@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FeiSharp2")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+700e2ea4a0e11e47482aa6b79097c3c794f5777a")]
 [assembly: System.Reflection.AssemblyProductAttribute("FeiSharp2")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FeiSharp2")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -31,7 +31,7 @@ namespace FeiSharp2
         private Expr ParseExpression()
         {
             Expr expr = ParsePrimary();
-            while (MatchOperator("+", "-"))
+            while (MatchOperator("+", "-","*","/"))
             {
                 string op = Previous().Value;
                 Expr right = ParsePrimary();
@@ -241,7 +241,9 @@ namespace FeiSharp2
                     _index++;
                     continue;
                 }
-
+                if (current == '/') { _index++; return new Token(TokenType.Operator, "/"); }
+                if (current == '*') { _index++; return new Token(TokenType.Operator, "*"); }
+                if (current == '-') { _index++; return new Token(TokenType.Operator, "-"); }
                 if (current == '+') { _index++; return new Token(TokenType.Operator, "+"); }
                 if (current == ';') { _index++; return new Token(TokenType.Punctuation, ";"); }
                 if (current == '(') { _index++; return new Token(TokenType.Punctuation, "("); }

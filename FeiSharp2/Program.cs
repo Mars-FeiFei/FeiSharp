@@ -52,6 +52,8 @@ static int EvaluateExpression(Expr expr)
             {
                 "+" => left + right,
                 "-" => left - right,
+                "*" => left * right,
+                "/" => left / right,
                 _ => throw new Exception("Unexpected operator: " + binExpr.Operator)
             };
 
@@ -59,5 +61,3 @@ static int EvaluateExpression(Expr expr)
             throw new Exception("Unexpected expression type");
     }
 }
-
-

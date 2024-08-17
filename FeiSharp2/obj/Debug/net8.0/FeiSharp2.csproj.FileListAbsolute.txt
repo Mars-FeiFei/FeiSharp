@@ -12,3 +12,4 @@ D:\MyCode\FeiSharp2\FeiSharp2\obj\Debug\net8.0\refint\FeiSharp2.dll
 D:\MyCode\FeiSharp2\FeiSharp2\obj\Debug\net8.0\FeiSharp2.pdb
 D:\MyCode\FeiSharp2\FeiSharp2\obj\Debug\net8.0\FeiSharp2.genruntimeconfig.cache
 D:\MyCode\FeiSharp2\FeiSharp2\obj\Debug\net8.0\ref\FeiSharp2.dll
+D:\MyCode\FeiSharp2\FeiSharp2\obj\Debug\net8.0\FeiSharp2.sourcelink.json
