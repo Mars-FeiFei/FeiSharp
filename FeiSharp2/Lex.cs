@@ -10,7 +10,7 @@ namespace FeiSharp2
     {
         private readonly List<Token> _tokens;
         private int _current;
-        private readonly Dictionary<string, int> _variables = new();
+        private readonly Dictionary<string, object> _variables = new();
 
         public Parser(List<Token> tokens)
         {
@@ -59,10 +59,9 @@ namespace FeiSharp2
             }
 
             // Evaluate the expression and store the result
-            int value = EvaluateExpression(expr);
+            object value = EvaluateExpression(expr);
             _variables[varName] = value;
         }
-
 
         // Parse a print statement
         private PrintStmt ParsePrintStatement()
@@ -90,16 +89,22 @@ namespace FeiSharp2
         {
             if (MatchToken(TokenType.Number))
             {
-                return new NumberExpr(int.Parse(Previous().Value));
+                return new ValueExpr(int.Parse(Previous().Value));
+            }
+
+            if(MatchToken(TokenType.String))
+            {
+                return new StringExpr(Previous().Value);
             }
 
             if (MatchToken(TokenType.Identifier))
             {
                 string varName = Previous().Value;
-                if (_variables.TryGetValue(varName, out int value))
+                if (_variables.TryGetValue(varName, out object value))
                 {
-                    return new NumberExpr(value);
-                }
+                    return new ValueExpr(value);
+                } 
+
                 throw new Exception($"Undefined variable: {varName}");
             }
 
@@ -214,27 +219,38 @@ namespace FeiSharp2
 
         private void EvaluatePrintStmt(PrintStmt stmt)
         {
-            int result = EvaluateExpression(stmt.Expression);
-            Console.WriteLine(result);
+            Console.WriteLine(EvaluateExpression(stmt.Expression));
         }
-
-        private int EvaluateExpression(Expr expr)
+        private object EvaluateExpression(Expr expr)
         {
             switch (expr)
             {
-                case NumberExpr numExpr:
+                case ValueExpr numExpr:
                     return numExpr.Value;
 
                 case BinaryExpr binExpr:
-                    int left = EvaluateExpression(binExpr.Left);
-                    int right = EvaluateExpression(binExpr.Right);
-                    return binExpr.Operator switch
+                    object left = EvaluateExpression(binExpr.Left);
+                    object right = EvaluateExpression(binExpr.Right);
+                    if (left is string && right is string)
                     {
-                        "+" => left + right,
-                        "-" => left - right,
-                        _ => throw new Exception("Unexpected operator: " + binExpr.Operator)
-                    };
-
+                        return binExpr.Operator switch
+                        {
+                            "+" => (string)left + (string)right,
+                            _ => throw new Exception("Unexpected operator: " + binExpr.Operator)
+                        };
+                    }
+                    else if (right is int && left is int)
+                    {
+                        return binExpr.Operator switch
+                        {
+                            "+" => (int)left + (int)right,
+                            "-" => (int)left - (int)right,
+                            _ => throw new Exception("Unexpected operator: " + binExpr.Operator)
+                        };
+                    }
+                    return new object();
+                case StringExpr stringExpr:
+                    return stringExpr.Value;
                 default:
                     throw new Exception("Unexpected expression type");
             }
@@ -248,6 +264,7 @@ namespace FeiSharp2
         Keyword,
         Identifier,
         Number,
+        String,
         Punctuation,
         Operator,
         EndOfFile
@@ -288,11 +305,19 @@ namespace FeiSharp2
 
     // Example Expr class hierarchy
     public abstract class Expr { }
-    public class NumberExpr : Expr
+    public class ValueExpr : Expr
     {
-        public int Value { get; }
-        public NumberExpr(int value) { Value = value; }
+        public object Value { get; }
+        public ValueExpr(object value) { Value = value; }
     }
+
+    public class StringExpr: Expr
+    {
+        public string Value { get; }
+
+        public StringExpr(string value) { Value = value; }
+    }
+
     public class VariableExpr : Expr
     {
         public string Name { get; }
@@ -341,11 +366,22 @@ namespace FeiSharp2
                 if (current == '(') { _index++; return new Token(TokenType.Punctuation, "("); }
                 if (current == ')') { _index++; return new Token(TokenType.Punctuation, ")"); }
 
+                if (current == '"')
+                {
+                    int start = ++_index;
+
+                    while (_index < _source.Length && _source[_index] != '"')
+                    {
+                        _index++;
+                    }
+                    return new Token(TokenType.String, _source[start.._index++]);
+                }
+
                 if (char.IsDigit(current))
                 {
                     int start = _index;
                     while (_index < _source.Length && char.IsDigit(_source[_index])) _index++;
-                    return new Token(TokenType.Number, _source.Substring(start, _index - start));
+                    return new Token(TokenType.Number, _source[start.._index]);
                 }
 
                 if (char.IsLetter(current))
