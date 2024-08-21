@@ -1,11 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace FeiSharp2
 {
+    public class VarExpr : Expr
+    {
+        public string Name { get; set; }
+        public VarExpr(string name)
+        {
+            Name = name;
+        }
+    }
+    
     public class Parser
     {
         private readonly List<Token> _tokens;
@@ -32,9 +44,41 @@ namespace FeiSharp2
                     PrintStmt printStmt = ParsePrintStatement();
                     EvaluatePrintStmt(printStmt);
                 }
+                else if (MatchKeyword("init"))
+                {
+                    ParseInitStatement();
+                }
             }
         }
+        private void ParseInitStatement()
+        {
+            if (!MatchPunctuation("(")) throw new Exception("Expected '('");
+            Expr expr = GetVar();
+            if (!MatchPunctuation(",")) throw new Exception("Expected ','");
+            Expr expr1 = GetVar();
+            if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
+            if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
+            _variables.Add(((VarExpr)expr).Name,InitValue(((VarExpr)expr1).Name));
+        }
+        private object InitValue(string type)
+        {
+                Type t = Type.GetType("System."+type);
+                return Activator.CreateInstance(t);
+        }
+        // 泛型方法，返回类型 T 的默认值
+        T GetDefaultGeneric<T>()
+        {
+            return default(T);
+        }
 
+        private Expr GetVar()
+        {
+                if (MatchToken(TokenType.Identifier))
+                {
+                        return new VarExpr(Previous().Value);
+                }
+                return null;
+        }
         private void ParseVariableDeclaration()
         {
             // Match the variable name
@@ -193,7 +237,10 @@ namespace FeiSharp2
         {
             return !IsAtEnd() && Peek().Type == type;
         }
-
+        private bool PreviousCheck(TokenType type)
+        {
+            return !IsAtEnd() && Previous().Type == type;
+        }
         private Token Advance()
         {
             if (!IsAtEnd()) _current++;
@@ -236,6 +283,7 @@ namespace FeiSharp2
                         return binExpr.Operator switch
                         {
                             "+" => (string)left + (string)right,
+                            "-" => Regex.Replace((string)left, Regex.Escape((string)right), ""),
                             _ => throw new Exception("Unexpected operator: " + binExpr.Operator)
                         };
                     }
@@ -300,6 +348,7 @@ namespace FeiSharp2
         public PrintStmt(Expr expression)
         {
             Expression = expression;
+            
         }
     }
 
@@ -358,14 +407,13 @@ namespace FeiSharp2
                     _index++;
                     continue;
                 }
-
+                if (current == ',') { _index++; return new Token(TokenType.Punctuation, ","); }
                 if (current == '+') { _index++; return new Token(TokenType.Operator, "+"); }
                 if (current == '-') { _index++; return new Token(TokenType.Operator, "-"); }
                 if (current == '=') { _index++; return new Token(TokenType.Operator, "="); } // Added for '='
                 if (current == ';') { _index++; return new Token(TokenType.Punctuation, ";"); }
                 if (current == '(') { _index++; return new Token(TokenType.Punctuation, "("); }
                 if (current == ')') { _index++; return new Token(TokenType.Punctuation, ")"); }
-
                 if (current == '"')
                 {
                     int start = ++_index;
@@ -391,6 +439,7 @@ namespace FeiSharp2
                     string value = _source.Substring(start, _index - start);
                     if (value == "var") return new Token(TokenType.Keyword, "var");
                     else if (value == "print") return new Token(TokenType.Keyword, "print");
+                    else if (value == "init") return new Token(TokenType.Keyword,"init");
                     else return new Token(TokenType.Identifier, value);
                 }
 
