@@ -48,17 +48,32 @@ namespace FeiSharp2
                 {
                     ParseInitStatement();
                 }
+                else if (MatchKeyword("set"))
+                {
+                    ParseSetStatement();
+                }
             }
+        }
+        private void ParseSetStatement()
+        {
+            if (!MatchPunctuation("(")) throw new Exception("Expected '('");
+            Expr expr = GetVar();
+            if (!MatchPunctuation(",")) throw new Exception("Expected ','");
+            string name = EvaluateExpression(ParseExpression()).ToString();
+            Expr expr2 = new VarExpr(name);
+            if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
+            if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
+            _variables[((VarExpr)expr).Name] = ((VarExpr)expr2).Name;
         }
         private void ParseInitStatement()
         {
             if (!MatchPunctuation("(")) throw new Exception("Expected '('");
             Expr expr = GetVar();
             if (!MatchPunctuation(",")) throw new Exception("Expected ','");
-            Expr expr1 = GetVar();
+             Expr expr2 = GetVar();
             if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
             if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
-            _variables.Add(((VarExpr)expr).Name,InitValue(((VarExpr)expr1).Name));
+            _variables.Add(((VarExpr)expr).Name,InitValue(((VarExpr)expr2).Name));
         }
         private object InitValue(string type)
         {
@@ -440,6 +455,7 @@ namespace FeiSharp2
                     if (value == "var") return new Token(TokenType.Keyword, "var");
                     else if (value == "print") return new Token(TokenType.Keyword, "print");
                     else if (value == "init") return new Token(TokenType.Keyword,"init");
+                    else if (value == "set") return new Token(TokenType.Keyword,"set");
                     else return new Token(TokenType.Identifier, value);
                 }
 
