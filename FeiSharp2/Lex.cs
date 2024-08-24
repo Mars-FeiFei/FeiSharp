@@ -52,7 +52,25 @@ namespace FeiSharp2
                 {
                     ParseSetStatement();
                 }
+                else if (MatchKeyword("input"))
+                {
+                    ParseInputStatement();
+                }
             }
+        }
+        private string GetCenter(string str,char fir,char lat)
+        {
+            return str.Split(fir)[1].Split(lat)[0];
+        }
+        private void ParseInputStatement()
+        {
+            if (!MatchPunctuation("(")) throw new Exception("Expected '('");
+            Console.Write(Peek().Value+":");
+            string a = Console.ReadLine();
+            _variables.Add(Peek().Value,GetCenter(a,'(',')'));
+            Advance();
+            if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
+            if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
         }
         private void ParseSetStatement()
         {
@@ -456,6 +474,7 @@ namespace FeiSharp2
                     else if (value == "print") return new Token(TokenType.Keyword, "print");
                     else if (value == "init") return new Token(TokenType.Keyword,"init");
                     else if (value == "set") return new Token(TokenType.Keyword,"set");
+                    else if (value == "input") return new Token(TokenType.Keyword, "input");
                     else return new Token(TokenType.Identifier, value);
                 }
 
