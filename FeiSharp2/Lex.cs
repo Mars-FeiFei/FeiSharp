@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using System.Text;
+﻿using System.Diagnostics;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace FeiSharp2
 {
@@ -56,7 +51,99 @@ namespace FeiSharp2
                 {
                     ParseInputStatement();
                 }
+                else if (MatchKeyword("import"))
+                {
+                    ParseImportStatement();
+                }
+                else if (MatchKeyword("export"))
+                {
+                    ParseExportStatement();
+                }
+                else if (MatchKeyword("start"))
+                {
+                    ParseStartStatement();
+                }
+                else if (MatchKeyword("stop"))
+                {
+                    ParseStopStatement();
+                }
             }
+        }
+        private void ParseStopStatement()
+        {
+            if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
+            while (true)
+            {
+                Console.WriteLine($"Application is stop...Enter 'c' key to continue...");
+                foreach(var item in _variables)
+                {
+                    Console.WriteLine($"var {item.Key} = {item.Value} : {item.Value.GetType()}");
+                }
+                Console.WriteLine($"{_variables.Count}"+" items of vars.");
+                ConsoleKeyInfo c = Console.ReadKey();
+                if (c.Key == ConsoleKey.C)
+                {
+                    return;
+                }
+                else
+                {
+                    continue;
+                }
+            }
+            
+        }
+        private void ParseStartStatement()
+        {
+            if (!MatchPunctuation("(")) throw new Exception("Expected '('");
+            Expr b = ParseExpression();
+            string a = (string)EvaluateExpression(b);
+            Process.Start(a);
+            if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
+            if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
+        }
+        private void ParseExportStatement()
+        {
+            if (!MatchPunctuation("(")) throw new Exception("Expected '('");
+            Expr b = ParseExpression();
+            string a = (string)EvaluateExpression(b);
+            if (!MatchPunctuation(",")) throw new Exception("Expected ','");
+            Expr b1 = ParseExpression();
+            string a1 = (string)EvaluateExpression(b1);
+            File.AppendAllText(a,a1);
+            if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
+            if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
+        }
+        private void ParseImportStatement()
+        {
+            if (!MatchPunctuation("(")) throw new Exception("Expected '('");
+            Expr b = ParseExpression();
+            string a = (string)EvaluateExpression(b);
+            Run(File.ReadAllText(a));
+            if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
+            if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
+        }
+        private void Run(string code)
+        {
+            string sourceCode = code;
+            Lexer lexer = new(sourceCode);
+            List<Token> tokens = [];
+            Token token;
+            do
+            {
+                token = lexer.NextToken();
+                tokens.Add(token);
+            } while (token.Type != TokenType.EndOfFile);
+
+            Parser parser = new(tokens);
+            try
+            {
+                parser.ParseStatements();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Parsing error: " + ex.Message);
+            }
+            return;
         }
         private string GetCenter(string str,char fir,char lat)
         {
@@ -67,7 +154,7 @@ namespace FeiSharp2
             if (!MatchPunctuation("(")) throw new Exception("Expected '('");
             Console.Write(Peek().Value+":");
             string a = Console.ReadLine();
-            _variables.Add(Peek().Value,GetCenter(a,'(',')'));
+            _variables.Add(Peek().Value,GetCenter(a,'"','"'));
             Advance();
             if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
             if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
@@ -88,7 +175,7 @@ namespace FeiSharp2
             if (!MatchPunctuation("(")) throw new Exception("Expected '('");
             Expr expr = GetVar();
             if (!MatchPunctuation(",")) throw new Exception("Expected ','");
-             Expr expr2 = GetVar();
+            Expr expr2 = GetVar();
             if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
             if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
             _variables.Add(((VarExpr)expr).Name,InitValue(((VarExpr)expr2).Name));
@@ -98,12 +185,6 @@ namespace FeiSharp2
                 Type t = Type.GetType("System."+type);
                 return Activator.CreateInstance(t);
         }
-        // 泛型方法，返回类型 T 的默认值
-        T GetDefaultGeneric<T>()
-        {
-            return default(T);
-        }
-
         private Expr GetVar()
         {
                 if (MatchToken(TokenType.Identifier))
@@ -153,7 +234,7 @@ namespace FeiSharp2
         private Expr ParseExpression()
         {
             Expr expr = ParsePrimary();
-            while (MatchOperator("+", "-"))
+            while (MatchOperator("+", "-","*","/","|","^"))
             {
                 string op = Previous().Value;
                 Expr right = ParsePrimary();
@@ -254,18 +335,6 @@ namespace FeiSharp2
             return false;
         }
 
-        private bool MatchIdentifier(out string identifier)
-        {
-            if (Check(TokenType.Identifier))
-            {
-                identifier = Peek().Value;
-                Advance();
-                return true;
-            }
-            identifier = null;
-            return false;
-        }
-
         private bool Check(TokenType type)
         {
             return !IsAtEnd() && Peek().Type == type;
@@ -320,16 +389,18 @@ namespace FeiSharp2
                             _ => throw new Exception("Unexpected operator: " + binExpr.Operator)
                         };
                     }
-                    else if (right is int && left is int)
-                    {
+                    left = Convert.ToDouble(left.ToString()+".0");
+                    right = Convert.ToDouble(right.ToString() + ".0");
                         return binExpr.Operator switch
                         {
-                            "+" => (int)left + (int)right,
-                            "-" => (int)left - (int)right,
+                            "+" => (double)left + (double)right,
+                            "-" => (double)left - (double)right,
+                            "*" => (double)left * (double)right,
+                            "/" => (double)left / (double)right,
+                            "^" => Math.Pow((double)left,(double)right),
+                            "|" => Math.Pow((double)left, 1 / (double)right),
                             _ => throw new Exception("Unexpected operator: " + binExpr.Operator)
                         };
-                    }
-                    return new object();
                 case StringExpr stringExpr:
                     return stringExpr.Value;
                 default:
@@ -440,6 +511,11 @@ namespace FeiSharp2
                     _index++;
                     continue;
                 }
+                if (current == '|') { _index++; return new Token(TokenType.Operator, "|"); }
+                if (current == '^') { _index++; return new Token(TokenType.Operator, "^"); }
+                if (current == '/') { _index++; return new Token(TokenType.Operator, "/"); }
+                if (current == '*') { _index++; return new Token(TokenType.Operator, "*"); }
+                if (current == '-') { _index++; return new Token(TokenType.Operator, "-"); }
                 if (current == ',') { _index++; return new Token(TokenType.Punctuation, ","); }
                 if (current == '+') { _index++; return new Token(TokenType.Operator, "+"); }
                 if (current == '-') { _index++; return new Token(TokenType.Operator, "-"); }
@@ -472,9 +548,13 @@ namespace FeiSharp2
                     string value = _source.Substring(start, _index - start);
                     if (value == "var") return new Token(TokenType.Keyword, "var");
                     else if (value == "print") return new Token(TokenType.Keyword, "print");
-                    else if (value == "init") return new Token(TokenType.Keyword,"init");
-                    else if (value == "set") return new Token(TokenType.Keyword,"set");
+                    else if (value == "init") return new Token(TokenType.Keyword, "init");
+                    else if (value == "set") return new Token(TokenType.Keyword, "set");
                     else if (value == "input") return new Token(TokenType.Keyword, "input");
+                    else if (value == "import") return new Token(TokenType.Keyword, "import");
+                    else if (value == "export") return new Token(TokenType.Keyword, "export");
+                    else if (value == "start") return new Token(TokenType.Keyword, "start");
+                    else if (value == "stop") return new Token(TokenType.Keyword, "stop");
                     else return new Token(TokenType.Identifier, value);
                 }
 

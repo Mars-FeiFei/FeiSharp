@@ -9,9 +9,8 @@ while (code.ToLower() != "run")
     code = Console.ReadLine();
     sourceCode += code;
 }
-Lexer lexer = new Lexer(sourceCode);
-
-List<Token> tokens = new List<Token>();
+Lexer lexer = new(sourceCode);
+List<Token> tokens = [];
 Token token;
 do
 {
@@ -19,7 +18,7 @@ do
     tokens.Add(token);
 } while (token.Type != TokenType.EndOfFile);
 
-Parser parser = new Parser(tokens);
+Parser parser = new(tokens);
 try
 {
     parser.ParseStatements();
