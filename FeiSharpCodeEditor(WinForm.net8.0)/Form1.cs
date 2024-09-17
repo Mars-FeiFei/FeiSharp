@@ -197,21 +197,34 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             else if (e.KeyChar == (char)Keys.Enter)
             {
                 int start = textBox1.SelectionStart;
-                if (textBox1.Text[start-1] != ';') {
-                    textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, ";\r\n");
-                }
-                else
-                {
-                    textBox1.Text += Environment.NewLine;
-                }
-                textBox1.SelectionStart = start+3;
+                textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, ";\r\n");
+                textBox1.Text += Environment.NewLine;
+                textBox1.SelectionStart = start + 3;
+                e.Handled = true;
+            }
+            else if (e.KeyChar == ';')
+            {
+                int start = textBox1.SelectionStart;
+                textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, ";\r\n");
+                textBox1.Text += Environment.NewLine;
+                textBox1.SelectionStart = start + 3;
                 e.Handled = true;
             }
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            Console.WriteLine("Loading......");
+        }
 
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, comboBox1.SelectedItem.ToString());
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, comboBox2.SelectedItem.ToString()+"()\r\n{\r\n\r\n}");
         }
     }
 }

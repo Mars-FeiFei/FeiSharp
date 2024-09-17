@@ -32,11 +32,13 @@
             button2 = new Button();
             button4 = new Button();
             textBox1 = new TextBox();
+            comboBox1 = new ComboBox();
+            comboBox2 = new ComboBox();
             SuspendLayout();
             // 
             // button1
             // 
-            button1.Location = new Point(167, 59);
+            button1.Location = new Point(33, 47);
             button1.Name = "button1";
             button1.Size = new Size(528, 157);
             button1.TabIndex = 0;
@@ -46,7 +48,7 @@
             // 
             // button2
             // 
-            button2.Location = new Point(896, 59);
+            button2.Location = new Point(628, 47);
             button2.Name = "button2";
             button2.Size = new Size(528, 157);
             button2.TabIndex = 1;
@@ -56,7 +58,7 @@
             // 
             // button4
             // 
-            button4.Location = new Point(1620, 59);
+            button4.Location = new Point(1243, 47);
             button4.Name = "button4";
             button4.Size = new Size(528, 157);
             button4.TabIndex = 2;
@@ -77,12 +79,36 @@
             textBox1.TextChanged += textBox1_TextChanged;
             textBox1.KeyPress += textBox1_KeyPress;
             // 
+            // comboBox1
+            // 
+            comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBox1.FormattingEnabled = true;
+            comboBox1.Items.AddRange(new object[] { "var", "print", "init", "set", "import", "export", "start", "stop", "wait", "watchstart", "watchend", "abe", "helper" });
+            comboBox1.Location = new Point(1855, 68);
+            comboBox1.Name = "comboBox1";
+            comboBox1.Size = new Size(329, 54);
+            comboBox1.TabIndex = 4;
+            comboBox1.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
+            // 
+            // comboBox2
+            // 
+            comboBox2.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBox2.FormattingEnabled = true;
+            comboBox2.Items.AddRange(new object[] { "if", "while" });
+            comboBox2.Location = new Point(1852, 161);
+            comboBox2.Name = "comboBox2";
+            comboBox2.Size = new Size(334, 54);
+            comboBox2.TabIndex = 5;
+            comboBox2.SelectedIndexChanged += comboBox2_SelectedIndexChanged;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(22F, 46F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.AliceBlue;
             ClientSize = new Size(2211, 1392);
+            Controls.Add(comboBox2);
+            Controls.Add(comboBox1);
             Controls.Add(textBox1);
             Controls.Add(button4);
             Controls.Add(button2);
@@ -102,5 +128,7 @@
         private Button button2;
         private Button button4;
         private TextBox textBox1;
+        private ComboBox comboBox1;
+        private ComboBox comboBox2;
     }
 }

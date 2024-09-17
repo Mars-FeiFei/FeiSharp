@@ -113,7 +113,7 @@ namespace FeiSharp
             if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
             List<Token> tokens = new List<Token>();
             int indexC = 0;
-            for (int i = _current; i < _tokens.Count; i++)
+            for (int i = _current+1; i < _tokens.Count; i++)
             {
                 if (_tokens[i].Type == TokenType.Punctuation && _tokens[i].Value == "}")
                 {
@@ -140,7 +140,7 @@ namespace FeiSharp
             if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
             List<Token> tokens = new List<Token>();
             int indexC = 0;
-            for (int i = _current; i < _tokens.Count; i++)
+            for (int i = _current+1; i < _tokens.Count; i++)
             {
                 if (_tokens[i].Type == TokenType.Punctuation && _tokens[i].Value == "}")
                 {
