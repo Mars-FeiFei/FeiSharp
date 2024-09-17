@@ -12,13 +12,25 @@ namespace FeiSharp
             Name = name;
         }
     }
-
+    public class FunctionInfo
+    {
+        public string Name {get; internal set;}
+        public List<string> Parameter { get; internal set; }
+        public List<Token> FunctionBody { get; internal set; }
+        public FunctionInfo(string name,IEnumerable<string> parameter, List<Token> functionBody)
+        {
+            Name = name;
+            Parameter = new(parameter);
+            FunctionBody = functionBody;
+        }
+    }
     public class Parser
     {
         private Stopwatch Stopwatch { get; set; }
         private readonly List<Token> _tokens;
         private int _current;
         public  Dictionary<string, object> _variables = new();
+        public Dictionary<string,FunctionInfo> _functions = new();
         public Parser(List<Token> tokens)
         {
             _tokens = tokens;
@@ -101,9 +113,106 @@ namespace FeiSharp
                 {
                     ParseWhileStatement();
                 }
-            } while (!IsAtEnd() && Peek().Type == TokenType.Keyword);
+                else if (MatchKeyword("func"))
+                {
+                    ParseFunctionStatement();
+                }
+                else if (MatchFunction(Peek().Value))
+                {
+                    RunFunction(Peek().Value);
+                }
+            } while (!IsAtEnd() && (Peek().Type == TokenType.Keyword || _functions.ContainsKey(Peek().Value)));
         }
         private void TestVoid() { }
+        private void RunFunction(string funcName)
+        {
+            FunctionInfo functionInfo = _functions[funcName];
+            List<object> actualParameters = new();
+            Advance();
+            while (Peek().Value != ")")
+            {
+                if (Peek().Value == "," || Peek().Value == "(")
+                {
+                    Advance();
+                    continue;
+                }
+                else
+                {
+                    if(double.TryParse(Peek().Value,out double a))
+                    {
+                        actualParameters.Add(double.Parse(Peek().Value));
+                    }
+                    else if(bool.TryParse(Peek().Value,out bool b))
+                    {
+                        actualParameters.Add(bool.Parse(Peek().Value));
+                    }
+                    else
+                    {
+                        actualParameters.Add(Peek().Value);
+                    }
+                    Advance();
+                }
+            }
+            for (int i = 0; i < functionInfo.Parameter.Count; i++)
+            {
+                try
+                {
+                    _variables.Add(functionInfo.Parameter[i], actualParameters[i]);
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    throw new Exception("Parameters is not correct.");
+                }
+            }
+            _variables = Run(functionInfo.FunctionBody,_variables);
+        }
+        private bool MatchFunction(string funcName)
+        {
+            return _functions.ContainsKey(funcName);
+        }
+        private void ParseFunctionStatement()
+        {
+            FunctionInfo functionInfo;
+            string name = "";
+            name = Peek().Value;
+            List<string> parameters = [];
+            Advance();
+            while (Peek().Value != ")")
+            {
+                if(Peek().Value == "," || Peek().Value == "(")
+                {
+                    Advance();
+                    continue;
+                }
+                else
+                {
+                    parameters.Add(Peek().Value);
+                    Advance();
+                }
+            }
+            Advance();
+            List<Token> tokens = ParseTokens();
+            functionInfo = new(name,parameters,tokens);
+            _functions.Add(name,functionInfo);
+            Advance();
+            Advance();
+        }
+        private List<Token> ParseTokens()
+        {
+            List<Token> tokens = new List<Token>();
+            int indexC = 0;
+            for (int i = _current + 1; i < _tokens.Count; i++)
+            {
+                if (_tokens[i].Type == TokenType.Punctuation && _tokens[i].Value == "}")
+                {
+                    indexC = i;
+                    break;
+                }
+                tokens.Add(_tokens[i]);
+                Advance();
+            }
+            return tokens;
+        }
         private void ParseWhileStatement()
         {
             if (!MatchPunctuation("(")) throw new Exception("Expected '('");
@@ -633,7 +742,8 @@ namespace FeiSharp
         Operator,
         EndOfFile,
         Type,
-        Bool
+        Bool,
+        FuncName
     }
 
     // Example Token class
@@ -778,12 +888,15 @@ namespace FeiSharp
                     else if (value == "watchstart") return new Token(TokenType.Keyword, "watchstart");
                     else if (value == "watchend") return new Token(TokenType.Keyword, "watchend");
                     else if (value == "abe") return new Token(TokenType.Keyword, "abe");
-                    else if (value == "Double" ) return new Token(TokenType.Type,"Double");
+                    else if (value == "Double") return new Token(TokenType.Type, "Double");
                     else if (value == "helper") return new Token(TokenType.Keyword, "helper");
                     else if (value == "true") return new Token(TokenType.Keyword, "true");
                     else if (value == "false") return new Token(TokenType.Keyword, "false");
                     else if (value == "if") return new Token(TokenType.Keyword, "if");
                     else if (value == "while") return new Token(TokenType.Keyword, "while");
+                    else if (value == "func") { 
+                        return new Token(TokenType.Keyword, "func"); 
+                    }
                     else return new Token(TokenType.Identifier, value);
                 }
                 throw new Exception("Unexpected character: " + current);
