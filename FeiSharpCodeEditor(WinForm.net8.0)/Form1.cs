@@ -1,13 +1,27 @@
 ﻿using FeiSharp;
+using System.Diagnostics;
+using T = System.Windows.Forms.Timer;
 
 namespace FeiSharpCodeEditor_WinForm.net8._0_
 {
     public partial class Form1 : Form
     {
+        T timer = new();
+        Image gifImage;
         public Form1()
         {
             InitializeComponent();
             this.KeyDown += Form1_KeyDown;
+            timer.Interval = 10;
+            timer.Start();
+            timer.Tick += Timer_Tick;
+        }
+        private void Timer_Tick(object? sender, EventArgs e)
+        {
+            timer.Stop();
+            this.pictureBox1.Visible = true;
+            Thread.Sleep(Random.Shared.Next(3000,4001));
+            this.pictureBox1.Visible = false;
         }
 
         private void Form1_KeyDown(object? sender, KeyEventArgs e)
@@ -28,7 +42,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         private void Start()
         {
             OpenFileDialog ofd = new();
-            ofd.Filter = "FeiSharp Code File|*.fs";
+            ofd.Filter = "FeiSharp Source Code File|*.fsc";
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 Run(File.ReadAllText(ofd.FileName));
@@ -37,7 +51,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         private void SaveAs()
         {
             SaveFileDialog sfd = new();
-            sfd.Filter = "FeiSharp Code File|*.fs";
+            sfd.Filter = "FeiSharp Source Code File|*.fsc";
             if (sfd.ShowDialog() == DialogResult.OK)
             {
                 using StreamWriter sw = new(sfd.FileName, false, encoding: System.Text.Encoding.UTF8);
@@ -173,6 +187,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         }
         private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
         {
+            bool a = false;
             if (e.KeyChar == '(')
             {
                 int start = textBox1.SelectionStart;
@@ -194,7 +209,16 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 textBox1.SelectionStart = start + 1;
                 e.Handled = true;
             }
-            else if (e.KeyChar == (char)Keys.Enter)
+            else if (e.KeyChar == (char)Keys.Enter && textBox1.Text[textBox1.SelectionStart - 1] != ']')
+            {
+                a = true;
+                int start = textBox1.SelectionStart;
+                textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, ";\r\n");
+                textBox1.Text += Environment.NewLine;
+                textBox1.SelectionStart = start + 3;
+                e.Handled = true;
+            }
+            else if (e.KeyChar == (char)Keys.Enter && textBox1.Text[textBox1.SelectionStart - 1] != '}' && !a)
             {
                 int start = textBox1.SelectionStart;
                 textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, ";\r\n");
@@ -214,7 +238,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Console.WriteLine("Loading......");
+            Debug.WriteLine("Loading......");
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -224,7 +248,20 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
 
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, comboBox2.SelectedItem.ToString()+"()\r\n{\r\n\r\n}");
+            if (comboBox2.SelectedItem.ToString() != "func")
+            {
+                textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, comboBox2.SelectedItem.ToString() + "()\r\n{\r\n\r\n}");
+            }
+            else
+            {
+                textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, comboBox2.SelectedItem.ToString() + " FunctionName()\r\n[\r\n\r\n]");
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Menu menu = new Menu();
+            menu.Show();
         }
     }
 }

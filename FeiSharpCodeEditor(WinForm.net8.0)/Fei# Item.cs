@@ -10,16 +10,11 @@ using System.Windows.Forms;
 
 namespace FeiSharpCodeEditor_WinForm.net8._0_
 {
-    public partial class TextShow : Form
+    public partial class Fei__Item: Form
     {
-        public TextShow()
+        public Fei__Item()
         {
             InitializeComponent();
-        }
-        public void Show(object a)
-        {
-            textBox1.Text = a.ToString();
-            Show();
         }
     }
 }

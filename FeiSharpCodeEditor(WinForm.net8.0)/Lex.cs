@@ -138,18 +138,7 @@ namespace FeiSharp
                 }
                 else
                 {
-                    if(double.TryParse(Peek().Value,out double a))
-                    {
-                        actualParameters.Add(double.Parse(Peek().Value));
-                    }
-                    else if(bool.TryParse(Peek().Value,out bool b))
-                    {
-                        actualParameters.Add(bool.Parse(Peek().Value));
-                    }
-                    else
-                    {
-                        actualParameters.Add(Peek().Value);
-                    }
+                    actualParameters.Add(EvaluateExpression(ParseExpression()));
                     Advance();
                 }
             }
@@ -203,7 +192,7 @@ namespace FeiSharp
             int indexC = 0;
             for (int i = _current + 1; i < _tokens.Count; i++)
             {
-                if (_tokens[i].Type == TokenType.Punctuation && _tokens[i].Value == "}")
+                if (_tokens[i].Type == TokenType.Punctuation && _tokens[i].Value == "]")
                 {
                     indexC = i;
                     break;
@@ -389,7 +378,7 @@ namespace FeiSharp
             if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
             if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
         }
-        private void Run(string code)
+        internal void Run(string code)
         {
             string sourceCode = code;
             Lexer lexer = new(sourceCode);
@@ -412,11 +401,34 @@ namespace FeiSharp
             }
             return;
         }
-        private Dictionary<string,object> Run(IEnumerable<Token> tokens,Dictionary<string,object> _vars)
+        internal Dictionary<string,object> Run(IEnumerable<Token> tokens,Dictionary<string,object> _vars)
         {
             List<Token> _tokens = new(tokens);
             Parser parser = new(_tokens);
             parser._variables = _vars;
+            try
+            {
+                parser.ParseStatements();
+            }
+            catch (Exception ex)
+            {
+                t.Show("Parsing error: " + ex.Message);
+            }
+            return parser._variables;
+        }
+        internal Dictionary<string, object> Run(string code,int a)
+        {
+            string sourceCode = code;
+            Lexer lexer = new(sourceCode);
+            List<Token> tokens = [];
+            Token token;
+            do
+            {
+                token = lexer.NextToken();
+                tokens.Add(token);
+            } while (token.Type != TokenType.EndOfFile);
+
+            Parser parser = new(tokens);
             try
             {
                 parser.ParseStatements();
@@ -835,6 +847,8 @@ namespace FeiSharp
                     _index++;
                     continue;
                 }
+                if (current == ']') { _index++; return new Token(TokenType.Punctuation, "]"); }
+                if (current == '[') { _index++; return new Token(TokenType.Punctuation, "["); }
                 if (current == '!') { _index++; return new Token(TokenType.Operator, "!"); }
                 if (current == '}') { _index++; return new Token(TokenType.Punctuation, "}"); }
                 if (current == '{') { _index++; return new Token(TokenType.Punctuation, "{"); }
