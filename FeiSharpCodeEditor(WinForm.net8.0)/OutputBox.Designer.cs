@@ -1,6 +1,6 @@
 ﻿namespace FeiSharpCodeEditor_WinForm.net8._0_
 {
-    partial class TextShow
+    partial class OutputBox
     {
         /// <summary>
         /// Required designer variable.
@@ -36,17 +36,17 @@
             textBox1.Location = new Point(2, 0);
             textBox1.Multiline = true;
             textBox1.Name = "textBox1";
-            textBox1.Size = new Size(1962, 1308);
+            textBox1.Size = new Size(2158, 1254);
             textBox1.TabIndex = 0;
             // 
-            // TextShow
+            // OutputBox
             // 
-            AutoScaleDimensions = new SizeF(20F, 48F);
+            AutoScaleDimensions = new SizeF(22F, 46F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1966, 1320);
+            ClientSize = new Size(2163, 1265);
             Controls.Add(textBox1);
-            Name = "TextShow";
-            Text = "TextShow";
+            Name = "OutputBox";
+            Text = "Output";
             ResumeLayout(false);
             PerformLayout();
         }

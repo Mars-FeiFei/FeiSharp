@@ -32,6 +32,7 @@
             button1 = new Button();
             button2 = new Button();
             linkLabel1 = new LinkLabel();
+            button3 = new Button();
             SuspendLayout();
             // 
             // button1
@@ -46,7 +47,7 @@
             // 
             // button2
             // 
-            button2.Location = new Point(577, 421);
+            button2.Location = new Point(577, 547);
             button2.Name = "button2";
             button2.Size = new Size(423, 147);
             button2.TabIndex = 1;
@@ -65,12 +66,23 @@
             linkLabel1.Text = "Fei# Item";
             linkLabel1.LinkClicked += linkLabel1_LinkClicked;
             // 
+            // button3
+            // 
+            button3.Location = new Point(582, 324);
+            button3.Name = "button3";
+            button3.Size = new Size(409, 149);
+            button3.TabIndex = 3;
+            button3.Text = "Developer Cmd";
+            button3.UseVisualStyleBackColor = true;
+            button3.Click += button3_Click;
+            // 
             // Menu
             // 
             AutoScaleDimensions = new SizeF(22F, 46F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.GradientInactiveCaption;
             ClientSize = new Size(1171, 756);
+            Controls.Add(button3);
             Controls.Add(linkLabel1);
             Controls.Add(button2);
             Controls.Add(button1);
@@ -90,5 +102,6 @@
         private Button button1;
         private Button button2;
         private LinkLabel linkLabel1;
+        private Button button3;
     }
 }

@@ -1,6 +1,8 @@
 ﻿using FeiSharpCodeEditor_WinForm.net8._0_;
 using System.Diagnostics;
+using System.Diagnostics.Tracing;
 using System.Text.RegularExpressions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace FeiSharp
 {
@@ -24,6 +26,17 @@ namespace FeiSharp
             FunctionBody = functionBody;
         }
     }
+    public class OutputEventArgs : EventArgs
+    {
+        public string Message { get; set;}
+        public string Type { get; set; }
+        public OutputEventArgs(string message,string type = "info")
+        {
+            Message = message;
+            Type = type;
+        }
+    }
+
     public class Parser
     {
         private Stopwatch Stopwatch { get; set; }
@@ -31,6 +44,7 @@ namespace FeiSharp
         private int _current;
         public  Dictionary<string, object> _variables = new();
         public Dictionary<string,FunctionInfo> _functions = new();
+        public event EventHandler<OutputEventArgs> OutputEvent;
         public Parser(List<Token> tokens)
         {
             _tokens = tokens;
@@ -38,7 +52,11 @@ namespace FeiSharp
             _variables.Add("true",true);
             _variables.Add("false", false);
         }
-
+        protected virtual void OnOutputEvent(OutputEventArgs e)
+        {
+            EventHandler<OutputEventArgs> handler = OutputEvent;
+            handler?.Invoke(this, e);
+        }
         // Parse statements (variable declarations and print statements)
         public void ParseStatements()
         {
@@ -274,11 +292,11 @@ namespace FeiSharp
             string a = EvaluateExpression(ParseExpression()).ToString();
             if (a.Equals("syntax",StringComparison.OrdinalIgnoreCase))
             {
-                t.Show("Syntax:\r\n1.keyword+(args);\r\nInvoke keyword with args.\r\nWarning: If keyword hasn't args,\r\nuse keyword+;\r\n2.Define var.\r\n(1)define:\r\ninit(varname,Type); Or var varname = value;\r\n(2)assignment:\r\nset(varname,value);\r\n3.Keywords Table.\r\n________________________________________________\r\n|keyword   |  args   |  do somwthings           |\r\n|paint        text     print the text           |\r\n|watchstart  varname   start stopwatch.         |\r\n|watchend     null     stop stopwatch           |\r\n|init    varname,Type  init var.                |\r\n|set    varname,value  set var.                 |\r\n|...          ....     ............             |\r\n|_______________________________________________|");
+                OnOutputEvent(new OutputEventArgs("Syntax:\r\n1.keyword+(args);\r\nInvoke keyword with args.\r\nWarning: If keyword hasn't args,\r\nuse keyword+;\r\n2.Define var.\r\n(1)define:\r\ninit(varname,Type); Or var varname = value;\r\n(2)assignment:\r\nset(varname,value);\r\n3.Keywords Table.\r\n________________________________________________\r\n|keyword   |  args   |  do somwthings           |\r\n|paint        text     print the text           |\r\n|watchstart  varname   start stopwatch.         |\r\n|watchend     null     stop stopwatch           |\r\n|init    varname,Type  init var.                |\r\n|set    varname,value  set var.                 |\r\n|...          ....     ............             |\r\n|_______________________________________________|"));
             }
             else if (a.Equals("github", StringComparison.OrdinalIgnoreCase))
             {
-                t.Show("https://github.com/Mars-FeiFei/FeiSharp \r\n It is copy to your clipboard.");
+                OnOutputEvent(new("https://github.com/Mars-FeiFei/FeiSharp \r\n It is copy to your clipboard."));
                 Clipboard.SetText("https://github.com/Mars-FeiFei/FeiSharp");
             }
             else
@@ -341,12 +359,12 @@ namespace FeiSharp
         private void ParseStopStatement()
         {
             if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
-            t.Show($"Application is stop...");
+            OnOutputEvent(new OutputEventArgs("Application is stop..."));
             foreach (var item in _variables)
             {
-                t.Show($"var {item.Key} = {item.Value} : {item.Value.GetType()}");
+                OnOutputEvent(new OutputEventArgs($"var {item.Key} = {item.Value} : {item.Value.GetType()}"));
             }
-            t.Show($"{_variables.Count}" + " items of vars.");
+            OnOutputEvent(new OutputEventArgs($"{_variables.Count}" + " items of vars."));
         }
         private void ParseStartStatement()
         {
@@ -397,7 +415,7 @@ namespace FeiSharp
             }
             catch (Exception ex)
             {
-                t.Show("Parsing error: " + ex.Message);
+                OnOutputEvent(new OutputEventArgs("Parsing error: " + ex.Message));
             }
             return;
         }
@@ -412,7 +430,7 @@ namespace FeiSharp
             }
             catch (Exception ex)
             {
-                t.Show("Parsing error: " + ex.Message);
+                OnOutputEvent(new OutputEventArgs("Parsing error: " + ex.Message));
             }
             return parser._variables;
         }
@@ -435,7 +453,7 @@ namespace FeiSharp
             }
             catch (Exception ex)
             {
-                t.Show("Parsing error: " + ex.Message);
+                OnOutputEvent(new OutputEventArgs("Parsing error: " + ex.Message));
             }
             return parser._variables;
         }
@@ -687,10 +705,11 @@ namespace FeiSharp
             if (_current == 0) throw new InvalidOperationException("No previous token available.");
             return _tokens[_current - 1];
         }
-        TextShow t = new TextShow();
+
         private void EvaluatePrintStmt(PrintStmt stmt)
         {
-            t.Show(EvaluateExpression(stmt.Expression));
+            string text = EvaluateExpression(stmt.Expression).ToString();
+            OnOutputEvent(new OutputEventArgs(text));
         }
         private object EvaluateExpression(Expr expr)
         {

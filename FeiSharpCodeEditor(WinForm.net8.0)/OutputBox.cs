@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace FeiSharpCodeEditor_WinForm.net8._0_
 {
-    public partial class TextShow : Form
+    public partial class OutputBox : Form
     {
-        public TextShow()
+        public OutputBox()
         {
             InitializeComponent();
         }

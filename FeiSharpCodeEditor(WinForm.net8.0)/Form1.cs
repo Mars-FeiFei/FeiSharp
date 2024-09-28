@@ -1,29 +1,32 @@
 ﻿using FeiSharp;
+using IWshRuntimeLibrary;
 using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Windows.Forms.VisualStyles;
 using T = System.Windows.Forms.Timer;
 
 namespace FeiSharpCodeEditor_WinForm.net8._0_
 {
     public partial class Form1 : Form
     {
-        T timer = new();
         Image gifImage;
         public Form1()
         {
             InitializeComponent();
             this.KeyDown += Form1_KeyDown;
-            timer.Interval = 10;
-            timer.Start();
-            timer.Tick += Timer_Tick;
+            RunBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            RunBtn.FlatAppearance.BorderSize = 0;
+            SaveAsBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            SaveAsBtn.FlatAppearance.BorderSize = 0;
+            Menu.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            Menu.FlatAppearance.BorderSize = 0;
+            OpenBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            OpenBtn.FlatAppearance.BorderSize = 0;
+            button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            button1.FlatAppearance.BorderSize = 0;
+            button1.SendToBack();
         }
-        private void Timer_Tick(object? sender, EventArgs e)
-        {
-            timer.Stop();
-            this.pictureBox1.Visible = true;
-            Thread.Sleep(Random.Shared.Next(3000,4001));
-            this.pictureBox1.Visible = false;
-        }
-
         private void Form1_KeyDown(object? sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.F5)
@@ -45,7 +48,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             ofd.Filter = "FeiSharp Source Code File|*.fsc";
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                Run(File.ReadAllText(ofd.FileName));
+                Run(System.IO.File.ReadAllText(ofd.FileName));
             }
         }
         private void SaveAs()
@@ -58,11 +61,10 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 sw.Write(textBox1.Text);
             }
         }
-        private void button1_Click(object sender, EventArgs e)
+        private void BtnRunClick(object sender, EventArgs e)
         {
             Run();
         }
-        TextShow t = new TextShow();
         private void Run()
         {
             string code = "";
@@ -73,17 +75,22 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             do
             {
                 token = lexer.NextToken();
+
                 tokens.Add(token);
             } while (token.Type != TokenType.EndOfFile);
 
             Parser parser = new(tokens);
+            parser.OutputEvent += (s, e) =>
+            {
+                outputBox.Show(e.Message);
+            };
             try
             {
                 parser.ParseStatements();
             }
             catch (Exception ex)
             {
-                t.Show("Parsing error: " + ex.Message);
+                outputBox.Show("Parsing error: " + ex.Message);
             }
             return;
         }
@@ -101,13 +108,17 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             } while (token.Type != TokenType.EndOfFile);
 
             Parser parser = new(tokens);
+            parser.OutputEvent += (s, e) =>
+            {
+                outputBox.Show(e.Message);
+            };
             try
             {
                 parser.ParseStatements();
             }
             catch (Exception ex)
             {
-                t.Show("Parsing error: " + ex.Message);
+                outputBox.Show("Parsing error: " + ex.Message);
             }
             return;
         }
@@ -125,12 +136,8 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             } while (token.Type != TokenType.EndOfFile);
             return tokens;
         }
-        private void Form1_Resize(object sender, EventArgs e)
-        {
-            textBox1.Width = this.ClientSize.Width - 20;
-            textBox1.Height = this.ClientSize.Height - button1.Height - 30;
-        }
-        private void button2_Click(object sender, EventArgs e)
+       
+        private void BtnSaveAsClick(object sender, EventArgs e)
         {
             SaveAs();
         }
@@ -148,6 +155,14 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             } while (token.Type != TokenType.EndOfFile);
 
             Parser parser = new(tokens);
+            parser.OutputEvent += (s, e) =>
+            {
+                outputBox.Show(e.Message);
+            };
+            parser.OutputEvent += (s, e) =>
+            {
+                outputBox.Show(e.Message);
+            };
             parser.ParseStatements();
             return;
         }
@@ -159,7 +174,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             {
                 if (item.Type == TokenType.Identifier && char.IsUpper(item.Value[0]))
                 {
-                    t.Show("The var \"" + item.Value + "\" isn't a valid varname, \r\n but it doesn't affect operation.");
+                    outputBox.Show("The var \"" + item.Value + "\" isn't a valid varname, \r\n but it doesn't affect operation.");
                     isValid = false;
                 }
             }
@@ -169,23 +184,20 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             }
             catch (Exception ex)
             {
-                t.Show("Something went wrong:" + "\r\n" + ex.Message);
+                outputBox.Show("Something went wrong:" + "\r\n" + ex.Message);
                 isValid = false;
             }
             if (isValid)
             {
-                t.Show("Nothing wrong.");
+                outputBox.Show("Nothing wrong.");
             }
         }
-        private void button4_Click(object sender, EventArgs e)
+        private void BtnOpenFileClick(object sender, EventArgs e)
         {
             Start();
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-        }
-        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        private void CodeEditor_KeyPress(object sender, KeyPressEventArgs e)
         {
             bool a = false;
             if (e.KeyChar == '(')
@@ -236,17 +248,17 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             }
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void FeiSharpForm_Load(object sender, EventArgs e)
         {
             Debug.WriteLine("Loading......");
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void CbxKeywords_SelectedIndexChanged(object sender, EventArgs e)
         {
             textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, comboBox1.SelectedItem.ToString());
         }
 
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        private void CbxStatement_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (comboBox2.SelectedItem.ToString() != "func")
             {
@@ -258,10 +270,33 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             }
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void BtnMenuClick(object sender, EventArgs e)
         {
             Menu menu = new Menu();
             menu.Show();
+        }
+
+        private void BtnShortcutClick(object sender, EventArgs e)
+        {
+            var executingPath = Assembly.GetExecutingAssembly().Location;
+            var currentFolder = Path.GetDirectoryName(executingPath);
+
+            var filename = Path.GetFileName(executingPath);
+            var executingFilename = Path.ChangeExtension(filename, "exe");
+
+            WshShell shell = new();
+            IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\FeiSharpStudio.lnk");
+            shortcut.TargetPath = Path.Combine(currentFolder, executingFilename);
+            shortcut.WorkingDirectory = currentFolder;
+            shortcut.Description = "FeiSharpStudio's shortcut.";
+            shortcut.Save();
+        }
+    }
+    public static class Util
+    {
+        public static void Show(this TextBox tbx,string text)
+        {
+            tbx.Text += Environment.NewLine+text;
         }
     }
 }
