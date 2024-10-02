@@ -135,11 +135,63 @@ namespace FeiSharp
                 {
                     ParseFunctionStatement();
                 }
+                else if (MatchKeyword("dowhile"))
+                {
+                    ParseDowhileStatement();
+                }
+                else if (MatchKeyword("throw"))
+                {
+                    ParseThrowStatement();
+                }
                 else if (MatchFunction(Peek().Value))
                 {
                     RunFunction(Peek().Value);
                 }
             } while (!IsAtEnd() && (Peek().Type == TokenType.Keyword || _functions.ContainsKey(Peek().Value)));
+        }
+        private void ParseThrowStatement()
+        {
+            if (!MatchPunctuation("(")) throw new Exception("Expected '('");
+            Exception? ex = new();
+            try
+            {
+                ex = (Exception)Activator.CreateInstance(Type.GetType("System." + Peek().Value));
+            }
+            catch
+            {
+                throw new Exception("This type isn't inherit Exception.");
+            }
+            
+            throw (ex);
+            if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
+            if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
+        }
+        private void ParseDowhileStatement()
+        {
+            if (!MatchPunctuation("(")) throw new Exception("Expected '('");
+            int current = _current;
+            string b = EvaluateExpression(ParseExpression()).ToString();
+            bool a = bool.Parse(b);
+            if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
+            List<Token> tokens = new List<Token>();
+            int indexC = 0;
+            for (int i = _current + 1; i < _tokens.Count; i++)
+            {
+                if (_tokens[i].Type == TokenType.Punctuation && _tokens[i].Value == "}")
+                {
+                    indexC = i;
+                    break;
+                }
+                tokens.Add(_tokens[i]);
+            }
+            TestVoid();
+            do
+            {
+                _variables = Run(tokens, _variables);
+                _current = current;
+                a = bool.Parse(EvaluateExpression(ParseExpression()).ToString());
+            } while (a);
+            _current = indexC;
         }
         private void TestVoid() { }
         private void RunFunction(string funcName)
@@ -927,6 +979,8 @@ namespace FeiSharp
                     else if (value == "false") return new Token(TokenType.Keyword, "false");
                     else if (value == "if") return new Token(TokenType.Keyword, "if");
                     else if (value == "while") return new Token(TokenType.Keyword, "while");
+                    else if (value == "dowhile") return new Token(TokenType.Keyword, "dowhile");
+                    else if (value == "throw") return new Token(TokenType.Keyword, "throw");
                     else if (value == "func") { 
                         return new Token(TokenType.Keyword, "func"); 
                     }

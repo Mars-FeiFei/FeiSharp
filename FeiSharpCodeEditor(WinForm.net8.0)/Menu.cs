@@ -17,12 +17,14 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         public Menu()
         {
             InitializeComponent();
-            button1.FlatStyle = FlatStyle.Flat;
-            button1.FlatAppearance.BorderSize = 0;
-            button2.FlatStyle = FlatStyle.Flat;
-            button2.FlatAppearance.BorderSize = 0;
-            button3.FlatStyle = FlatStyle.Flat;
-            button3.FlatAppearance.BorderSize = 0;
+            console.FlatStyle = FlatStyle.Flat;
+            console.FlatAppearance.BorderSize = 0;
+            ficJson.FlatStyle = FlatStyle.Flat;
+            ficJson.FlatAppearance.BorderSize = 0;
+            devoCmd.FlatStyle = FlatStyle.Flat;
+            devoCmd.FlatAppearance.BorderSize = 0;
+            learn.FlatStyle = FlatStyle.Flat;
+            learn.FlatAppearance.BorderSize = 0;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -54,6 +56,11 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             path = Path.Combine(Path.GetDirectoryName(path), @"Develper Cmd\Develper Cmd\bin\Debug\net8.0");
             path += @"\Develper Cmd.exe";
             Process.Start(path);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            new Learn().Show();
         }
     }
 }

@@ -29,31 +29,32 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Menu));
-            button1 = new Button();
-            button2 = new Button();
+            console = new Button();
+            ficJson = new Button();
             linkLabel1 = new LinkLabel();
-            button3 = new Button();
+            devoCmd = new Button();
+            learn = new Button();
             SuspendLayout();
             // 
             // button1
             // 
-            button1.Location = new Point(577, 149);
-            button1.Name = "button1";
-            button1.Size = new Size(423, 125);
-            button1.TabIndex = 0;
-            button1.Text = "Console";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
+            console.Location = new Point(577, 189);
+            console.Name = "button1";
+            console.Size = new Size(423, 137);
+            console.TabIndex = 0;
+            console.Text = "Console";
+            console.UseVisualStyleBackColor = true;
+            console.Click += button1_Click;
             // 
             // button2
             // 
-            button2.Location = new Point(577, 547);
-            button2.Name = "button2";
-            button2.Size = new Size(423, 147);
-            button2.TabIndex = 1;
-            button2.Text = "FicJson(Fei#Item convert Json)";
-            button2.UseVisualStyleBackColor = true;
-            button2.Click += button2_Click;
+            ficJson.Location = new Point(577, 597);
+            ficJson.Name = "button2";
+            ficJson.Size = new Size(423, 147);
+            ficJson.TabIndex = 1;
+            ficJson.Text = "FicJson(Fei#Item convert Json)";
+            ficJson.UseVisualStyleBackColor = true;
+            ficJson.Click += button2_Click;
             // 
             // linkLabel1
             // 
@@ -68,13 +69,23 @@
             // 
             // button3
             // 
-            button3.Location = new Point(582, 324);
-            button3.Name = "button3";
-            button3.Size = new Size(409, 149);
-            button3.TabIndex = 3;
-            button3.Text = "Developer Cmd";
-            button3.UseVisualStyleBackColor = true;
-            button3.Click += button3_Click;
+            devoCmd.Location = new Point(577, 377);
+            devoCmd.Name = "button3";
+            devoCmd.Size = new Size(423, 149);
+            devoCmd.TabIndex = 3;
+            devoCmd.Text = "Developer Cmd";
+            devoCmd.UseVisualStyleBackColor = true;
+            devoCmd.Click += button3_Click;
+            // 
+            // button4
+            // 
+            learn.Location = new Point(577, 12);
+            learn.Name = "button4";
+            learn.Size = new Size(423, 134);
+            learn.TabIndex = 4;
+            learn.Text = "Learn";
+            learn.UseVisualStyleBackColor = true;
+            learn.Click += button4_Click;
             // 
             // Menu
             // 
@@ -82,10 +93,11 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.GradientInactiveCaption;
             ClientSize = new Size(1171, 756);
-            Controls.Add(button3);
+            Controls.Add(learn);
+            Controls.Add(devoCmd);
             Controls.Add(linkLabel1);
-            Controls.Add(button2);
-            Controls.Add(button1);
+            Controls.Add(ficJson);
+            Controls.Add(console);
             FormBorderStyle = FormBorderStyle.Fixed3D;
             Icon = (Icon)resources.GetObject("$this.Icon");
             KeyPreview = true;
@@ -99,9 +111,10 @@
 
         #endregion
 
-        private Button button1;
-        private Button button2;
+        private Button console;
+        private Button ficJson;
         private LinkLabel linkLabel1;
-        private Button button3;
+        private Button devoCmd;
+        private Button learn;
     }
 }

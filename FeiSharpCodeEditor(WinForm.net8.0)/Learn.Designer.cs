@@ -1,6 +1,6 @@
 ﻿namespace FeiSharpCodeEditor_WinForm.net8._0_
 {
-    partial class Fei__Item
+    partial class Learn
     {
         /// <summary>
         /// Required designer variable.
@@ -28,35 +28,31 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Fei__Item));
-            textBox1 = new TextBox();
+            label1 = new Label();
             SuspendLayout();
             // 
-            // textBox1
+            // label1
             // 
-            textBox1.Location = new Point(6, 0);
-            textBox1.Multiline = true;
-            textBox1.Name = "textBox1";
-            textBox1.ReadOnly = true;
-            textBox1.Size = new Size(1575, 895);
-            textBox1.TabIndex = 0;
-            textBox1.Text = "Fei# Items is some Fei# template.It has Console and FicJson(Fei# Item Convert Json).\r\n";
+            label1.AutoSize = true;
+            label1.Location = new Point(189, 104);
+            label1.Name = "label1";
+            label1.Size = new Size(0, 46);
+            label1.TabIndex = 0;
             // 
-            // Fei__Item
+            // Learn
             // 
             AutoScaleDimensions = new SizeF(22F, 46F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1583, 906);
-            Controls.Add(textBox1);
-            Icon = (Icon)resources.GetObject("$this.Icon");
-            Name = "Fei__Item";
-            Text = "FeiSharpStudio-Fei# Item Intruduction";
+            ClientSize = new Size(1557, 815);
+            Controls.Add(label1);
+            Name = "Learn";
+            Text = "Learn";
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private TextBox textBox1;
+        private Label label1;
     }
 }

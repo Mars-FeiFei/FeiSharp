@@ -32,13 +32,15 @@
             RunBtn = new Button();
             SaveAsBtn = new Button();
             OpenBtn = new Button();
-            textBox1 = new TextBox();
-            comboBox1 = new ComboBox();
-            comboBox2 = new ComboBox();
+            comboKeywords = new ComboBox();
+            comboBoxStatement = new ComboBox();
             Menu = new Button();
-            button1 = new Button();
+            ShortCutBtn = new Button();
             label1 = new Label();
             outputBox = new TextBox();
+            CheckBtn = new Button();
+            comboBoxClear = new ComboBox();
+            txtCode = new RichTextBox();
             SuspendLayout();
             // 
             // RunBtn
@@ -71,39 +73,27 @@
             OpenBtn.UseVisualStyleBackColor = true;
             OpenBtn.Click += BtnOpenFileClick;
             // 
-            // textBox1
+            // comboKeywords
             // 
-            textBox1.BackColor = Color.FromArgb(64, 64, 64);
-            textBox1.Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            textBox1.ForeColor = Color.White;
-            textBox1.Location = new Point(5, 252);
-            textBox1.Multiline = true;
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(2191, 1127);
-            textBox1.TabIndex = 3;
-            textBox1.KeyPress += CodeEditor_KeyPress;
+            comboKeywords.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboKeywords.FormattingEnabled = true;
+            comboKeywords.Items.AddRange(new object[] { "var", "print", "init", "set", "import", "export", "start", "stop", "wait", "watchstart", "watchend", "abe", "helper" });
+            comboKeywords.Location = new Point(1869, 12);
+            comboKeywords.Name = "comboKeywords";
+            comboKeywords.Size = new Size(329, 54);
+            comboKeywords.TabIndex = 4;
+            comboKeywords.SelectedIndexChanged += CbxKeywords_SelectedIndexChanged;
             // 
-            // comboBox1
+            // comboBoxStatement
             // 
-            comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
-            comboBox1.FormattingEnabled = true;
-            comboBox1.Items.AddRange(new object[] { "var", "print", "init", "set", "import", "export", "start", "stop", "wait", "watchstart", "watchend", "abe", "helper" });
-            comboBox1.Location = new Point(1855, 68);
-            comboBox1.Name = "comboBox1";
-            comboBox1.Size = new Size(329, 54);
-            comboBox1.TabIndex = 4;
-            comboBox1.SelectedIndexChanged += CbxKeywords_SelectedIndexChanged;
-            // 
-            // comboBox2
-            // 
-            comboBox2.DropDownStyle = ComboBoxStyle.DropDownList;
-            comboBox2.FormattingEnabled = true;
-            comboBox2.Items.AddRange(new object[] { "if", "while", "func" });
-            comboBox2.Location = new Point(1852, 161);
-            comboBox2.Name = "comboBox2";
-            comboBox2.Size = new Size(334, 54);
-            comboBox2.TabIndex = 5;
-            comboBox2.SelectedIndexChanged += CbxStatement_SelectedIndexChanged;
+            comboBoxStatement.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBoxStatement.FormattingEnabled = true;
+            comboBoxStatement.Items.AddRange(new object[] { "if", "while", "func" });
+            comboBoxStatement.Location = new Point(1869, 82);
+            comboBoxStatement.Name = "comboBoxStatement";
+            comboBoxStatement.Size = new Size(334, 54);
+            comboBoxStatement.TabIndex = 5;
+            comboBoxStatement.SelectedIndexChanged += CbxStatement_SelectedIndexChanged;
             // 
             // Menu
             // 
@@ -115,15 +105,15 @@
             Menu.UseVisualStyleBackColor = true;
             Menu.Click += BtnMenuClick;
             // 
-            // button1
+            // ShortCutBtn
             // 
-            button1.Location = new Point(1192, 3);
-            button1.Name = "button1";
-            button1.Size = new Size(521, 88);
-            button1.TabIndex = 8;
-            button1.Text = "Create Desktop Shortcut";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += BtnShortcutClick;
+            ShortCutBtn.Location = new Point(1192, 3);
+            ShortCutBtn.Name = "ShortCutBtn";
+            ShortCutBtn.Size = new Size(521, 88);
+            ShortCutBtn.TabIndex = 8;
+            ShortCutBtn.Text = "Create Desktop Shortcut";
+            ShortCutBtn.UseVisualStyleBackColor = true;
+            ShortCutBtn.Click += BtnShortcutClick;
             // 
             // label1
             // 
@@ -136,28 +126,67 @@
             // 
             // outputBox
             // 
-            outputBox.BackColor = Color.Black;
+            outputBox.BackColor = Color.FromArgb(64, 64, 64);
+            outputBox.Dock = DockStyle.Bottom;
             outputBox.Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             outputBox.ForeColor = Color.White;
-            outputBox.Location = new Point(8, 1453);
+            outputBox.Location = new Point(0, 1453);
             outputBox.Multiline = true;
             outputBox.Name = "outputBox";
-            outputBox.Size = new Size(2184, 179);
+            outputBox.ReadOnly = true;
+            outputBox.ScrollBars = ScrollBars.Vertical;
+            outputBox.Size = new Size(2401, 417);
             outputBox.TabIndex = 10;
+            // 
+            // CheckBtn
+            // 
+            CheckBtn.Location = new Point(1719, 3);
+            CheckBtn.Name = "CheckBtn";
+            CheckBtn.Size = new Size(136, 88);
+            CheckBtn.TabIndex = 11;
+            CheckBtn.Text = "Check";
+            CheckBtn.UseVisualStyleBackColor = true;
+            CheckBtn.Click += BtnCheckClick;
+            // 
+            // comboBoxClear
+            // 
+            comboBoxClear.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBoxClear.FormattingEnabled = true;
+            comboBoxClear.Items.AddRange(new object[] { "clear codes", "clear output" });
+            comboBoxClear.Location = new Point(1877, 165);
+            comboBoxClear.Name = "comboBoxClear";
+            comboBoxClear.Size = new Size(329, 54);
+            comboBoxClear.TabIndex = 12;
+            comboBoxClear.SelectedIndexChanged += cbxClear_SelectedIndexChanged;
+            // 
+            // txtCode
+            // 
+            txtCode.BackColor = Color.FromArgb(64, 64, 64);
+            txtCode.Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            txtCode.ForeColor = Color.White;
+            txtCode.Location = new Point(7, 251);
+            txtCode.Name = "txtCode";
+            txtCode.Size = new Size(2382, 1139);
+            txtCode.TabIndex = 13;
+            txtCode.Text = "";
+            txtCode.TextChanged += txtCode_TextChanged;
+            txtCode.KeyPress += CodeEditor_KeyPress;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(22F, 46F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.AliceBlue;
-            ClientSize = new Size(2198, 1641);
+            ClientSize = new Size(2401, 1870);
+            Controls.Add(txtCode);
+            Controls.Add(comboBoxClear);
+            Controls.Add(CheckBtn);
             Controls.Add(outputBox);
             Controls.Add(label1);
-            Controls.Add(button1);
+            Controls.Add(ShortCutBtn);
             Controls.Add(Menu);
-            Controls.Add(comboBox2);
-            Controls.Add(comboBox1);
-            Controls.Add(textBox1);
+            Controls.Add(comboBoxStatement);
+            Controls.Add(comboKeywords);
             Controls.Add(OpenBtn);
             Controls.Add(SaveAsBtn);
             Controls.Add(RunBtn);
@@ -167,21 +196,26 @@
             StartPosition = FormStartPosition.CenterScreen;
             Text = "FeiSharpStudio-Console";
             Load += FeiSharpForm_Load;
+            Resize += FeiSharpForm_Resize;
             ResumeLayout(false);
             PerformLayout();
         }
+
+        
 
         #endregion
 
         private Button RunBtn;
         private Button SaveAsBtn;
         private Button OpenBtn;
-        private TextBox textBox1;
-        private ComboBox comboBox1;
-        private ComboBox comboBox2;
+        private ComboBox comboKeywords;
+        private ComboBox comboBoxStatement;
         private Button Menu;
-        private Button button1;
+        private Button ShortCutBtn;
         private Label label1;
         internal TextBox outputBox;
+        private Button CheckBtn;
+        private ComboBox comboBoxClear;
+        private RichTextBox txtCode;
     }
 }

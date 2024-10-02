@@ -3,6 +3,8 @@ using IWshRuntimeLibrary;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using T = System.Windows.Forms.Timer;
 
@@ -23,9 +25,11 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             Menu.FlatAppearance.BorderSize = 0;
             OpenBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             OpenBtn.FlatAppearance.BorderSize = 0;
-            button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            button1.FlatAppearance.BorderSize = 0;
-            button1.SendToBack();
+            ShortCutBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            ShortCutBtn.FlatAppearance.BorderSize = 0;
+            CheckBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            CheckBtn.FlatAppearance.BorderSize = 0;
+            ShortCutBtn.SendToBack();
         }
         private void Form1_KeyDown(object? sender, KeyEventArgs e)
         {
@@ -58,7 +62,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             if (sfd.ShowDialog() == DialogResult.OK)
             {
                 using StreamWriter sw = new(sfd.FileName, false, encoding: System.Text.Encoding.UTF8);
-                sw.Write(textBox1.Text);
+                sw.Write(txtCode.Text);
             }
         }
         private void BtnRunClick(object sender, EventArgs e)
@@ -68,7 +72,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         private void Run()
         {
             string code = "";
-            string sourceCode = textBox1.Text;
+            string sourceCode = txtCode.Text;
             Lexer lexer = new(sourceCode);
             List<Token> tokens = [];
             Token token;
@@ -125,7 +129,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         private List<Token> Build()
         {
             string code = "";
-            string sourceCode = textBox1.Text;
+            string sourceCode = txtCode.Text;
             Lexer lexer = new(sourceCode);
             List<Token> tokens = [];
             Token token;
@@ -136,15 +140,16 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             } while (token.Type != TokenType.EndOfFile);
             return tokens;
         }
-       
+
         private void BtnSaveAsClick(object sender, EventArgs e)
         {
             SaveAs();
         }
+        
         private void RunAsException()
         {
             string code = "";
-            string sourceCode = textBox1.Text;
+            string sourceCode = txtCode.Text;
             Lexer lexer = new(sourceCode);
             List<Token> tokens = [];
             Token token;
@@ -155,16 +160,22 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             } while (token.Type != TokenType.EndOfFile);
 
             Parser parser = new(tokens);
+            Debug.WriteLine("test run value:");
             parser.OutputEvent += (s, e) =>
             {
-                outputBox.Show(e.Message);
-            };
-            parser.OutputEvent += (s, e) =>
-            {
-                outputBox.Show(e.Message);
+                Debug.WriteLine(e.Message);
             };
             parser.ParseStatements();
             return;
+        }
+        private void FeiSharpForm_Resize(object sender, EventArgs e)
+        {
+            if(ClientSize.Width <= 1900 && ClientSize.Height <= 2000)
+            {
+                Width = 1900;
+                Height = 2000;
+            }
+            txtCode.Width = outputBox.ClientSize.Width;
         }
         private void Check()
         {
@@ -202,48 +213,38 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             bool a = false;
             if (e.KeyChar == '(')
             {
-                int start = textBox1.SelectionStart;
-                textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, "()");
-                textBox1.SelectionStart = start + 1;
+                int start = txtCode.SelectionStart;
+                txtCode.Text = txtCode.Text.Insert(txtCode.SelectionStart, "()");
+                txtCode.SelectionStart = start + 1;
                 e.Handled = true;
             }
             else if (e.KeyChar == '{')
             {
-                int start = textBox1.SelectionStart;
-                textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, "\r\n{\r\n\r\n}");
-                textBox1.SelectionStart = start + 2;
+                int start = txtCode.SelectionStart;
+                txtCode.Text = txtCode.Text.Insert(txtCode.SelectionStart, "\r\n{\r\n\r\n}");
+                txtCode.SelectionStart = start + 2;
+                e.Handled = true;
+            }
+            else if (e.KeyChar == '[')
+            {
+                int start = txtCode.SelectionStart;
+                txtCode.Text = txtCode.Text.Insert(txtCode.SelectionStart, "\r\n[\r\n\r\n]");
+                txtCode.SelectionStart = start + 2;
                 e.Handled = true;
             }
             else if (e.KeyChar == '"')
             {
-                int start = textBox1.SelectionStart;
-                textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, "\"\"");
-                textBox1.SelectionStart = start + 1;
-                e.Handled = true;
-            }
-            else if (e.KeyChar == (char)Keys.Enter && textBox1.Text[textBox1.SelectionStart - 1] != ']')
-            {
-                a = true;
-                int start = textBox1.SelectionStart;
-                textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, ";\r\n");
-                textBox1.Text += Environment.NewLine;
-                textBox1.SelectionStart = start + 3;
-                e.Handled = true;
-            }
-            else if (e.KeyChar == (char)Keys.Enter && textBox1.Text[textBox1.SelectionStart - 1] != '}' && !a)
-            {
-                int start = textBox1.SelectionStart;
-                textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, ";\r\n");
-                textBox1.Text += Environment.NewLine;
-                textBox1.SelectionStart = start + 3;
+                int start = txtCode.SelectionStart;
+                txtCode.Text = txtCode.Text.Insert(txtCode.SelectionStart, "\"\"");
+                txtCode.SelectionStart = start + 1;
                 e.Handled = true;
             }
             else if (e.KeyChar == ';')
             {
-                int start = textBox1.SelectionStart;
-                textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, ";\r\n");
-                textBox1.Text += Environment.NewLine;
-                textBox1.SelectionStart = start + 3;
+                int start = txtCode.SelectionStart;
+                txtCode.Text = txtCode.Text.Insert(txtCode.SelectionStart, ";\r\n");
+                txtCode.Text += Environment.NewLine;
+                txtCode.SelectionStart = start + 2;
                 e.Handled = true;
             }
         }
@@ -255,24 +256,24 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
 
         private void CbxKeywords_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, comboBox1.SelectedItem.ToString());
+            txtCode.Text = txtCode.Text.Insert(txtCode.SelectionStart, comboKeywords.SelectedItem.ToString());
         }
 
         private void CbxStatement_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (comboBox2.SelectedItem.ToString() != "func")
+            if (comboBoxStatement.SelectedItem.ToString() != "func")
             {
-                textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, comboBox2.SelectedItem.ToString() + "()\r\n{\r\n\r\n}");
+                txtCode.Text = txtCode.Text.Insert(txtCode.SelectionStart, comboBoxStatement.SelectedItem.ToString() + "()\r\n{\r\n\r\n}");
             }
             else
             {
-                textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, comboBox2.SelectedItem.ToString() + " FunctionName()\r\n[\r\n\r\n]");
+                txtCode.Text = txtCode.Text.Insert(txtCode.SelectionStart, comboBoxStatement.SelectedItem.ToString() + " FunctionName()\r\n[\r\n\r\n]");
             }
         }
 
         private void BtnMenuClick(object sender, EventArgs e)
         {
-            Menu menu = new Menu();
+            Menu menu = new();
             menu.Show();
         }
 
@@ -290,6 +291,27 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             shortcut.WorkingDirectory = currentFolder;
             shortcut.Description = "FeiSharpStudio's shortcut.";
             shortcut.Save();
+        }
+
+        private void BtnCheckClick(object sender, EventArgs e)
+        {
+            Check();
+        }
+
+        private void cbxClear_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBoxClear.SelectedIndex == 0)
+            {
+                txtCode.Text = string.Empty;
+            }
+            else if (comboBoxClear.SelectedIndex == 1)
+            {
+                outputBox.Text = string.Empty;
+            }
+        }
+
+        private void txtCode_TextChanged(object sender, EventArgs e)
+        {
         }
     }
     public static class Util
