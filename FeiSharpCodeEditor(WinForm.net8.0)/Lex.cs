@@ -45,6 +45,7 @@ namespace FeiSharp
         public  Dictionary<string, object> _variables = new();
         public Dictionary<string,FunctionInfo> _functions = new();
         public event EventHandler<OutputEventArgs> OutputEvent;
+        public Dictionary<string,object> _results = new();
         public Parser(List<Token> tokens)
         {
             _tokens = tokens;
@@ -58,7 +59,7 @@ namespace FeiSharp
             handler?.Invoke(this, e);
         }
         // Parse statements (variable declarations and print statements)
-        public void ParseStatements()
+        public void ParseStatements(string funcName = "")
         {
             do
             {
@@ -143,12 +144,24 @@ namespace FeiSharp
                 {
                     ParseThrowStatement();
                 }
+                else if (MatchKeyword("return"))
+                {
+                    ParseReturnStatement(funcName);
+                }
                 else if (MatchFunction(Peek().Value))
                 {
                     RunFunction(Peek().Value);
                 }
+                
             } while (!IsAtEnd() && (Peek().Type == TokenType.Keyword || _functions.ContainsKey(Peek().Value)));
         }
+
+        private void ParseReturnStatement(string funcName)
+        {
+            _results.Add(funcName, EvaluateExpression(ParseExpression()));
+            _variables.Add($"{funcName}:return", _results[funcName]);
+        }
+
         private void ParseThrowStatement()
         {
             if (!MatchPunctuation("(")) throw new Exception("Expected '('");
@@ -161,7 +174,6 @@ namespace FeiSharp
             {
                 throw new Exception("This type isn't inherit Exception.");
             }
-            
             throw (ex);
             if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
             if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
@@ -199,7 +211,7 @@ namespace FeiSharp
             FunctionInfo functionInfo = _functions[funcName];
             List<object> actualParameters = new();
             Advance();
-            while (Peek().Value != ")")
+            while (Peek().Value != ")" && Peek().Value != ";")
             {
                 if (Peek().Value == "," || Peek().Value == "(")
                 {
@@ -223,7 +235,7 @@ namespace FeiSharp
                     throw new Exception("Parameters is not correct.");
                 }
             }
-            _variables = Run(functionInfo.FunctionBody,_variables);
+            _variables = Run(functionInfo.FunctionBody,_variables, funcName);
         }
         private bool MatchFunction(string funcName)
         {
@@ -461,6 +473,7 @@ namespace FeiSharp
             } while (token.Type != TokenType.EndOfFile);
 
             Parser parser = new(tokens);
+            parser._functions = _functions;
             try
             {
                 parser.ParseStatements();
@@ -475,10 +488,27 @@ namespace FeiSharp
         {
             List<Token> _tokens = new(tokens);
             Parser parser = new(_tokens);
+            parser.OutputEvent = this.OutputEvent;
             parser._variables = _vars;
             try
             {
                 parser.ParseStatements();
+            }
+            catch (Exception ex)
+            {
+                OnOutputEvent(new OutputEventArgs("Parsing error: " + ex.Message));
+            }
+            return parser._variables;
+        }
+        internal Dictionary<string, object> Run(IEnumerable<Token> tokens, Dictionary<string, object> _vars,string funcName)
+        {
+            List<Token> _tokens = new(tokens);
+            Parser parser = new(_tokens);
+            parser.OutputEvent = this.OutputEvent;
+            parser._variables = _vars;
+            try
+            {
+                parser.ParseStatements(funcName);
             }
             catch (Exception ex)
             {
@@ -499,6 +529,7 @@ namespace FeiSharp
             } while (token.Type != TokenType.EndOfFile);
 
             Parser parser = new(tokens);
+            parser.OutputEvent = this.OutputEvent;
             try
             {
                 parser.ParseStatements();
@@ -635,7 +666,12 @@ namespace FeiSharp
                 {
                     return new ValueExpr(value);
                 }
-
+                else
+                {
+                    RunFunction(varName);
+                    return new ValueExpr(_variables[$"{varName}:return"]);
+                    // return new ValueExpr(Run(_functions[varName].FunctionBody, _variables, varName));
+                }
                 throw new Exception($"Undefined variable: {varName}");
             }
 
@@ -981,6 +1017,7 @@ namespace FeiSharp
                     else if (value == "while") return new Token(TokenType.Keyword, "while");
                     else if (value == "dowhile") return new Token(TokenType.Keyword, "dowhile");
                     else if (value == "throw") return new Token(TokenType.Keyword, "throw");
+                    else if (value == "return") return new Token(TokenType.Keyword, "return");
                     else if (value == "func") { 
                         return new Token(TokenType.Keyword, "func"); 
                     }
