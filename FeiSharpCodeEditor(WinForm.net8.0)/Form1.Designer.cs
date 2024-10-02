@@ -41,6 +41,7 @@
             CheckBtn = new Button();
             comboBoxClear = new ComboBox();
             txtCode = new RichTextBox();
+            lstbIntelligence = new ListBox();
             SuspendLayout();
             // 
             // RunBtn
@@ -75,13 +76,14 @@
             // 
             // comboKeywords
             // 
-            comboKeywords.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboKeywords.FlatStyle = FlatStyle.Popup;
             comboKeywords.FormattingEnabled = true;
             comboKeywords.Items.AddRange(new object[] { "var", "print", "init", "set", "import", "export", "start", "stop", "wait", "watchstart", "watchend", "abe", "helper" });
             comboKeywords.Location = new Point(1869, 12);
             comboKeywords.Name = "comboKeywords";
             comboKeywords.Size = new Size(329, 54);
             comboKeywords.TabIndex = 4;
+            comboKeywords.Visible = false;
             comboKeywords.SelectedIndexChanged += CbxKeywords_SelectedIndexChanged;
             // 
             // comboBoxStatement
@@ -93,6 +95,7 @@
             comboBoxStatement.Name = "comboBoxStatement";
             comboBoxStatement.Size = new Size(334, 54);
             comboBoxStatement.TabIndex = 5;
+            comboBoxStatement.Visible = false;
             comboBoxStatement.SelectedIndexChanged += CbxStatement_SelectedIndexChanged;
             // 
             // Menu
@@ -172,12 +175,25 @@
             txtCode.TextChanged += txtCode_TextChanged;
             txtCode.KeyPress += CodeEditor_KeyPress;
             // 
+            // lstbIntelligence
+            // 
+            lstbIntelligence.FormattingEnabled = true;
+            lstbIntelligence.Items.AddRange(new object[] { "var", "print", "init", "set", "import", "export", "start", "stop", "wait", "watchstart", "watchend", "abe", "helper", "if", "while", "func" });
+            lstbIntelligence.Location = new Point(124, 152);
+            lstbIntelligence.Name = "lstbIntelligence";
+            lstbIntelligence.Size = new Size(360, 280);
+            lstbIntelligence.TabIndex = 14;
+            lstbIntelligence.Visible = false;
+            lstbIntelligence.SelectedIndexChanged += lstbIntelligence_SelectedIndexChanged;
+            lstbIntelligence.KeyPress += lstbIntelligence_KeyPress;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(22F, 46F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.AliceBlue;
             ClientSize = new Size(2401, 1870);
+            Controls.Add(lstbIntelligence);
             Controls.Add(txtCode);
             Controls.Add(comboBoxClear);
             Controls.Add(CheckBtn);
@@ -201,7 +217,7 @@
             PerformLayout();
         }
 
-        
+
 
         #endregion
 
@@ -217,5 +233,6 @@
         private Button CheckBtn;
         private ComboBox comboBoxClear;
         private RichTextBox txtCode;
+        private ListBox lstbIntelligence;
     }
 }

@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 using T = System.Windows.Forms.Timer;
 
 namespace FeiSharpCodeEditor_WinForm.net8._0_
@@ -145,7 +144,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         {
             SaveAs();
         }
-        
+
         private void RunAsException()
         {
             string code = "";
@@ -170,7 +169,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         }
         private void FeiSharpForm_Resize(object sender, EventArgs e)
         {
-            if(ClientSize.Width <= 1900 && ClientSize.Height <= 2000)
+            if (ClientSize.Width <= 1900 && ClientSize.Height <= 2000)
             {
                 Width = 1900;
                 Height = 2000;
@@ -247,6 +246,18 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 txtCode.SelectionStart = start + 2;
                 e.Handled = true;
             }
+
+            if (e.KeyChar == '#')
+            {
+                // 设置 ComboBox 的位置与 RichTextBox 的光标位置匹配
+                Point cursorPosition = txtCode.GetPositionFromCharIndex(txtCode.SelectionStart);
+                lstbIntelligence.Left = txtCode.Left + cursorPosition.X;
+                lstbIntelligence.Top = txtCode.Top + cursorPosition.Y + txtCode.Font.Height;
+
+                lstbIntelligence.Visible = true;
+                lstbIntelligence.BringToFront();
+            }
+
         }
 
         private void FeiSharpForm_Load(object sender, EventArgs e)
@@ -310,8 +321,73 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             }
         }
 
+        private void ShowIntelligenceIfNecessary(string segment)
+        {
+            int index = -1;
+            for (int i = 0; i < lstbIntelligence.Items.Count; i++)
+            {
+                string currentItem = lstbIntelligence?.Items[i]?.ToString();
+                if (currentItem.StartsWith(segment, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    index = i; break;
+                }
+            }
+
+            if (index >= 0)
+            {
+                lstbIntelligence.SelectedIndex = index;
+                Point cursorPosition = txtCode.GetPositionFromCharIndex(txtCode.SelectionStart);
+                lstbIntelligence.Left = txtCode.Left + cursorPosition.X;
+                lstbIntelligence.Top = txtCode.Top + cursorPosition.Y + txtCode.Font.Height;
+
+                lstbIntelligence.Visible = true;
+                lstbIntelligence.BringToFront();
+                lstbIntelligence.Focus();
+            }
+        }
+
         private void txtCode_TextChanged(object sender, EventArgs e)
         {
+            Debug.WriteLine(txtCode.SelectionStart);
+            var index = txtCode.SelectionStart - 1;
+            if (index >= 0 && txtCode.Text.Length > index)
+            {
+                string cha = txtCode.Text[index].ToString();
+                while (cha != " " && cha != "\n")
+                {
+                    index--;
+                    if (index < 0)
+                    {
+                        index = -1;
+                        break;
+                    }
+                    cha = txtCode.Text[index].ToString();
+                }
+
+                var segment = txtCode.Text.Substring(index + 1, txtCode.SelectionStart - index - 1);
+                Debug.WriteLine(segment);
+                ShowIntelligenceIfNecessary(segment);
+            }
+        }
+
+        private void lstbIntelligence_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //if (lstbIntelligence.Visible)
+            //{
+            //    string keyword = lstbIntelligence.SelectedItem.ToString();
+            //    txtCode.Text += keyword;
+            //    lstbIntelligence.Visible = false;
+            //}
+        }
+
+        private void lstbIntelligence_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (lstbIntelligence.Visible && e.KeyChar ==(char)Keys.Enter)
+            {
+                string keyword = lstbIntelligence.SelectedItem.ToString();
+                txtCode.Text += keyword;
+                lstbIntelligence.Visible = false;
+            }
         }
     }
     public static class Util
