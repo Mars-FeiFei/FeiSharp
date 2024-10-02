@@ -327,9 +327,10 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             for (int i = 0; i < lstbIntelligence.Items.Count; i++)
             {
                 string currentItem = lstbIntelligence?.Items[i]?.ToString();
-                if (currentItem.StartsWith(segment, StringComparison.InvariantCultureIgnoreCase))
+                if (segment!=""&&currentItem.StartsWith(segment, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    index = i; break;
+                    index = i;
+                    break;
                 }
             }
 
@@ -340,9 +341,16 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 lstbIntelligence.Left = txtCode.Left + cursorPosition.X;
                 lstbIntelligence.Top = txtCode.Top + cursorPosition.Y + txtCode.Font.Height;
 
+                lstbIntelligence.Tag = segment;
                 lstbIntelligence.Visible = true;
                 lstbIntelligence.BringToFront();
                 lstbIntelligence.Focus();
+            }
+            else
+            {
+                lstbIntelligence.Visible = false;
+                txtCode.Focus();
+                txtCode.SelectionStart = txtCode.Text.Length;
             }
         }
 
@@ -370,24 +378,34 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             }
         }
 
-        private void lstbIntelligence_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            //if (lstbIntelligence.Visible)
-            //{
-            //    string keyword = lstbIntelligence.SelectedItem.ToString();
-            //    txtCode.Text += keyword;
-            //    lstbIntelligence.Visible = false;
-            //}
-        }
-
         private void lstbIntelligence_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (lstbIntelligence.Visible && e.KeyChar ==(char)Keys.Enter)
+            List<char> list = new List<char>
+            {
+                (char)Keys.Enter, (char)Keys.Up, (char)Keys.Down
+            };
+            if (!list.Contains(e.KeyChar))
+            {
+                e.Handled = true;
+                txtCode.Text += e.KeyChar;
+                txtCode.SelectionStart = txtCode.Text.Length;
+                txtCode.Focus();
+            }
+
+            if (lstbIntelligence.Visible && e.KeyChar == (char)Keys.Enter)
             {
                 string keyword = lstbIntelligence.SelectedItem.ToString();
+                int segmentLength = lstbIntelligence.Tag.ToString().Length;
+                keyword = keyword.Remove(0, segmentLength);
+
                 txtCode.Text += keyword;
                 lstbIntelligence.Visible = false;
             }
+        }
+
+        private void txtCode_MouseClick(object sender, MouseEventArgs e)
+        {
+            lstbIntelligence.Visible = false;
         }
     }
     public static class Util

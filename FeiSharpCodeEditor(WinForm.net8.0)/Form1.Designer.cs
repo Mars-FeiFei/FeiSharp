@@ -172,6 +172,7 @@
             txtCode.Size = new Size(2382, 1139);
             txtCode.TabIndex = 13;
             txtCode.Text = "";
+            txtCode.MouseClick += txtCode_MouseClick;
             txtCode.TextChanged += txtCode_TextChanged;
             txtCode.KeyPress += CodeEditor_KeyPress;
             // 
@@ -184,7 +185,6 @@
             lstbIntelligence.Size = new Size(360, 280);
             lstbIntelligence.TabIndex = 14;
             lstbIntelligence.Visible = false;
-            lstbIntelligence.SelectedIndexChanged += lstbIntelligence_SelectedIndexChanged;
             lstbIntelligence.KeyPress += lstbIntelligence_KeyPress;
             // 
             // Form1
