@@ -51,7 +51,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             ofd.Filter = "FeiSharp Source Code File|*.fsc";
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                Run(System.IO.File.ReadAllText(ofd.FileName));
+                txtCode.Text = System.IO.File.ReadAllText(ofd.FileName);
             }
         }
         private void SaveAs()
@@ -238,18 +238,8 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 txtCode.SelectionStart = start + 1;
                 e.Handled = true;
             }
-            else if (e.KeyChar == ';')
-            {
-                int start = txtCode.SelectionStart;
-                txtCode.Text = txtCode.Text.Insert(txtCode.SelectionStart, ";\r\n");
-                txtCode.Text += Environment.NewLine;
-                txtCode.SelectionStart = start + 2;
-                e.Handled = true;
-            }
-
             if (e.KeyChar == '#')
             {
-                // 设置 ComboBox 的位置与 RichTextBox 的光标位置匹配
                 Point cursorPosition = txtCode.GetPositionFromCharIndex(txtCode.SelectionStart);
                 lstbIntelligence.Left = txtCode.Left + cursorPosition.X;
                 lstbIntelligence.Top = txtCode.Top + cursorPosition.Y + txtCode.Font.Height;
@@ -327,7 +317,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             for (int i = 0; i < lstbIntelligence.Items.Count; i++)
             {
                 string currentItem = lstbIntelligence?.Items[i]?.ToString();
-                if (segment!=""&&currentItem.StartsWith(segment, StringComparison.InvariantCultureIgnoreCase))
+                if (segment != "" && currentItem.StartsWith(segment, StringComparison.InvariantCultureIgnoreCase))
                 {
                     index = i;
                     break;
@@ -350,7 +340,6 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             {
                 lstbIntelligence.Visible = false;
                 txtCode.Focus();
-                txtCode.SelectionStart = txtCode.Text.Length;
             }
         }
 
@@ -371,7 +360,6 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                     }
                     cha = txtCode.Text[index].ToString();
                 }
-
                 var segment = txtCode.Text.Substring(index + 1, txtCode.SelectionStart - index - 1);
                 Debug.WriteLine(segment);
                 ShowIntelligenceIfNecessary(segment);
@@ -388,24 +376,42 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             {
                 e.Handled = true;
                 txtCode.Text += e.KeyChar;
-                txtCode.SelectionStart = txtCode.Text.Length;
                 txtCode.Focus();
             }
 
             if (lstbIntelligence.Visible && e.KeyChar == (char)Keys.Enter)
             {
+                int index = txtCode.SelectionStart;
                 string keyword = lstbIntelligence.SelectedItem.ToString();
                 int segmentLength = lstbIntelligence.Tag.ToString().Length;
+                var oldKeyword = keyword;
                 keyword = keyword.Remove(0, segmentLength);
-
-                txtCode.Text += keyword;
+                txtCode.Text = txtCode.Text.Insert(index, keyword);
                 lstbIntelligence.Visible = false;
+                txtCode.SelectionStart = index + (oldKeyword.Length - segmentLength);
+                txtCode.Focus();
             }
         }
 
         private void txtCode_MouseClick(object sender, MouseEventArgs e)
         {
             lstbIntelligence.Visible = false;
+        }
+
+        private void lstbIntelligence_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lstbIntelligence.Visible)
+            {
+                int index = txtCode.SelectionStart;
+                string keyword = lstbIntelligence.SelectedItem.ToString();
+                int segmentLength = lstbIntelligence.Tag.ToString().Length;
+                var oldKeyword = keyword;
+                keyword = keyword.Remove(0, segmentLength);
+                txtCode.Text = txtCode.Text.Insert(index, keyword);
+                lstbIntelligence.Visible = false;
+                txtCode.SelectionStart = index + (oldKeyword.Length - segmentLength);
+                txtCode.Focus();
+            }
         }
     }
     public static class Util

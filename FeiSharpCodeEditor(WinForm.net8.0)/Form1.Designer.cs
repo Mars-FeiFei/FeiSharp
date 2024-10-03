@@ -185,6 +185,7 @@
             lstbIntelligence.Size = new Size(360, 280);
             lstbIntelligence.TabIndex = 14;
             lstbIntelligence.Visible = false;
+            lstbIntelligence.SelectedIndexChanged += lstbIntelligence_SelectedIndexChanged;
             lstbIntelligence.KeyPress += lstbIntelligence_KeyPress;
             // 
             // Form1
