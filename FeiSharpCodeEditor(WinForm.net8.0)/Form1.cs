@@ -1,4 +1,4 @@
-﻿using FeiSharp;
+﻿
 using IWshRuntimeLibrary;
 using System.Diagnostics;
 using System.Reflection;
@@ -6,12 +6,14 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using T = System.Windows.Forms.Timer;
+using Timer = System.Windows.Forms.Timer;
 
 namespace FeiSharpCodeEditor_WinForm.net8._0_
 {
     public partial class Form1 : Form
     {
         Image gifImage;
+        Timer t = new();
         public Form1()
         {
             InitializeComponent();
@@ -29,6 +31,15 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             CheckBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             CheckBtn.FlatAppearance.BorderSize = 0;
             ShortCutBtn.SendToBack();
+            t.Interval = 10;
+            t.Start();
+            t.Tick += (s, e) =>
+            {
+                if (txtCode.Text.Contains('\b'))
+                {
+                    txtCode.Text = txtCode.Text.Replace("\b", "");
+                }
+            };
         }
         private void Form1_KeyDown(object? sender, KeyEventArgs e)
         {
@@ -66,6 +77,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         }
         private void BtnRunClick(object sender, EventArgs e)
         {
+            
             Run();
         }
         private void Run()
@@ -217,20 +229,6 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 txtCode.SelectionStart = start + 1;
                 e.Handled = true;
             }
-            else if (e.KeyChar == '{')
-            {
-                int start = txtCode.SelectionStart;
-                txtCode.Text = txtCode.Text.Insert(txtCode.SelectionStart, "\r\n{\r\n\r\n}");
-                txtCode.SelectionStart = start + 2;
-                e.Handled = true;
-            }
-            else if (e.KeyChar == '[')
-            {
-                int start = txtCode.SelectionStart;
-                txtCode.Text = txtCode.Text.Insert(txtCode.SelectionStart, "\r\n[\r\n\r\n]");
-                txtCode.SelectionStart = start + 2;
-                e.Handled = true;
-            }
             else if (e.KeyChar == '"')
             {
                 int start = txtCode.SelectionStart;
@@ -330,7 +328,6 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 Point cursorPosition = txtCode.GetPositionFromCharIndex(txtCode.SelectionStart);
                 lstbIntelligence.Left = txtCode.Left + cursorPosition.X;
                 lstbIntelligence.Top = txtCode.Top + cursorPosition.Y + txtCode.Font.Height;
-
                 lstbIntelligence.Tag = segment;
                 lstbIntelligence.Visible = true;
                 lstbIntelligence.BringToFront();
@@ -389,7 +386,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 txtCode.Text = txtCode.Text.Insert(index, keyword);
                 lstbIntelligence.Visible = false;
                 txtCode.SelectionStart = index + (oldKeyword.Length - segmentLength);
-                txtCode.Focus();
+                txtCode.Focus(); 
             }
         }
 

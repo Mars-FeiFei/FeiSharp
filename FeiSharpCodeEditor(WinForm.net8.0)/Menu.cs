@@ -25,6 +25,8 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             devoCmd.FlatAppearance.BorderSize = 0;
             learn.FlatStyle = FlatStyle.Flat;
             learn.FlatAppearance.BorderSize = 0;
+            Paint.FlatStyle = FlatStyle.Flat;
+            Paint.FlatAppearance.BorderSize = 0;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -61,6 +63,11 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         private void button4_Click(object sender, EventArgs e)
         {
             new Learn().Show();
+        }
+
+        private void Paint_Click(object sender, EventArgs e)
+        {
+            new Paint().Show();
         }
     }
 }

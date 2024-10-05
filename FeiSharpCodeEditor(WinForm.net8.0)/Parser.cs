@@ -1,56 +1,27 @@
-﻿using FeiSharpCodeEditor_WinForm.net8._0_;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Tracing;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
-using static System.Net.Mime.MediaTypeNames;
+using System.Threading.Tasks;
 
-namespace FeiSharp
+namespace FeiSharpCodeEditor_WinForm.net8._0_
 {
-    public class VarExpr : Expr
-    {
-        public string Name { get; set; }
-        public VarExpr(string name)
-        {
-            Name = name;
-        }
-    }
-    public class FunctionInfo
-    {
-        public string Name {get; internal set;}
-        public List<string> Parameter { get; internal set; }
-        public List<Token> FunctionBody { get; internal set; }
-        public FunctionInfo(string name,IEnumerable<string> parameter, List<Token> functionBody)
-        {
-            Name = name;
-            Parameter = new(parameter);
-            FunctionBody = functionBody;
-        }
-    }
-    public class OutputEventArgs : EventArgs
-    {
-        public string Message { get; set;}
-        public string Type { get; set; }
-        public OutputEventArgs(string message,string type = "info")
-        {
-            Message = message;
-            Type = type;
-        }
-    }
-
     public class Parser
     {
         private Stopwatch Stopwatch { get; set; }
         private readonly List<Token> _tokens;
         private int _current;
-        public  Dictionary<string, object> _variables = new();
-        public Dictionary<string,FunctionInfo> _functions = new();
+        public Dictionary<string, object> _variables = new();
+        public Dictionary<string, FunctionInfo> _functions = new();
         public event EventHandler<OutputEventArgs> OutputEvent;
-        public Dictionary<string,object> _results = new();
+        public Dictionary<string, object> _results = new();
         public Parser(List<Token> tokens)
         {
             _tokens = tokens;
             _current = 0;
-            _variables.Add("true",true);
+            _variables.Add("true", true);
             _variables.Add("false", false);
         }
         protected virtual void OnOutputEvent(OutputEventArgs e)
@@ -148,14 +119,79 @@ namespace FeiSharp
                 {
                     ParseReturnStatement(funcName);
                 }
+                else if (MatchKeyword("gethtml"))
+                {
+                    ParseGetHtmlStatement();
+                }
+                else if (MatchKeyword("getVarsFromJsonFilePath"))
+                {
+                    ParseGetJsonFilePathStatement();
+                }
                 else if (MatchFunction(Peek().Value))
                 {
                     RunFunction(Peek().Value);
                 }
-                
             } while (!IsAtEnd() && (Peek().Type == TokenType.Keyword || _functions.ContainsKey(Peek().Value)));
         }
-
+        //private void ParseReplaceStatement()
+        //{
+        //    if (!MatchPunctuation("(")) throw new Exception("Expected '('");
+        //    string arg = EvaluateExpression(ParseExpression()).ToString();
+        //    if (!MatchPunctuation(",")) throw new Exception("Expected ','");
+        //    string oldString = EvaluateExpression(ParseExpression()).ToString();
+        //    if (!MatchPunctuation(",")) throw new Exception("Expected ','");
+        //    string newString = EvaluateExpression(ParseExpression()).ToString();
+        //    _variables.Add("replace:return", arg.Replace(oldString,newString));
+        //    _functions.Add("replace", new FunctionInfo("replace", new List<string>(), new List<Token>()));
+        //    if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
+        //    if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
+        //}
+        private void ParseGetJsonFilePathStatement()
+        {
+            if (!MatchPunctuation("(")) throw new Exception("Expected '('");
+            string content = File.ReadAllText(Advance().Value);
+            content = content.Replace("{", "").Replace("}", "");
+            string[] contentDatas = content.Split(',');
+            foreach (var item in contentDatas)
+            {
+                if (double.TryParse(item.Split(':')[1], out double other))
+                {
+                    _variables.Add(item.Split(':')[0].Replace("\"", ""), double.Parse(item.Split(':')[1]));
+                }
+                else if (bool.TryParse(item.Split(':')[1], out bool otherBool))
+                {
+                    _variables.Add(item.Split(':')[0].Replace("\"", ""), bool.Parse(item.Split(':')[1]));
+                }
+                else
+                {
+                    _variables.Add(item.Split(':')[0].Replace("\"", ""), item.Split(':')[1].Split('\"')[1]);
+                }
+            }
+            if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
+            if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
+        }
+        private void ParseGetHtmlStatement()
+        {
+            if (!MatchPunctuation("(")) throw new Exception("Expected '('");
+            string content = "";
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = client.GetAsync(EvaluateExpression(ParseExpression()).ToString()).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                content = response.Content.ReadAsStringAsync().Result;
+            }
+            if (!MatchPunctuation(",")) throw new Exception("Expected ','");
+            try
+            {
+                _variables.Add(EvaluateExpression(ParseExpression()).ToString(), content);
+            }
+            catch
+            {
+                _variables[EvaluateExpression(ParseExpression()).ToString()] = content;
+            }
+            if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
+            if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
+        }
         private void ParseReturnStatement(string funcName)
         {
             _results.Add(funcName, EvaluateExpression(ParseExpression()));
@@ -235,7 +271,7 @@ namespace FeiSharp
                     throw new Exception("Parameters is not correct.");
                 }
             }
-            _variables = Run(functionInfo.FunctionBody,_variables, funcName);
+            _variables = Run(functionInfo.FunctionBody, _variables, funcName);
         }
         private bool MatchFunction(string funcName)
         {
@@ -250,7 +286,7 @@ namespace FeiSharp
             Advance();
             while (Peek().Value != ")")
             {
-                if(Peek().Value == "," || Peek().Value == "(")
+                if (Peek().Value == "," || Peek().Value == "(")
                 {
                     Advance();
                     continue;
@@ -263,8 +299,8 @@ namespace FeiSharp
             }
             Advance();
             List<Token> tokens = ParseTokens();
-            functionInfo = new(name,parameters,tokens);
-            _functions.Add(name,functionInfo);
+            functionInfo = new(name, parameters, tokens);
+            _functions.Add(name, functionInfo);
             Advance();
             Advance();
         }
@@ -293,7 +329,7 @@ namespace FeiSharp
             if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
             List<Token> tokens = new List<Token>();
             int indexC = 0;
-            for (int i = _current+1; i < _tokens.Count; i++)
+            for (int i = _current + 1; i < _tokens.Count; i++)
             {
                 if (_tokens[i].Type == TokenType.Punctuation && _tokens[i].Value == "}")
                 {
@@ -303,11 +339,11 @@ namespace FeiSharp
                 tokens.Add(_tokens[i]);
             }
             TestVoid();
-            while(a)
+            while (a)
             {
-                _variables = Run(tokens,_variables);
+                _variables = Run(tokens, _variables);
                 _current = current;
-                a = bool.Parse(EvaluateExpression(ParseExpression()).ToString());  
+                a = bool.Parse(EvaluateExpression(ParseExpression()).ToString());
             }
             _current = indexC;
         }
@@ -320,7 +356,7 @@ namespace FeiSharp
             if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
             List<Token> tokens = new List<Token>();
             int indexC = 0;
-            for (int i = _current+1; i < _tokens.Count; i++)
+            for (int i = _current + 1; i < _tokens.Count; i++)
             {
                 if (_tokens[i].Type == TokenType.Punctuation && _tokens[i].Value == "}")
                 {
@@ -354,7 +390,7 @@ namespace FeiSharp
         {
             if (!MatchPunctuation("(")) throw new Exception("Expected '('");
             string a = EvaluateExpression(ParseExpression()).ToString();
-            if (a.Equals("syntax",StringComparison.OrdinalIgnoreCase))
+            if (a.Equals("syntax", StringComparison.OrdinalIgnoreCase))
             {
                 OnOutputEvent(new OutputEventArgs("Syntax:\r\n1.keyword+(args);\r\nInvoke keyword with args.\r\nWarning: If keyword hasn't args,\r\nuse keyword+;\r\n2.Define var.\r\n(1)define:\r\ninit(varname,Type); Or var varname = value;\r\n(2)assignment:\r\nset(varname,value);\r\n3.Keywords Table.\r\n________________________________________________\r\n|keyword   |  args   |  do somwthings           |\r\n|paint        text     print the text           |\r\n|watchstart  varname   start stopwatch.         |\r\n|watchend     null     stop stopwatch           |\r\n|init    varname,Type  init var.                |\r\n|set    varname,value  set var.                 |\r\n|...          ....     ............             |\r\n|_______________________________________________|"));
             }
@@ -365,7 +401,7 @@ namespace FeiSharp
             }
             else
             {
-                throw new Exception("Invalid string for \"helper\" keyword: "+a);
+                throw new Exception("Invalid string for \"helper\" keyword: " + a);
             }
             if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
             if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
@@ -484,7 +520,7 @@ namespace FeiSharp
             }
             return;
         }
-        internal Dictionary<string,object> Run(IEnumerable<Token> tokens,Dictionary<string,object> _vars)
+        internal Dictionary<string, object> Run(IEnumerable<Token> tokens, Dictionary<string, object> _vars)
         {
             List<Token> _tokens = new(tokens);
             Parser parser = new(_tokens);
@@ -500,7 +536,7 @@ namespace FeiSharp
             }
             return parser._variables;
         }
-        internal Dictionary<string, object> Run(IEnumerable<Token> tokens, Dictionary<string, object> _vars,string funcName)
+        internal Dictionary<string, object> Run(IEnumerable<Token> tokens, Dictionary<string, object> _vars, string funcName)
         {
             List<Token> _tokens = new(tokens);
             Parser parser = new(_tokens);
@@ -516,7 +552,7 @@ namespace FeiSharp
             }
             return parser._variables;
         }
-        internal Dictionary<string, object> Run(string code,int a)
+        internal Dictionary<string, object> Run(string code, int a)
         {
             string sourceCode = code;
             Lexer lexer = new(sourceCode);
@@ -638,7 +674,7 @@ namespace FeiSharp
         private Expr ParseExpression()
         {
             Expr expr = ParsePrimary();
-            while (MatchOperator("+", "-", "*", "/", "|", "^", "<", ">", "=","!"))
+            while (MatchOperator("+", "-", "*", "/", "|", "^", "<", ">", "=", "!"))
             {
                 string op = Previous().Value;
                 Expr right = ParsePrimary();
@@ -651,15 +687,13 @@ namespace FeiSharp
         {
             if (MatchToken(TokenType.Number))
             {
-                return new ValueExpr(int.Parse(Previous().Value));
+                return new ValueExpr(double.Parse(Previous().Value));
             }
-
-            if (MatchToken(TokenType.String))
+            else if (MatchToken(TokenType.String))
             {
                 return new StringExpr(Previous().Value);
             }
-
-            if (MatchToken(TokenType.Identifier))
+            else if (MatchToken(TokenType.Identifier))
             {
                 string varName = Previous().Value;
                 if (_variables.TryGetValue(varName, out object value))
@@ -674,8 +708,7 @@ namespace FeiSharp
                 }
                 throw new Exception($"Undefined variable: {varName}");
             }
-
-            if (MatchPunctuation("("))
+            else if (MatchPunctuation("("))
             {
                 Expr expr = ParseExpression();
                 if (!MatchPunctuation(")"))
@@ -684,7 +717,7 @@ namespace FeiSharp
                 }
                 return expr;
             }
-            if (MatchKeyword("true"))
+            else if (MatchKeyword("true"))
             {
                 string varName = Previous().Value;
                 if (_variables.TryGetValue(varName, out object value))
@@ -694,7 +727,7 @@ namespace FeiSharp
 
                 throw new Exception($"Undefined variable: {varName}");
             }
-            if (MatchKeyword("false"))
+            else if (MatchKeyword("false"))
             {
                 string varName = Previous().Value;
                 if (_variables.TryGetValue(varName, out object value))
@@ -704,7 +737,7 @@ namespace FeiSharp
 
                 throw new Exception($"Undefined variable: {varName}");
             }
-            throw new Exception("Unexpected token: " + (IsAtEnd() ? "End of input" : Peek().Value));
+            throw new Exception("Unvalid token: " + Peek().Value);
         }
 
         private bool MatchToken(params TokenType[] types)
@@ -825,8 +858,8 @@ namespace FeiSharp
                             _ => throw new Exception("Unexpected operator: " + binExpr.Operator)
                         };
                     }
-                    left = Convert.ToDouble(left.ToString() + ".0");
-                    right = Convert.ToDouble(right.ToString() + ".0");
+                    left = Convert.ToDouble(left.ToString());
+                    right = Convert.ToDouble(right.ToString());
                     return binExpr.Operator switch
                     {
                         "+" => (double)left + (double)right,
@@ -835,7 +868,7 @@ namespace FeiSharp
                         "/" => (double)left / (double)right,
                         "^" => Math.Pow((double)left, (double)right),
                         "|" => Math.Pow((double)left, 1 / (double)right),
-                        ">" => (double)left>(double)right,
+                        ">" => (double)left > (double)right,
                         "<" => (double)left < (double)right,
                         "=" => (double)left == (double)right,
                         "!" => (double)left != (double)right,
@@ -845,6 +878,15 @@ namespace FeiSharp
                     return stringExpr.Value;
                 default:
                     throw new Exception("Unexpected expression type");
+            }
+            string RepeatZeros(int a)
+            {
+                string result = "";
+                for (int i = 0; i < a; i++)
+                {
+                    result += "0";
+                }
+                return result;
             }
         }
     }
@@ -864,169 +906,4 @@ namespace FeiSharp
         Bool,
         FuncName
     }
-
-    // Example Token class
-    public class Token
-    {
-        public TokenType Type { get; }
-        public string Value { get; }
-
-        public Token(TokenType type, string value)
-        {
-            Type = type;
-            Value = value;
-        }
-    }
-
-    // Example Token types
-    public static class TokenTypes
-    {
-        public const string PrintKeyword = "print";
-        public const string Semicolon = ";";
-        public const string PlusOperator = "+";
-        public const string NumberToken = "Number";
-        public const string IdentifierToken = "Identifier";
-    }
-
-    // Example PrintStmt class
-    public class PrintStmt
-    {
-        public Expr Expression { get; }
-        public PrintStmt(Expr expression)
-        {
-            Expression = expression;
-
-        }
-    }
-
-    // Example Expr class hierarchy
-    public abstract class Expr { }
-    public class ValueExpr : Expr
-    {
-        public object Value { get; }
-        public ValueExpr(object value) { Value = value; }
-    }
-
-    public class StringExpr : Expr
-    {
-        public string Value { get; }
-
-        public StringExpr(string value) { Value = value; }
-    }
-
-    public class VariableExpr : Expr
-    {
-        public string Name { get; }
-        public VariableExpr(string name) { Name = name; }
-    }
-    public class BinaryExpr : Expr
-    {
-        public Expr Left { get; }
-        public string Operator { get; }
-        public Expr Right { get; }
-        public BinaryExpr(Expr left, string op, Expr right)
-        {
-            Left = left;
-            Operator = op;
-            Right = right;
-        }
-    }
-
-    // Example of Lexer (simple implementation)
-    public class Lexer
-    {
-        private readonly string _source;
-        private int _index;
-
-        public Lexer(string source)
-        {
-            _source = source;
-            _index = 0;
-        }
-
-        public Token NextToken()
-        {
-            while (_index < _source.Length)
-            {
-                char current = _source[_index];
-                if (char.IsWhiteSpace(current))
-                {
-                    _index++;
-                    continue;
-                }
-                if (current == ']') { _index++; return new Token(TokenType.Punctuation, "]"); }
-                if (current == '[') { _index++; return new Token(TokenType.Punctuation, "["); }
-                if (current == '!') { _index++; return new Token(TokenType.Operator, "!"); }
-                if (current == '}') { _index++; return new Token(TokenType.Punctuation, "}"); }
-                if (current == '{') { _index++; return new Token(TokenType.Punctuation, "{"); }
-                if (current == '<') { _index++; return new Token(TokenType.Operator, "<"); }
-                if (current == '>') { _index++; return new Token(TokenType.Operator, ">"); }
-                if (current == '=') { _index++; return new Token(TokenType.Operator, "="); }
-                if (current == '|') { _index++; return new Token(TokenType.Operator, "|"); }
-                if (current == '^') { _index++; return new Token(TokenType.Operator, "^"); }
-                if (current == '/') { _index++; return new Token(TokenType.Operator, "/"); }
-                if (current == '*') { _index++; return new Token(TokenType.Operator, "*"); }
-                if (current == '-') { _index++; return new Token(TokenType.Operator, "-"); }
-                if (current == ',') { _index++; return new Token(TokenType.Punctuation, ","); }
-                if (current == '+') { _index++; return new Token(TokenType.Operator, "+"); }
-                if (current == '-') { _index++; return new Token(TokenType.Operator, "-"); }
-                if (current == '=') { _index++; return new Token(TokenType.Operator, "="); } // Added for '='
-                if (current == ';') { _index++; return new Token(TokenType.Punctuation, ";"); }
-                if (current == '(') { _index++; return new Token(TokenType.Punctuation, "("); }
-                if (current == ')') { _index++; return new Token(TokenType.Punctuation, ")"); }
-                if (current == '"')
-                {
-                    int start = ++_index;
-
-                    while (_index < _source.Length && _source[_index] != '"')
-                    {
-                        _index++;
-                    }
-                    return new Token(TokenType.String, _source[start.._index++]);
-                }
-
-                if (char.IsDigit(current))
-                {
-                    int start = _index;
-                    while (_index < _source.Length && char.IsDigit(_source[_index])) _index++;
-                    return new Token(TokenType.Number, _source[start.._index]);
-                }
-
-                if (char.IsLetter(current))
-                {
-                    int start = _index;
-                    while (_index < _source.Length && char.IsLetter(_source[_index])) _index++;
-                    string value = _source.Substring(start, _index - start);
-                    if (value == "var") return new Token(TokenType.Keyword, "var");
-                    else if (value == "print") return new Token(TokenType.Keyword, "print");
-                    else if (value == "init") return new Token(TokenType.Keyword, "init");
-                    else if (value == "set") return new Token(TokenType.Keyword, "set");
-                    else if (value == "import") return new Token(TokenType.Keyword, "import");
-                    else if (value == "export") return new Token(TokenType.Keyword, "export");
-                    else if (value == "start") return new Token(TokenType.Keyword, "start");
-                    else if (value == "stop") return new Token(TokenType.Keyword, "stop");
-                    else if (value == "wait") return new Token(TokenType.Keyword, "wait");
-                    else if (value == "watchstart") return new Token(TokenType.Keyword, "watchstart");
-                    else if (value == "watchend") return new Token(TokenType.Keyword, "watchend");
-                    else if (value == "abe") return new Token(TokenType.Keyword, "abe");
-                    else if (value == "Double") return new Token(TokenType.Type, "Double");
-                    else if (value == "helper") return new Token(TokenType.Keyword, "helper");
-                    else if (value == "true") return new Token(TokenType.Keyword, "true");
-                    else if (value == "false") return new Token(TokenType.Keyword, "false");
-                    else if (value == "if") return new Token(TokenType.Keyword, "if");
-                    else if (value == "while") return new Token(TokenType.Keyword, "while");
-                    else if (value == "dowhile") return new Token(TokenType.Keyword, "dowhile");
-                    else if (value == "throw") return new Token(TokenType.Keyword, "throw");
-                    else if (value == "return") return new Token(TokenType.Keyword, "return");
-                    else if (value == "func") { 
-                        return new Token(TokenType.Keyword, "func"); 
-                    }
-                    else return new Token(TokenType.Identifier, value);
-                }
-                throw new Exception("Unexpected character: " + current);
-            }
-            return new Token(TokenType.EndOfFile, "");
-        }
-    }
-
 }

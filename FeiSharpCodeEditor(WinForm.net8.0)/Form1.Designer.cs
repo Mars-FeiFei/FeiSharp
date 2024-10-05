@@ -178,11 +178,13 @@
             // 
             // lstbIntelligence
             // 
+            lstbIntelligence.BackColor = Color.Black;
+            lstbIntelligence.ForeColor = Color.Blue;
             lstbIntelligence.FormattingEnabled = true;
-            lstbIntelligence.Items.AddRange(new object[] { "var", "print", "init", "set", "import", "export", "start", "stop", "wait", "watchstart", "watchend", "abe", "helper", "if", "while", "func" });
-            lstbIntelligence.Location = new Point(124, 152);
+            lstbIntelligence.Items.AddRange(new object[] { "var", "print", "init", "set", "import", "export", "start", "stop", "wait", "watchstart", "watchend", "abe", "helper", "if", "while", "func", "return", "gethtml", "getVarsFromJsonFilePath" });
+            lstbIntelligence.Location = new Point(125, 146);
             lstbIntelligence.Name = "lstbIntelligence";
-            lstbIntelligence.Size = new Size(360, 280);
+            lstbIntelligence.Size = new Size(470, 280);
             lstbIntelligence.TabIndex = 14;
             lstbIntelligence.Visible = false;
             lstbIntelligence.SelectedIndexChanged += lstbIntelligence_SelectedIndexChanged;

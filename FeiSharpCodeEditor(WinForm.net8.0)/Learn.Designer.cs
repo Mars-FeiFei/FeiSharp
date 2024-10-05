@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Learn));
             label1 = new Label();
             SuspendLayout();
             // 
@@ -45,8 +46,9 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1557, 815);
             Controls.Add(label1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Learn";
-            Text = "Learn";
+            Text = "FeiSharpStudio-Learn";
             ResumeLayout(false);
             PerformLayout();
         }
