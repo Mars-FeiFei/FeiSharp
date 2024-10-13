@@ -2,18 +2,18 @@
 using IWshRuntimeLibrary;
 using System.Diagnostics;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
-using T = System.Windows.Forms.Timer;
-using Timer = System.Windows.Forms.Timer;
 
 namespace FeiSharpCodeEditor_WinForm.net8._0_
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        Image gifImage;
-        public Form1()
+        Log logForm = new Log();
+        List<string> keywords = new List<string>()
+        {
+            "var", "print", "init", "set", "import", "export", "start", "stop", "wait", "watchstart", "watchend", "abe", "helper", "if", "while", "func", "return", "gethtml", "getVarsFromJsonFilePath"
+        };
+
+        public MainForm()
         {
             AddText(EventName.Ctor, "type=Method", "Form1", "ctor Form1()");
             InitializeComponent();
@@ -36,6 +36,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             lstbIntelligence.DrawMode = DrawMode.OwnerDrawFixed;
             lstbIntelligence.DrawItem += ListBox1_DrawItem;
         }
+
         private async void ListBox1_DrawItem(object sender, DrawItemEventArgs e)
         {
             AddText(EventName.DrawItem, "type=ListBox", "Form1", "lstbIntelligence");
@@ -51,6 +52,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 }
             }
         }
+
         private void Form1_KeyDown(object? sender, KeyEventArgs e)
         {
             AddText(EventName.KeyDown, "type=Form(this)", "Form1", "this");
@@ -68,6 +70,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 Start();
             }
         }
+
         private void Start()
         {
             AddText(EventName.Method, "type=Method", "Form1", "void Start()");
@@ -79,6 +82,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 txtCode.Text = System.IO.File.ReadAllText(ofd.FileName);
             }
         }
+
         private void SaveAs()
         {
             AddText(EventName.Method, "type=Method", "Form1", "void SaveAs()");
@@ -91,12 +95,14 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 sw.Write(txtCode.Text);
             }
         }
+
         private void BtnRunClick(object sender, EventArgs e)
         {
             AddText(EventName.Click, "type=Button", "Form1", "btnRun");
 
             Run();
         }
+
         private void Run()
         {
             AddText(EventName.Method, "type=Method", "Form1", "void Run()[2 references]");
@@ -128,36 +134,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             }
             return;
         }
-        private void Run(string _code)
-        {
-            AddText(EventName.Method, "type=Method", "Form1", "void Run()");
 
-            string code = "";
-            string sourceCode = _code;
-            Lexer lexer = new(sourceCode);
-            List<Token> tokens = [];
-            Token token;
-            do
-            {
-                token = lexer.NextToken();
-                tokens.Add(token);
-            } while (token.Type != TokenType.EndOfFile);
-
-            Parser parser = new(tokens);
-            parser.OutputEvent += (s, e) =>
-            {
-                outputBox.Show(e.Message);
-            };
-            try
-            {
-                parser.ParseStatements();
-            }
-            catch (Exception ex)
-            {
-                outputBox.Show("Parsing error: " + ex.Message);
-            }
-            return;
-        }
         private List<Token> Build()
         {
             AddText(EventName.Method, "type=Method", "Form1", "List<Token> Build()");
@@ -206,6 +183,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             parser.ParseStatements();
             return;
         }
+
         private void FeiSharpForm_Resize(object sender, EventArgs e)
         {
             AddText(EventName.Resize, "type=Form(this)", "Form1", "this");
@@ -217,6 +195,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             }
             txtCode.Width = outputBox.ClientSize.Width;
         }
+
         private void Check()
         {
             AddText(EventName.Method, "type=Method", "Form1", "void Check()");
@@ -253,7 +232,6 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         private void CodeEditor_KeyPress(object sender, KeyPressEventArgs e)
         {
             AddText(EventName.KeyPress, "type=RichTextBox","Form1","txtCode");
-            bool a = false;
             if (e.KeyChar == '(')
             {
                 int start = txtCode.SelectionStart;
@@ -276,7 +254,6 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 lstbIntelligence.Visible = true;
                 lstbIntelligence.BringToFront();
             }
-
         }
 
         private void FeiSharpForm_Load(object sender, EventArgs e)
@@ -284,6 +261,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             AddText(EventName.Load, "type=Form(this)", "Form1", "this");
             Debug.WriteLine("Loading......");
         }
+
         private void BtnMenuClick(object sender, EventArgs e)
         {
             AddText(EventName.Click, "type=Button", "Form1", "btnMenu");
@@ -313,10 +291,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             AddText(EventName.Click, "type=Button", "Form1", "btnCheck");
             Check();
         }
-        List<string> keywords = new List<string>()
-        {
-            "var", "print", "init", "set", "import", "export", "start", "stop", "wait", "watchstart", "watchend", "abe", "helper", "if", "while", "func", "return", "gethtml", "getVarsFromJsonFilePath"
-        };
+        
         private void ShowIntelligenceIfNecessary(string segment)
         {
             object[] objectKeywords = keywords.Where(i => i.Contains(segment)).ToArray();
@@ -561,70 +536,17 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 }
             }
         }
-        Log logForm = new Log();
-        int times = 0;
         private void log_Click(object sender, EventArgs e)
         {
             AddText(EventName.Click,"type=Button","Form1","log");
-            if(times % 2 == 0)
+            if (logForm.Visible)
+            {
+                logForm.Hide();
+            } 
+            else
             {
                 logForm.Show();
             }
-            else
-            {
-                logForm.Hide();
-            }
-            times++;
         }
-    }
-    public static class Util
-    {
-        public static void Show(this TextBox tbx,string text)
-        {
-            tbx.Text += text + Environment.NewLine;
-        }
-        public static void Show(this RichTextBox tbx, string text)
-        {
-            tbx.Text += text + Environment.NewLine;
-        }
-    }
-    public class Resource
-    {
-        private static readonly string FILE_PATH = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        public static string GetResourceFilePath(string filename)
-        {
-            return Path.Combine(FILE_PATH, filename);
-        }
-        public static T GetResourceInstance<T>(string filename)
-        {
-            return (T)Activator.CreateInstance(typeof(T), GetResourceFilePath(filename));
-        }
-        public static string GetSplit()
-        {
-            return "           ";
-        }
-        public static object GetResourceFromMethod(string expression, params object[] parameters)
-        {
-            string[] parts = expression.Split('.');
-            string namespaceName = parts[0];
-            string className = parts[1];
-            string methodName = parts[2];
-
-            Type type = Type.GetType($"{namespaceName}.{className}");
-            if (type == null)
-            {
-                throw new ArgumentException($"Cannot find type:{namespaceName}.{className}");
-            }
-
-            object instance = Activator.CreateInstance(type);
-            MethodInfo method = type.GetMethod(methodName);
-            if (method == null)
-            {
-                throw new ArgumentException($"Cannot find method:{methodName}");
-            }
-
-            return method.Invoke(instance, parameters);
-        }
-
     }
 }

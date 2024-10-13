@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FeiSharpCodeEditor_WinForm.net8._0_
+﻿namespace FeiSharpCodeEditor_WinForm.net8._0_
 {
     public class Token
     {
@@ -18,7 +12,6 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         }
     }
 
-    // Example Token types
     public static class TokenTypes
     {
         public const string PrintKeyword = "print";
@@ -27,5 +20,4 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         public const string NumberToken = "Number";
         public const string IdentifierToken = "Identifier";
     }
-
 }

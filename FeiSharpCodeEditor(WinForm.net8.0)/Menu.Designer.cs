@@ -34,12 +34,11 @@
             linkLabel1 = new LinkLabel();
             devoCmd = new Button();
             learn = new Button();
-            Paint = new Button();
             SuspendLayout();
             // 
             // console
             // 
-            console.Location = new Point(577, 299);
+            console.Location = new Point(577, 193);
             console.Name = "console";
             console.Size = new Size(423, 137);
             console.TabIndex = 0;
@@ -70,7 +69,7 @@
             // 
             // devoCmd
             // 
-            devoCmd.Location = new Point(577, 442);
+            devoCmd.Location = new Point(577, 388);
             devoCmd.Name = "devoCmd";
             devoCmd.Size = new Size(423, 149);
             devoCmd.TabIndex = 3;
@@ -80,7 +79,7 @@
             // 
             // learn
             // 
-            learn.Location = new Point(577, 159);
+            learn.Location = new Point(577, 2);
             learn.Name = "learn";
             learn.Size = new Size(423, 134);
             learn.TabIndex = 4;
@@ -88,23 +87,12 @@
             learn.UseVisualStyleBackColor = true;
             learn.Click += button4_Click;
             // 
-            // Paint
-            // 
-            Paint.Location = new Point(576, 12);
-            Paint.Name = "Paint";
-            Paint.Size = new Size(424, 139);
-            Paint.TabIndex = 5;
-            Paint.Text = "Paint";
-            Paint.UseVisualStyleBackColor = true;
-            Paint.Click += Paint_Click;
-            // 
             // Menu
             // 
             AutoScaleDimensions = new SizeF(22F, 46F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.GradientInactiveCaption;
             ClientSize = new Size(1171, 756);
-            Controls.Add(Paint);
             Controls.Add(learn);
             Controls.Add(devoCmd);
             Controls.Add(linkLabel1);
@@ -128,6 +116,5 @@
         private LinkLabel linkLabel1;
         private Button devoCmd;
         private Button learn;
-        private Button Paint;
     }
 }

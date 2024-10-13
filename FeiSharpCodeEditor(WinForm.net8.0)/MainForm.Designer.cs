@@ -1,6 +1,6 @@
 ﻿namespace FeiSharpCodeEditor_WinForm.net8._0_
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             RunBtn = new Button();
             SaveAsBtn = new Button();
             OpenBtn = new Button();
