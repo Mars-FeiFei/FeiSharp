@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FeiSharpCodeEditor_WinForm.net8.0 README</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        h2 {
+            color: #555;
+            margin-top: 20px;
+        }
+
+        h3 {
+            color: #777;
+            margin-top: 15px;
+        }
+
+        p {
+            margin-bottom: 10px;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>FeiSharpCodeEditor_WinForm.net8.0 README</h1>
+
+    <h2>I. Project Overview</h2>
+    <p>This project is a Windows form application based on.NET 8.0 for editing FeiSharp code. It provides functions such as code editing, saving, running, and checking, and also has certain interactive logic and syntax-parsing capabilities.</p>
+
+    <h2>II. Main Functional Modules</h2>
+
+    <h3>(I) Main Window (MainForm)</h3>
+
+    <h4>Event Handling</h4>
+    <ul>
+        <li><strong>Keyboard Events (KeyDown, KeyPress)</strong>: Handled in the Form1_KeyDown and Form1_KeyPress methods. For example, pressing the F5 key runs the code (Run method), Ctrl + S saves as (SaveAs method), Ctrl + F opens a file (Start method), etc. At the same time, some special shortcut key combinations, such as Ctrl + Alt + C to close the window, are also handled.</li>
+        <li><strong>Mouse Events (MouseDown, MouseClick)</strong>: Handled in the MainForm_MouseDown and txtCode_MouseClick methods. For example, right-clicking in the text box pops up the corresponding context menu.</li>
+        <li><strong>Window Resize Event (Resize)</strong>: Handled in the FeiSharpForm_Resize method. It limits the minimum window size and adjusts the widths of the text box and the output box.</li>
+    </ul>
+
+    <h4>Function Button Click Events</h4>
+    <ul>
+        <li><strong>Run Button (BtnRunClick)</strong>: Clicking the run button calls the Run method, which performs lexical analysis (Lexer) and syntax analysis (Parser) and displays the results or error messages in the output box.</li>
+        <li><strong>Save As Button (BtnSaveAsClick)</strong>: Clicking the save as button calls the SaveAs method, which saves the current code to the specified file through the SaveFileDialog.</li>
+        <li><strong>Open File Button (BtnOpenFileClick)</strong>: Clicking the open file button calls the Start method, which opens the FeiSharp source file through the OpenFileDialog and loads it into the text box.</li>
+        <li><strong>Check Button (BtnCheckClick)</strong>: Clicking the check button calls the Check method to perform code checking, including checking the legality of variable and function names and runtime exceptions.</li>
+        <li><strong>Menu Button (BtnMenuClick)</strong>: Click to display the menu.</li>
+        <li><strong>Shortcut Button (BtnShortcutClick)</strong>: Create a desktop shortcut for the application.</li>
+        <li><strong>Log Button (log_Click)</strong>: Click to show or hide the log window.</li>
+    </ul>
+
+    <h4>Code-editing-related Functions</h4>
+    <ul>
+        <li>In the CodeEditor_KeyPress method, handle the input of specific characters (such as (, ") in the text box, automatically complete parentheses or quotation marks, and display intelligent prompts according to the input content (ShowIntelligenceIfNecessary method).</li>
+        <li>In the txtCode_TextChanged method, update the intelligent prompts according to the changes in the content of the text box.</li>
+    </ul>
+
+    <h3>(II) Syntax Parser (Parser)</h3>
+    <ul>
+        <li><strong>Constructor</strong>: Accepts a list of Tokens as a parameter to initialize the state of the parser, including setting the current position, built-in variables (true and false), etc.</li>
+        <li><strong>Parse Statements (ParseStatements)</strong>: This method is the core of syntax parsing. It processes various types of statements, such as variable declarations (var), print statements (print), function definitions (func), conditional statements (if), loop statements (while), etc. The code is parsed by matching keywords and corresponding syntax structures.</li>
+        <li><strong>Evaluate Expression (EvaluateExpression)</strong>: Used to calculate the value of an expression, supporting numbers, strings, variables, binary operations (+, -, *, /, etc.), and performing corresponding calculations and type conversions according to the expression type and operator.</li>
+        <li><strong>Other Functional Methods</strong>: Such as MatchToken, MatchKeyword, MatchPunctuation, MatchOperator, etc. are used to match different types of Tokens to assist the syntax-parsing process. There are also Advance, Peek, Previous, etc. methods for moving and obtaining Tokens in the Token stream.</li>
+    </ul>
+
+    <h2>III. Data Structures and Types</h2>
+    <ul>
+        <li><strong>Token Type</strong>: Represents the basic syntactic units in the code, including keywords (Keyword), identifiers (Identifier), numbers (Number), strings (String), punctuation marks (Punctuation), operators (Operator), end-of-file markers (EndOfFile), types (Type), boolean values (Bool), function names (FuncName), etc.</li>
+        <li><strong>Data Structures in Parser</strong>
+            <ul>
+                <li>_tokens: Stores the list of parsed Tokens.</li>
+                <li>_current: The index of the current parsing position.</li>
+                <li>_variables: A dictionary that stores variables and their values.</li>
+                <li>_functions: A dictionary that stores function information, including function names, parameter lists, and lists of function-body Tokens.</li>
+                <li>_results: A dictionary used to store the return results of functions.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>IV. Usage Methods</h2>
+    <ul>
+        <li><strong>Start the Application</strong>: Run the executable file to open the main window of FeiSharpCodeEditor.</li>
+        <li><strong>Edit Code</strong>: Enter FeiSharp code in the text box.</li>
+        <li><strong>Save Code</strong>: Click the save as button and select the save path and file name.</li>
+        <li><strong>Run Code</strong>: Click the run button to view the output results or error messages.</li>
+        <li><strong>Check Code</strong>: Click the check button to check the legality of the code and potential problems.</li>
+        <li><strong>Use Shortcut Keys and Menus</strong>: Execute corresponding operations through shortcut keys or by clicking menu buttons, such as creating shortcuts, opening files, etc.</li>
+    </ul>
+
+    <h2>V. Precautions</h2>
+    <ul>
+        <li>The exception-handling part in the code is used to capture syntax-parsing and runtime errors, but the error-message-prompting information may need to be further improved and optimized to better help users locate problems.</li>
+        <li>When handling intelligent prompts and code-editing-related functions, attention should be paid to performance optimization, especially when dealing with large-scale code files, to avoid lagging.</li>
+        <li>For the syntax of the FeiSharp language, it is necessary to ensure that the implementation of the parser is completely consistent with the language specification to avoid parsing errors or incorrect execution results.</li>
+    </ul>
+
+</body>
+
+</html>
