@@ -93,31 +93,8 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 textBox1.SelectionStart = start + 1;
                 e.Handled = true;
             }
-            else if (e.KeyChar == (char)Keys.Enter && textBox1.Text[textBox1.SelectionStart - 1] != ']')
-            {
-                a = true;
-                int start = textBox1.SelectionStart;
-                textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, ";\r\n");
-                textBox1.Text += Environment.NewLine;
-                textBox1.SelectionStart = start + 3;
-                e.Handled = true;
-            }
-            else if (e.KeyChar == (char)Keys.Enter && textBox1.Text[textBox1.SelectionStart - 1] != '}' && !a)
-            {
-                int start = textBox1.SelectionStart;
-                textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, ";\r\n");
-                textBox1.Text += Environment.NewLine;
-                textBox1.SelectionStart = start + 3;
-                e.Handled = true;
-            }
-            else if (e.KeyChar == ';')
-            {
-                int start = textBox1.SelectionStart;
-                textBox1.Text = textBox1.Text.Insert(textBox1.SelectionStart, ";\r\n");
-                textBox1.Text += Environment.NewLine;
-                textBox1.SelectionStart = start + 3;
-                e.Handled = true;
-            }
+
+
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -142,7 +119,8 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         }
         private void FicJson_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.F5) {
+            if (e.KeyCode == Keys.F5)
+            {
                 var a = new Parser(new List<Token>()).Run(textBox1.Text, 1);
                 string b = "{";
                 foreach (var item in a)
@@ -173,7 +151,8 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 b = new string(c);
                 textBox2.Text = b;
             }
-            else if(e.Control && e.KeyCode == Keys.S){
+            else if (e.Control && e.KeyCode == Keys.S)
+            {
                 SaveFileDialog sfd = new()
                 {
                     Filter = "Json File|.json"
@@ -197,5 +176,9 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             }
         }
 
+        private void FicJson_Load(object sender, EventArgs e)
+        {
+            comboBox1.Items.AddRange(["var", "print", "init", "set", "import", "export", "start", "stop", "wait", "watchstart", "watchend", "abe", "helper", "if", "while", "func", "return", "gethtml", "getVarsFromJsonFilePath"]);
+        }
     }
 }

@@ -52,10 +52,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
 
         private void button3_Click(object sender, EventArgs e)
         {
-            string path = Assembly.GetExecutingAssembly().Location;
-            path = Path.Combine(Path.GetDirectoryName(path), @"Develper Cmd\Develper Cmd\bin\Debug\net8.0");
-            path += @"\Develper Cmd.exe";
-            Process.Start(path);
+            Process.Start("cmd.exe");
         }
 
         private void button4_Click(object sender, EventArgs e)

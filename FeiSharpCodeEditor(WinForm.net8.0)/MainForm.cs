@@ -12,6 +12,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         {
             "var", "print", "init", "set", "import", "export", "start", "stop", "wait", "watchstart", "watchend", "abe", "helper", "if", "while", "func", "return", "gethtml", "getVarsFromJsonFilePath"
         };
+        private readonly static string delimiter = "                    ";
 
         public MainForm()
         {
@@ -33,26 +34,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             log.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             log.FlatAppearance.BorderSize = 0;
             ShortCutBtn.SendToBack();
-            lstbIntelligence.DrawMode = DrawMode.OwnerDrawFixed;
-            lstbIntelligence.DrawItem += ListBox1_DrawItem;
         }
-
-        private async void ListBox1_DrawItem(object sender, DrawItemEventArgs e)
-        {
-            AddText(EventName.DrawItem, "type=ListBox", "Form1", "lstbIntelligence");
-
-            if (e.Index >= 0)
-            {
-                Bitmap icon = Resource.GetResourceInstance<Bitmap>("keyword.png");
-                e.Graphics.DrawImage(icon, e.Bounds.Left, e.Bounds.Top);
-                using (Brush brush = new SolidBrush(e.ForeColor))
-                {
-                    e.Graphics.DrawImage(icon, e.Bounds.Left, e.Bounds.Top - e.Bounds.Height);
-                    e.Graphics.DrawString(lstbIntelligence.Items[e.Index].ToString(), e.Font, brush, e.Bounds.Left + icon.Width, e.Bounds.Top);
-                }
-            }
-        }
-
         private void Form1_KeyDown(object? sender, KeyEventArgs e)
         {
             AddText(EventName.KeyDown, "type=Form(this)", "Form1", "this");
@@ -205,7 +187,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             {
                 if (item.Type == TokenType.Identifier && char.IsUpper(item.Value[0]))
                 {
-                    outputBox.Show("The var \"" + item.Value + "\" isn't a valid varname, \r\n but it doesn't affect operation.");
+                    outputBox.Show("The var or func \"" + item.Value + "\" isn't a valid var or func name, \r\n but it doesn't affect operation.");
                     isValid = false;
                 }
             }
@@ -215,12 +197,44 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             }
             catch (Exception ex)
             {
-                outputBox.Show("Something went wrong:" + "\r\n" + ex.Message);
+                outputBox.Show("Runtime exception:" + "\r\n in " + ex.Source+$" Namespace's  {ex.Data}.");
                 isValid = false;
             }
             if (isValid)
             {
                 outputBox.Show("Nothing wrong.");
+            }
+        }
+        private void MainForm_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                ContextMenuStrip contextMenuStrip = new ContextMenuStrip();
+                ToolStripMenuItem closeMenuItem = new ToolStripMenuItem("Close");
+                ToolStripMenuItem minMenuItem = new ToolStripMenuItem("Minimize");
+                ToolStripMenuItem maxMenuItem = new ToolStripMenuItem("Maximize");
+                ToolStripMenuItem openMenuItem = new ToolStripMenuItem("Open File");
+                ToolStripMenuItem saveMenuItem = new ToolStripMenuItem("Save As");
+                ToolStripMenuItem codeMenuItem = new ToolStripMenuItem("View Source Code");
+                codeMenuItem.Click += (s, e) => new CodeCore.SourceCode().Show();
+                closeMenuItem.Click += (s, e) => this.Close();
+                minMenuItem.Click += (s, e) => this.WindowState = FormWindowState.Minimized;
+                maxMenuItem.Click += (s, e) => this.WindowState = FormWindowState.Maximized;
+                openMenuItem.Click += (s, e) => Start();
+                saveMenuItem.Click += (s, e) => SaveAs();
+                closeMenuItem.ShortcutKeys = Keys.Control | Keys.Alt | Keys.C;
+                minMenuItem.ShortcutKeys = Keys.Control | Keys.Alt | Keys.I;
+                maxMenuItem.ShortcutKeys = Keys.Control | Keys.Alt | Keys.A;
+                openMenuItem.ShortcutKeys = Keys.Control | Keys.F;
+                saveMenuItem.ShortcutKeys = Keys.Control | Keys.S;
+                codeMenuItem.ShortcutKeys = Keys.Control | Keys.Shift | Keys.V;
+                contextMenuStrip.Items.Add(codeMenuItem);
+                contextMenuStrip.Items.Add(closeMenuItem);
+                contextMenuStrip.Items.Add(minMenuItem);
+                contextMenuStrip.Items.Add(maxMenuItem);
+                contextMenuStrip.Items.Add(openMenuItem);
+                contextMenuStrip.Items.Add(saveMenuItem);
+                contextMenuStrip.Show(e.Location);
             }
         }
         private void BtnOpenFileClick(object sender, EventArgs e)
@@ -347,6 +361,26 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                     outputBox.Text = "";
                 }
             }
+            else if (e.KeyCode == Keys.C && (e.Control && e.Alt))
+            {
+                this.Close();
+            }
+            else if (e.KeyCode == Keys.I && (e.Control && e.Alt))
+            {
+                this.WindowState = FormWindowState.Minimized;
+            }
+            else if (e.KeyCode == Keys.A && (e.Control && e.Alt))
+            {
+                this.WindowState = FormWindowState.Maximized;
+            }
+            else if (e.KeyCode == Keys.O && (e.Control && e.Alt))
+            {
+                Process.Start("cmd.exe");
+            }
+            else if (e.KeyCode == Keys.V && (e.Control && e.Shift))
+            {
+                new CodeCore.SourceCode().Show();
+            }
         }
         private void TxtCode_MouseDown(object sender, MouseEventArgs e)
         {
@@ -354,20 +388,18 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             if (e.Button == MouseButtons.Right)
             {
                 ContextMenuStrip contextMenuStrip = new ContextMenuStrip();
-                ToolStripMenuItem ClearMenuItem = new ToolStripMenuItem("clear");
-                ToolStripMenuItem PasteMenuItem = new ToolStripMenuItem("paste");
-                ToolStripMenuItem CopyMenuItem = new ToolStripMenuItem("copy");
-                ToolStripMenuItem CutMenuItem = new ToolStripMenuItem("cut");
-                ToolStripMenuItem SelectAllMenuItem = new ToolStripMenuItem("select all");
+                ToolStripMenuItem ClearMenuItem = new ToolStripMenuItem("Clear");
+                ToolStripMenuItem PasteMenuItem = new ToolStripMenuItem("Paste");
+                ToolStripMenuItem CopyMenuItem = new ToolStripMenuItem("Copy");
+                ToolStripMenuItem CutMenuItem = new ToolStripMenuItem("Cut");
+                ToolStripMenuItem SelectAllMenuItem = new ToolStripMenuItem("Select All");
+                ToolStripMenuItem DeleteMenuItem = new ToolStripMenuItem($"Delete{delimiter}Backspace");
                 ClearMenuItem.Click += (s, g) => { txtCode.Text = ""; };
                 PasteMenuItem.Click += (s, g) => { txtCode.Paste(); };
                 CopyMenuItem.Click += (s, g) => txtCode.Copy();
                 CutMenuItem.Click += (s, g) => txtCode.Cut();
                 SelectAllMenuItem.Click += (s, g) => txtCode.SelectAll();
-                ClearMenuItem.Image = Resource.GetResourceInstance<Bitmap>("clear.png");
-                PasteMenuItem.Image = Resource.GetResourceInstance<Bitmap>("paste.png");
-                CopyMenuItem.Image = Resource.GetResourceInstance<Bitmap>("copy.png");
-                CutMenuItem.Image = Resource.GetResourceInstance<Bitmap>("cut.png");
+                DeleteMenuItem.Click += (s, g) => txtCode.SelectedText = "";
                 CutMenuItem.ShortcutKeys = Keys.Control | Keys.X;
                 CopyMenuItem.ShortcutKeys = Keys.Control | Keys.C;
                 ClearMenuItem.ShortcutKeys = Keys.Control | Keys.B;
@@ -378,6 +410,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 contextMenuStrip.Items.Add(CopyMenuItem);
                 contextMenuStrip.Items.Add(CutMenuItem);
                 contextMenuStrip.Items.Add(SelectAllMenuItem);
+                contextMenuStrip.Items.Add(DeleteMenuItem);
                 contextMenuStrip.Show(txtCode, e.Location);
             }
         }
@@ -387,29 +420,17 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             if (e.Button == MouseButtons.Right)
             {
                 ContextMenuStrip contextMenuStrip = new ContextMenuStrip();
-                ToolStripMenuItem ClearMenuItem = new ToolStripMenuItem("clear");
-                ToolStripMenuItem PasteMenuItem = new ToolStripMenuItem("paste");
-                ToolStripMenuItem CopyMenuItem = new ToolStripMenuItem("copy");
-                ToolStripMenuItem CutMenuItem = new ToolStripMenuItem("cut");
-                ToolStripMenuItem SelectAllMenuItem = new ToolStripMenuItem("select all");
+                ToolStripMenuItem ClearMenuItem = new ToolStripMenuItem("Clear");
+                ToolStripMenuItem CopyMenuItem = new ToolStripMenuItem("Copy");
+                ToolStripMenuItem SelectAllMenuItem = new ToolStripMenuItem("Select All");
                 ClearMenuItem.Click += (s, g) => { outputBox.Text = ""; };
-                PasteMenuItem.Click += (s, g) => { outputBox.Paste(); };
                 CopyMenuItem.Click += (s, g) => outputBox.Copy();
-                CutMenuItem.Click += (s, g) => outputBox.Cut();
                 SelectAllMenuItem.Click += (s, g) => outputBox.SelectAll();
-                ClearMenuItem.Image = Resource.GetResourceInstance<Bitmap>("clear.png");
-                PasteMenuItem.Image = Resource.GetResourceInstance<Bitmap>("paste.png");
-                CopyMenuItem.Image = Resource.GetResourceInstance<Bitmap>("copy.png");
-                CutMenuItem.Image = Resource.GetResourceInstance<Bitmap>("cut.png");
-                CutMenuItem.ShortcutKeys = Keys.Control | Keys.X;
                 CopyMenuItem.ShortcutKeys = Keys.Control | Keys.C;
                 ClearMenuItem.ShortcutKeys = Keys.Control | Keys.B;
-                PasteMenuItem.ShortcutKeys = Keys.Control | Keys.V;
                 SelectAllMenuItem.ShortcutKeys = Keys.Control | Keys.A;
                 contextMenuStrip.Items.Add(ClearMenuItem);
-                contextMenuStrip.Items.Add(PasteMenuItem);
                 contextMenuStrip.Items.Add(CopyMenuItem);
-                contextMenuStrip.Items.Add(CutMenuItem);
                 contextMenuStrip.Items.Add(SelectAllMenuItem);
                 contextMenuStrip.Show(outputBox, e.Location);
             }
