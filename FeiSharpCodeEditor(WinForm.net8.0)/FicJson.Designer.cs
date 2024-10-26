@@ -115,7 +115,6 @@
             // 
             comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBox1.FormattingEnabled = true;
-            comboBox1.Items.AddRange(new object[] { "var", "print", "init", "set", "import", "export", "start", "stop", "wait", "watchstart", "watchend", "abe", "helper" });
             comboBox1.Location = new Point(795, 29);
             comboBox1.Name = "comboBox1";
             comboBox1.Size = new Size(252, 54);
@@ -153,12 +152,13 @@
             MaximizeBox = false;
             Name = "FicJson";
             Text = "FeiSharpStudio-FicJson";
+            Load += FicJson_Load;
             KeyDown += FicJson_KeyDown;
             ResumeLayout(false);
             PerformLayout();
         }
 
-       
+
 
 
         #endregion

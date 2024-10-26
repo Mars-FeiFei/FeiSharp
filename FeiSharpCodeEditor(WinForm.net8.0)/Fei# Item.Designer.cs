@@ -34,13 +34,15 @@
             // 
             // textBox1
             // 
-            textBox1.Location = new Point(6, 0);
+            textBox1.Dock = DockStyle.Fill;
+            textBox1.Location = new Point(0, 0);
             textBox1.Multiline = true;
             textBox1.Name = "textBox1";
             textBox1.ReadOnly = true;
-            textBox1.Size = new Size(1575, 895);
+            textBox1.ScrollBars = ScrollBars.Both;
+            textBox1.Size = new Size(1583, 906);
             textBox1.TabIndex = 0;
-            textBox1.Text = "Fei# Items is some Fei# template.It has Console and FicJson(Fei# Item Convert Json).\r\n";
+            textBox1.Text = resources.GetString("textBox1.Text");
             // 
             // Fei__Item
             // 

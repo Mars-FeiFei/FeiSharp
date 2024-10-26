@@ -1,5 +1,8 @@
-﻿namespace FeiSharpCodeEditor_WinForm.net8._0_
+﻿using FeiSharpCodeEditor_WinForm.net8._0_;
+
+namespace FeiSharpCodeEditor_WinForm.net8._0_
 {
+  
     partial class MainForm
     {
         /// <summary>
@@ -54,9 +57,9 @@
             // 
             // SaveAsBtn
             // 
-            SaveAsBtn.Location = new Point(450, -6);
+            SaveAsBtn.Location = new Point(450, 3);
             SaveAsBtn.Name = "SaveAsBtn";
-            SaveAsBtn.Size = new Size(333, 97);
+            SaveAsBtn.Size = new Size(333, 88);
             SaveAsBtn.TabIndex = 1;
             SaveAsBtn.Text = "Save As(CTRL+S)";
             SaveAsBtn.UseVisualStyleBackColor = true;
@@ -104,6 +107,7 @@
             // outputBox
             // 
             outputBox.BackColor = Color.FromArgb(64, 64, 64);
+            outputBox.BorderStyle = BorderStyle.FixedSingle;
             outputBox.Dock = DockStyle.Bottom;
             outputBox.Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             outputBox.ForeColor = Color.White;
@@ -129,6 +133,7 @@
             // txtCode
             // 
             txtCode.BackColor = Color.FromArgb(64, 64, 64);
+            txtCode.BorderStyle = BorderStyle.FixedSingle;
             txtCode.Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             txtCode.ForeColor = Color.White;
             txtCode.Location = new Point(7, 251);
@@ -165,7 +170,7 @@
             log.UseVisualStyleBackColor = true;
             log.Click += log_Click;
             // 
-            // Form1
+            // MainForm
             // 
             AutoScaleDimensions = new SizeF(22F, 46F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -184,16 +189,19 @@
             Controls.Add(RunBtn);
             Icon = (Icon)resources.GetObject("$this.Icon");
             KeyPreview = true;
-            Name = "Form1";
+            Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "FeiSharpStudio-Console";
             Load += FeiSharpForm_Load;
             KeyDown += Form1_KeyDown1;
             KeyPress += Form1_KeyPress;
+            MouseDown += MainForm_MouseDown;
             Resize += FeiSharpForm_Resize;
             ResumeLayout(false);
             PerformLayout();
         }
+
+
         #endregion
         private Button RunBtn;
         private Button SaveAsBtn;
