@@ -216,24 +216,28 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 ToolStripMenuItem openMenuItem = new ToolStripMenuItem("Open File");
                 ToolStripMenuItem saveMenuItem = new ToolStripMenuItem("Save As");
                 ToolStripMenuItem codeMenuItem = new ToolStripMenuItem("View Source Code");
+                ToolStripMenuItem propertiesItem = new ToolStripMenuItem("Advanced Properties");
                 codeMenuItem.Click += (s, e) => new CodeCore.SourceCode().Show();
                 closeMenuItem.Click += (s, e) => this.Close();
                 minMenuItem.Click += (s, e) => this.WindowState = FormWindowState.Minimized;
                 maxMenuItem.Click += (s, e) => this.WindowState = FormWindowState.Maximized;
                 openMenuItem.Click += (s, e) => Start();
                 saveMenuItem.Click += (s, e) => SaveAs();
+                propertiesItem.Click += (s, e) => new CodeCore.AdvancedProperties().Show();
                 closeMenuItem.ShortcutKeys = Keys.Control | Keys.Alt | Keys.C;
                 minMenuItem.ShortcutKeys = Keys.Control | Keys.Alt | Keys.I;
                 maxMenuItem.ShortcutKeys = Keys.Control | Keys.Alt | Keys.A;
                 openMenuItem.ShortcutKeys = Keys.Control | Keys.F;
                 saveMenuItem.ShortcutKeys = Keys.Control | Keys.S;
                 codeMenuItem.ShortcutKeys = Keys.Control | Keys.Shift | Keys.V;
+                propertiesItem.ShortcutKeys = Keys.Control | Keys.Shift | Keys.P;
                 contextMenuStrip.Items.Add(codeMenuItem);
                 contextMenuStrip.Items.Add(closeMenuItem);
                 contextMenuStrip.Items.Add(minMenuItem);
                 contextMenuStrip.Items.Add(maxMenuItem);
                 contextMenuStrip.Items.Add(openMenuItem);
                 contextMenuStrip.Items.Add(saveMenuItem);
+                contextMenuStrip.Items.Add(propertiesItem);
                 contextMenuStrip.Show(e.Location);
             }
         }
@@ -380,6 +384,10 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             else if (e.KeyCode == Keys.V && (e.Control && e.Shift))
             {
                 new CodeCore.SourceCode().Show();
+            }
+            else if (e.KeyCode == Keys.P && (e.Control && e.Shift))
+            {
+                new CodeCore.AdvancedProperties().Show();
             }
         }
         private void TxtCode_MouseDown(object sender, MouseEventArgs e)
