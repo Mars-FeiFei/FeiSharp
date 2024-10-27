@@ -85,6 +85,7 @@
             comboBox1.Name = "comboBox1";
             comboBox1.Size = new Size(567, 54);
             comboBox1.TabIndex = 3;
+            comboBox1.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
             // 
             // input
             // 
@@ -125,11 +126,12 @@
             // 
             comboBox2.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBox2.FormattingEnabled = true;
-            comboBox2.Items.AddRange(new object[] { "normal" });
+            comboBox2.Items.AddRange(new object[] { "normal", "sizable" });
             comboBox2.Location = new Point(221, 287);
             comboBox2.Name = "comboBox2";
             comboBox2.Size = new Size(567, 54);
             comboBox2.TabIndex = 8;
+            comboBox2.SelectedIndexChanged += comboBox2_SelectedIndexChanged;
             // 
             // AdvancedProperties
             // 

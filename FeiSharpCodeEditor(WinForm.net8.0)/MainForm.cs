@@ -1,6 +1,9 @@
 ﻿
+using EnvDTE;
+using EnvDTE80;
 using IWshRuntimeLibrary;
 using System.Diagnostics;
+using System.IO.Packaging;
 using System.Reflection;
 
 namespace FeiSharpCodeEditor_WinForm.net8._0_
@@ -33,8 +36,33 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             CheckBtn.FlatAppearance.BorderSize = 0;
             log.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             log.FlatAppearance.BorderSize = 0;
+            exit.Text = "exit";
+            exit.BackColor = Color.LightYellow;
+            exit.ShortcutKeys = Keys.Control | Keys.Alt|Keys.F4;
+            exit.Click += (s, e) => { 
+                Application.Exit();
+            };
+            properties.Text = "properties";
+            properties.BackColor = Color.LightYellow;
+            properties.ShortcutKeys = Keys.P | Keys.Control | Keys.Shift;
+            properties.Click += (s, e) => { 
+                new CodeCore.AdvancedProperties().ShowDialog();
+            };
+            contextMenuStrip1.Items.AddRange([exit,properties]);
             ShortCutBtn.SendToBack();
+            this.FormClosing += MainForm_FormClosing;
         }
+       
+        bool isclose = false;
+        private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing && !isclose)
+            {
+                e.Cancel = true;
+                this.Hide();
+            }
+        }
+
         private void Form1_KeyDown(object? sender, KeyEventArgs e)
         {
             AddText(EventName.KeyDown, "type=Form(this)", "Form1", "this");
@@ -197,7 +225,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             }
             catch (Exception ex)
             {
-                outputBox.Show("Runtime exception:" + "\r\n in " + ex.Source+$" Namespace's  {ex.Data}.");
+                outputBox.Show("Runtime exception:" + "\r\n in " + ex.Source + $" Namespace's  {ex.Data}.");
                 isValid = false;
             }
             if (isValid)
@@ -223,7 +251,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 maxMenuItem.Click += (s, e) => this.WindowState = FormWindowState.Maximized;
                 openMenuItem.Click += (s, e) => Start();
                 saveMenuItem.Click += (s, e) => SaveAs();
-                propertiesItem.Click += (s, e) => new CodeCore.AdvancedProperties().Show();
+                propertiesItem.Click += (s, e) => new CodeCore.AdvancedProperties().ShowDialog();
                 closeMenuItem.ShortcutKeys = Keys.Control | Keys.Alt | Keys.C;
                 minMenuItem.ShortcutKeys = Keys.Control | Keys.Alt | Keys.I;
                 maxMenuItem.ShortcutKeys = Keys.Control | Keys.Alt | Keys.A;
@@ -243,13 +271,13 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         }
         private void BtnOpenFileClick(object sender, EventArgs e)
         {
-            AddText(EventName.Click,"type=Button","Form1","btnOpenFile");
+            AddText(EventName.Click, "type=Button", "Form1", "btnOpenFile");
             Start();
         }
 
         private void CodeEditor_KeyPress(object sender, KeyPressEventArgs e)
         {
-            AddText(EventName.KeyPress, "type=RichTextBox","Form1","txtCode");
+            AddText(EventName.KeyPress, "type=RichTextBox", "Form1", "txtCode");
             if (e.KeyChar == '(')
             {
                 int start = txtCode.SelectionStart;
@@ -276,8 +304,12 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
 
         private void FeiSharpForm_Load(object sender, EventArgs e)
         {
+            StringWriter stringWriter = new StringWriter();
+            Console.SetOut(stringWriter);
+            Console.WriteLine("'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: DefaultDomain): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Private.CoreLib.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'D:\\Source Code\\FeiSharp\\FeiSharpCodeEditor(WinForm.net8.0)\\bin\\Debug\\net8.0-windows\\FeiSharpCodeEditor(WinForm.net8.0).dll'. Symbols loaded.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Runtime.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'c:\\program files\\microsoft visual studio\\2022\\community\\common7\\ide\\commonextensions\\microsoft\\hotreload\\Microsoft.Extensions.DotNetDeltaApplier.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.IO.Pipes.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Linq.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Collections.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Console.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Threading.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Runtime.InteropServices.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Threading.Overlapped.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Security.AccessControl.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Security.Principal.Windows.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Security.Claims.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Runtime.Loader.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App\\8.0.8\\System.Windows.Forms.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Collections.Concurrent.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.ComponentModel.Primitives.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App\\8.0.8\\System.Windows.Forms.Primitives.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Drawing.Primitives.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Collections.Specialized.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Diagnostics.TraceSource.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App\\8.0.8\\System.Drawing.Common.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\Microsoft.Win32.Primitives.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.ComponentModel.EventBasedAsync.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Threading.Thread.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App\\8.0.8\\Accessibility.dll'. Module was built without symbols.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.ComponentModel.TypeConverter.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Numerics.Vectors.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App\\8.0.8\\Microsoft.Win32.SystemEvents.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.ComponentModel.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App\\8.0.8\\System.Resources.Extensions.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Memory.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App\\8.0.8\\System.Drawing.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.ObjectModel.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Diagnostics.FileVersionInfo.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App\\8.0.8\\zh-Hans\\System.Windows.Forms.resources.dll'. Module was built without symbols.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Collections.NonGeneric.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.");
+            string output = stringWriter.ToString();
+            AddText(eventName:EventName.Load,"type=Form(this)",output);
             AddText(EventName.Load, "type=Form(this)", "Form1", "this");
-            Debug.WriteLine("Loading......");
         }
 
         private void BtnMenuClick(object sender, EventArgs e)
@@ -309,7 +341,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             AddText(EventName.Click, "type=Button", "Form1", "btnCheck");
             Check();
         }
-        
+
         private void ShowIntelligenceIfNecessary(string segment)
         {
             object[] objectKeywords = keywords.Where(i => i.Contains(segment)).ToArray();
@@ -353,7 +385,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         }
         private void Form1_KeyDown1(object sender, KeyEventArgs e)
         {
-            AddText(EventName.KeyDown,"type=Form(this)","Form1","this");
+            AddText(EventName.KeyDown, "type=Form(this)", "Form1", "this");
             if (e.KeyCode == Keys.B && e.Control)
             {
                 if (txtCode.Focused)
@@ -379,7 +411,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             }
             else if (e.KeyCode == Keys.O && (e.Control && e.Alt))
             {
-                Process.Start("cmd.exe");
+                System.Diagnostics.Process.Start("cmd.exe");
             }
             else if (e.KeyCode == Keys.V && (e.Control && e.Shift))
             {
@@ -387,12 +419,16 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             }
             else if (e.KeyCode == Keys.P && (e.Control && e.Shift))
             {
-                new CodeCore.AdvancedProperties().Show();
+                new CodeCore.AdvancedProperties().ShowDialog();
+            }
+            else if (e.KeyCode == Keys.F4 && (e.Control && e.Alt))
+            {
+                Application.Exit();
             }
         }
         private void TxtCode_MouseDown(object sender, MouseEventArgs e)
         {
-            AddText(EventName.MouseDown, "type=RichTextBox","Form1","txtCode");
+            AddText(EventName.MouseDown, "type=RichTextBox", "Form1", "txtCode");
             if (e.Button == MouseButtons.Right)
             {
                 ContextMenuStrip contextMenuStrip = new ContextMenuStrip();
@@ -424,7 +460,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         }
         private void OutputBox_MouseDown(object sender, MouseEventArgs e)
         {
-            AddText(EventName.MouseDown, "type=RichTextBox","Form1","outputBox");
+            AddText(EventName.MouseDown, "type=RichTextBox", "Form1", "outputBox");
             if (e.Button == MouseButtons.Right)
             {
                 ContextMenuStrip contextMenuStrip = new ContextMenuStrip();
@@ -446,7 +482,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
 
         private void txtCode_TextChanged(object sender, EventArgs e)
         {
-            AddText(EventName.TextChanged,"type=RichTextBox","Form1","txtCode");
+            AddText(EventName.TextChanged, "type=RichTextBox", "Form1", "txtCode");
             Debug.WriteLine(txtCode.SelectionStart);
             var index = txtCode.SelectionStart - 1;
             if (index >= 0 && txtCode.Text.Length > index)
@@ -470,7 +506,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
 
         private void lstbIntelligence_KeyPress(object sender, KeyPressEventArgs e)
         {
-            AddText(EventName.KeyPress,"type=ListBox","Form1","lstbIntelligence");
+            AddText(EventName.KeyPress, "type=ListBox", "Form1", "lstbIntelligence");
             try
             {
                 int index1 = txtCode.SelectionStart;
@@ -515,9 +551,10 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         private void txtCode_MouseClick(object sender, MouseEventArgs e)
         {
             lstbIntelligence.Visible = false;
-            AddText(EventName.MouseClick,"type=RichTextBox","Form1","txtCode");
+            AddText(EventName.MouseClick, "type=RichTextBox", "Form1", "txtCode");
         }
-        private enum EventName{
+        private enum EventName
+        {
             MouseClick,
             MouseDoubleClick,
             KeyPress,
@@ -531,17 +568,17 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             Resize,
             DrawItem
         }
-        private void AddText(EventName eventName, string moreInfomation,params string[] expression)
+        private void AddText(EventName eventName, string moreInfomation, params string[] expression)
         {
             string expressionStr = "";
             foreach (var item in expression)
             {
-                expressionStr += item+".";
+                expressionStr += item + ".";
             }
             char[] chars = expressionStr.ToCharArray();
             chars[chars.Length - 1] = '[';
             expressionStr = new string(chars);
-            logForm.textBox1.Text += $"[{DateTime.Now}] {Enum.GetName(typeof(EventName),eventName)+"Event"} at {expressionStr}{moreInfomation}]{Environment.NewLine}";
+            logForm.textBox1.Text += $"[{DateTime.Now}] {Enum.GetName(typeof(EventName), eventName) + "Event"} at {expressionStr}{moreInfomation}]{Environment.NewLine}";
         }
         private void lstbIntelligence_MouseDoubleClick(object sender, MouseEventArgs e)
         {
@@ -567,14 +604,34 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         }
         private void log_Click(object sender, EventArgs e)
         {
-            AddText(EventName.Click,"type=Button","Form1","log");
+            AddText(EventName.Click, "type=Button", "Form1", "log");
             if (logForm.Visible)
             {
                 logForm.Hide();
-            } 
+            }
             else
             {
-                logForm.Show();
+                try
+                {
+                    logForm.Show();
+                }
+                catch
+                {
+                    logForm = new();
+                    logForm.Show();
+                }
+            }
+        }
+
+        private void notify_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (this.Visible)
+            {
+                this.Hide();
+            }
+            else
+            {
+                this.Show();
             }
         }
     }

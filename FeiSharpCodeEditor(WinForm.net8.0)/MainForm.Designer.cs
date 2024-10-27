@@ -31,6 +31,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             RunBtn = new Button();
             SaveAsBtn = new Button();
@@ -43,6 +44,12 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             txtCode = new RichTextBox();
             lstbIntelligence = new ListBox();
             log = new Button();
+            toolStripMenuItem1 = new ToolStripMenuItem();
+            notify = new NotifyIcon(components);
+            contextMenuStrip1 = new ContextMenuStrip(components);
+            exit = new ToolStripMenuItem();
+            properties = new ToolStripMenuItem();
+            contextMenuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // RunBtn
@@ -170,6 +177,37 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             log.UseVisualStyleBackColor = true;
             log.Click += log_Click;
             // 
+            // toolStripMenuItem1
+            // 
+            toolStripMenuItem1.Name = "toolStripMenuItem1";
+            toolStripMenuItem1.Size = new Size(32, 19);
+            // 
+            // notify
+            // 
+            notify.ContextMenuStrip = contextMenuStrip1;
+            notify.Icon = (Icon)resources.GetObject("notify.Icon");
+            notify.Text = "FeiSharpStudio";
+            notify.Visible = true;
+            notify.MouseDoubleClick += notify_MouseDoubleClick;
+            // 
+            // contextMenuStrip1
+            // 
+            contextMenuStrip1.ImageScalingSize = new Size(48, 48);
+            contextMenuStrip1.Name = "contextMenuStrip1";
+            contextMenuStrip1.Size = new Size(421, 124);
+            // 
+            // exit
+            // 
+            exit.Name = "exit";
+            exit.Size = new Size(420, 54);
+            exit.Text = "exit";
+            // 
+            // properties
+            // 
+            properties.Name = "properties";
+            properties.Size = new Size(420, 54);
+            properties.Text = "properties";
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(22F, 46F);
@@ -197,9 +235,12 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             KeyPress += Form1_KeyPress;
             MouseDown += MainForm_MouseDown;
             Resize += FeiSharpForm_Resize;
+            contextMenuStrip1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
+
+
 
 
         #endregion
@@ -214,5 +255,10 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         private RichTextBox txtCode;
         private ListBox lstbIntelligence;
         private Button log;
+        private ToolStripMenuItem toolStripMenuItem1;
+        private NotifyIcon notify;
+        private ContextMenuStrip contextMenuStrip1;
+        private ToolStripMenuItem exit;
+        private ToolStripMenuItem properties;
     }
 }

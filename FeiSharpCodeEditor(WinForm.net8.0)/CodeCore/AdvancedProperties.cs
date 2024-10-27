@@ -1,20 +1,11 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using static System.Windows.Forms.DataFormats;
 
 namespace FeiSharpCodeEditor_WinForm.net8._0_.CodeCore
 {
     public partial class AdvancedProperties : Form
     {
+        public string ProgarmLanguage {  get; internal set; }
         public AdvancedProperties()
         {
             InitializeComponent();
@@ -28,8 +19,6 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_.CodeCore
             button1.Visible = false;
             label1.Visible = false;
             comboBox2.Visible = false;
-
-
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
@@ -40,7 +29,6 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_.CodeCore
             button1.Visible = true;
             label1.Visible = true;
             comboBox2.Visible = false;
-
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
@@ -55,7 +43,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_.CodeCore
 
         private void button1_Click(object sender, EventArgs e)
         {
-            string code = $"using System;using System.Diagnostics;using System.Reflection;using System.Collections.Generic;using System.IO;using System.Linq;using System.Net.Http;string properties = \"view:normal;lang:FeiSharp-WinFormEdition 8.0.1\";string version=\"v1.22.1\";string code=\"{input.Text}\";return " + input.Text + ";";
+            string code = $"using System;using System.Runtime.InteropServices;using System.Diagnostics;using System.Reflection;using System.Collections.Generic;using System.IO;using System.Linq;using System.Net.Http;string os=RuntimeInformation.OSDescription;public class Tools\r\n        {{\r\n            public static string[] GetSpaceSplit(string a)\r\n            {{\r\n                 return a.Split(' ');\r\n            }}\r\n            public static string GetCenter(string str,string leftSplit,string rightsplit)\r\n            {{\r\n                return str.Split(leftSplit)[1].Split(rightsplit)[0];\r\n            }}\r\n        }}string progarmLanguage = \"{ProgarmLanguage}\";string properties = \"view:normal;lang:FeiSharp-WinFormEdition 8.0.1\";string version=\"v1.22.1\";return " + input.Text + ";";
             try
             {
                 var options = ScriptOptions.Default.AddReferences(typeof(AdvancedProperties).Assembly);
@@ -72,7 +60,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_.CodeCore
             }
             catch (Exception ex)
             {
-                output.Text = "Error: " + ex.Message + Environment.NewLine;
+                output.Text += "Error: " + ex.Message + Environment.NewLine;
             }
         }
 
@@ -80,6 +68,25 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_.CodeCore
         {
             comboBox1.SelectedIndex = 0;
             comboBox2.SelectedIndex = 0;
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Thread.Sleep(400);
+            if (comboBox1.SelectedIndex == 0)
+            {
+                this.FormBorderStyle = FormBorderStyle.Fixed3D;
+            }
+            else
+            {
+                this.FormBorderStyle = FormBorderStyle.Sizable;
+            }
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Thread.Sleep(400);
+            ProgarmLanguage = comboBox1.SelectedText;
         }
     }
 }
