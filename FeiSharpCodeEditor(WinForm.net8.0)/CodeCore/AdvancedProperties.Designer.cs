@@ -69,10 +69,10 @@
             lang.AutoSize = true;
             lang.Location = new Point(605, 44);
             lang.Name = "lang";
-            lang.Size = new Size(393, 50);
+            lang.Size = new Size(355, 50);
             lang.TabIndex = 2;
             lang.TabStop = true;
-            lang.Text = "Progarm Language";
+            lang.Text = "Progarm Version";
             lang.UseVisualStyleBackColor = true;
             lang.CheckedChanged += radioButton3_CheckedChanged;
             // 
@@ -80,11 +80,11 @@
             // 
             comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBox1.FormattingEnabled = true;
-            comboBox1.Items.AddRange(new object[] { "FeiSharp-WinFormEdition 8.0" });
+            comboBox1.Items.AddRange(new object[] { "FeiSharp-WinFormEdition 8.5", "FeiSharp-WinFormEdition 8.0" });
             comboBox1.Location = new Point(221, 417);
             comboBox1.Name = "comboBox1";
             comboBox1.Size = new Size(567, 54);
-            comboBox1.TabIndex = 3;
+            comboBox1.TabIndex = 2;
             comboBox1.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
             // 
             // input
@@ -150,6 +150,7 @@
             FormBorderStyle = FormBorderStyle.Fixed3D;
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
+            MinimizeBox = false;
             Name = "AdvancedProperties";
             Text = "FeiSharpStudio-AdvancedProperties";
             Load += AdvancedProperties_Load;

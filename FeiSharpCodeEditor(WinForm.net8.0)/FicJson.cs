@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -28,7 +29,12 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var a = new Parser(new List<Token>()).Run(textBox1.Text, 1);
+            var parser = new Parser(new List<Token>());
+            parser.OutputEvent += (s, e) =>
+            {
+                Debug.WriteLine(e.Message);
+            };
+            var a = parser.Run(textBox1.Text, 1);
             string b = "{";
             foreach (var item in a)
             {

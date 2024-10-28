@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using FeiSharpCodeEditor_WinForm.net8._0_.ClassInstance;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace FeiSharpCodeEditor_WinForm.net8._0_
 {
@@ -127,25 +123,86 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 {
                     ParseGetJsonFilePathStatement();
                 }
+                else if (MatchKeyword("class"))
+                {
+                    ParseClassStatement();
+                }
                 else if (MatchFunction(Peek().Value))
                 {
                     RunFunction(Peek().Value);
                 }
-            } while (!IsAtEnd() && (Peek().Type == TokenType.Keyword || _functions.ContainsKey(Peek().Value)));
+                else if (MatchFunction(Peek().Value))
+                {
+                    RunFunction(Peek().Value);
+                }
+            } while (!IsAtEnd() && (Peek().Type == TokenType.Keyword || _functions.ContainsKey(Peek().Value) || _classInfos.ContainsKey(Peek().Value)));
         }
-        //private void ParseReplaceStatement()
-        //{
-        //    if (!MatchPunctuation("(")) throw new Exception("Expected '('");
-        //    string arg = EvaluateExpression(ParseExpression()).ToString();
-        //    if (!MatchPunctuation(",")) throw new Exception("Expected ','");
-        //    string oldString = EvaluateExpression(ParseExpression()).ToString();
-        //    if (!MatchPunctuation(",")) throw new Exception("Expected ','");
-        //    string newString = EvaluateExpression(ParseExpression()).ToString();
-        //    _variables.Add("replace:return", arg.Replace(oldString,newString));
-        //    _functions.Add("replace", new FunctionInfo("replace", new List<string>(), new List<Token>()));
-        //    if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
-        //    if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
-        //}
+        private KeyValuePair<string,bool> Runclass(string name)
+        {
+            ClassInfo classInfo = _classInfos[name];
+            string funcorvarname = "";
+            bool isFunc = default;
+            try {
+                foreach (var item in classInfo._Vars)
+                {
+                    _variables.Add(item.Key, item.Value);
+                }
+            }
+            catch
+            {
+                goto Parse;
+            }
+            Parse:
+            if (classInfo != null) {
+                if (Peek().Value == "`") {
+                    Advance();
+                    if (classInfo._FunctionInfo.ContainsKey(Peek().Value))
+                    {
+                        _functions.Add(Peek().Value, classInfo._FunctionInfo[Peek().Value]);
+                        funcorvarname = Peek().Value;
+                        isFunc = true;
+                        RunFunction(Peek().Value);
+                    }
+                    else if (classInfo._Vars.ContainsKey(Peek().Value))
+                    {
+                        funcorvarname = Peek().Value;
+                        isFunc = false;
+                    }
+                }
+            }
+            return new(funcorvarname,isFunc);
+        }
+        private void ParseClassStatement()
+        {
+            string className = Peek().Value;
+            Advance();
+            List<Token> tokens = new List<Token>();
+            int indexC = 0;
+            for (int i = _current + 1; i < _tokens.Count; i++)
+            {
+                if (_tokens[i].Type == TokenType.Punctuation && _tokens[i].Value == "}")
+                {
+                    indexC = i;
+                    Advance();
+                    break;
+                }
+                if (_tokens[i].Type == TokenType.Punctuation && _tokens[i].Value == "{")
+                {
+                    Advance();
+                    continue;
+                }
+                tokens.Add(_tokens[i]);
+                Advance();
+            }
+            Advance();
+            ClassInfo classInfo;
+            Parser parser = new(tokens);
+            parser.OutputEvent += (s, e) => Console.WriteLine();
+            var @return = parser.Run(tokens, new(), 0);
+            classInfo = new(@return.Value,@return.Key,className);
+            _classInfos.Add(className, classInfo);
+        }
+        internal Dictionary<string,ClassInfo> _classInfos = new Dictionary<string,ClassInfo>();
         private void ParseGetJsonFilePathStatement()
         {
             if (!MatchPunctuation("(")) throw new Exception("Expected '('");
@@ -273,6 +330,37 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             }
             _variables = Run(functionInfo.FunctionBody, _variables, funcName);
         }
+        private void RunFunction(string funcName,List<Token> tokens,List<string> args)
+        {
+            FunctionInfo functionInfo = new(funcName,args,tokens);
+            List<object> actualParameters = new();
+            Advance();
+            while (Peek().Value != ")" && Peek().Value != ";")
+            {
+                if (Peek().Value == "," || Peek().Value == "(")
+                {
+                    Advance();
+                    continue;
+                }
+                else
+                {
+                    actualParameters.Add(EvaluateExpression(ParseExpression()));
+                    Advance();
+                }
+            }
+            for (int i = 0; i < functionInfo.Parameter.Count; i++)
+            {
+                try
+                {
+                    _variables.Add(functionInfo.Parameter[i], actualParameters[i]);
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    throw new Exception("Parameters is not correct.");
+                }
+            }
+            _variables = Run(functionInfo.FunctionBody, _variables, funcName);
+        }
         private bool MatchFunction(string funcName)
         {
             return _functions.ContainsKey(funcName);
@@ -358,12 +446,12 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             int indexC = 0;
             for (int i = _current + 1; i < _tokens.Count; i++)
             {
-                if (_tokens[i].Type == TokenType.Punctuation && _tokens[i].Value == "}")
+                if (_tokens[i].Type == TokenType.Punctuation && _tokens[i].Value == "]")
                 {
                     indexC = i;
                     break;
                 }
-                if (_tokens[i].Type == TokenType.Punctuation && _tokens[i].Value == "{")
+                if (_tokens[i].Type == TokenType.Punctuation && _tokens[i].Value == "[")
                 {
                     continue;
                 }
@@ -536,6 +624,23 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             }
             return parser._variables;
         }
+        internal KeyValuePair<Dictionary<string,object>, Dictionary<string, FunctionInfo>> Run(IEnumerable<Token> tokens, Dictionary<string, object> _vars, int op = 0)
+        {
+            List<Token> _tokens = new(tokens);
+            Parser parser = new(_tokens);
+            parser.OutputEvent = this.OutputEvent;
+            parser._variables = _vars;
+            try
+            {
+                parser.ParseStatements();
+            }
+            catch (Exception ex)
+            {
+                OnOutputEvent(new OutputEventArgs("Parsing error: " + ex.Message));
+            }
+            KeyValuePair<Dictionary<string, object>, Dictionary<string,FunctionInfo>> result = new(parser._variables,parser._functions);
+            return result;
+        }
         internal Dictionary<string, object> Run(IEnumerable<Token> tokens, Dictionary<string, object> _vars, string funcName)
         {
             List<Token> _tokens = new(tokens);
@@ -700,11 +805,22 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 {
                     return new ValueExpr(value);
                 }
-                else
+                else if(_functions.ContainsKey(varName))
                 {
                     RunFunction(varName);
                     return new ValueExpr(_variables[$"{varName}:return"]);
                     // return new ValueExpr(Run(_functions[varName].FunctionBody, _variables, varName));
+                }
+                else
+                {
+                    var a = Runclass(varName);
+                    if (a.Value)
+                    {
+                        return new ValueExpr(_variables[$"{a.Key}:return"]);
+                    }
+                    else {
+                        return new ValueExpr(_variables[a.Key]);
+                    }
                 }
                 throw new Exception($"Undefined variable: {varName}");
             }
@@ -782,6 +898,14 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             {
                 Advance();
                 return true;
+            }
+            else {
+                Advance();
+                if (Check(TokenType.Punctuation) && Peek().Value == punctuation)
+                {
+                    Advance();
+                    return true;
+                }
             }
             return false;
         }

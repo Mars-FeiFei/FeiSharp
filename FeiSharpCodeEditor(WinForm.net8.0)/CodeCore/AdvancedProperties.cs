@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Scripting;
+﻿using FeiSharpCodeEditor_WinForm.net8._0_.Utils;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 
 namespace FeiSharpCodeEditor_WinForm.net8._0_.CodeCore
@@ -66,27 +67,34 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_.CodeCore
 
         private void AdvancedProperties_Load(object sender, EventArgs e)
         {
-            comboBox1.SelectedIndex = 0;
-            comboBox2.SelectedIndex = 0;
         }
 
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
             Thread.Sleep(400);
-            if (comboBox1.SelectedIndex == 0)
+            if (comboBox2.SelectedItem == (object)"normal")
             {
                 this.FormBorderStyle = FormBorderStyle.Fixed3D;
+                this.MaximizeBox = false;
             }
             else
             {
                 this.FormBorderStyle = FormBorderStyle.Sizable;
+                this.MaximizeBox = true;
             }
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             Thread.Sleep(400);
-            ProgarmLanguage = comboBox1.SelectedText;
+            ProgarmLanguage = comboBox1.SelectedItem.ToString();
+            if (comboBox1.SelectedIndex == 0) {
+                Tab.Version = "8.5";
+            }
+            else
+            {
+                Tab.Version = "8.0";
+            }
         }
     }
 }

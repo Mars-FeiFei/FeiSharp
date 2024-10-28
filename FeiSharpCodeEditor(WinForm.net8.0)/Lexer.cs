@@ -27,6 +27,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                     _index++;
                     continue;
                 }
+                if (current == '`') { _index++; return new Token(TokenType.Punctuation, "`"); }
                 if (current == ']') { _index++; return new Token(TokenType.Punctuation, "]"); }
                 if (current == '[') { _index++; return new Token(TokenType.Punctuation, "["); }
                 if (current == '!') { _index++; return new Token(TokenType.Operator, "!"); }
@@ -93,6 +94,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                     else if (value == "throw") return new Token(TokenType.Keyword, "throw");
                     else if (value == "return") return new Token(TokenType.Keyword, "return");
                     else if (value == "getVarsFromJsonFilePath") return new Token(TokenType.Keyword, "getVarsFromJsonFilePath");
+                    else if (value == "class") return new Token(TokenType.Keyword, "class");
                     else if (value == "func") { 
                         return new Token(TokenType.Keyword, "func"); 
                     }

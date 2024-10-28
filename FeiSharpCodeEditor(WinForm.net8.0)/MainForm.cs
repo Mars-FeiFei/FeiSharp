@@ -1,10 +1,12 @@
 ﻿
 using EnvDTE;
 using EnvDTE80;
+using FeiSharpCodeEditor_WinForm.net8._0_.Utils;
 using IWshRuntimeLibrary;
 using System.Diagnostics;
 using System.IO.Packaging;
 using System.Reflection;
+using While = System.Windows.Forms.Timer;
 
 namespace FeiSharpCodeEditor_WinForm.net8._0_
 {
@@ -16,7 +18,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             "var", "print", "init", "set", "import", "export", "start", "stop", "wait", "watchstart", "watchend", "abe", "helper", "if", "while", "func", "return", "gethtml", "getVarsFromJsonFilePath"
         };
         private readonly static string delimiter = "                    ";
-
+        While @while = new While();
         public MainForm()
         {
             AddText(EventName.Ctor, "type=Method", "Form1", "ctor Form1()");
@@ -48,11 +50,44 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             properties.Click += (s, e) => { 
                 new CodeCore.AdvancedProperties().ShowDialog();
             };
+            @while.Interval = 250;
+            @while.Start();
+            @while.Tick += @while_Tick;
             contextMenuStrip1.Items.AddRange([exit,properties]);
             ShortCutBtn.SendToBack();
             this.FormClosing += MainForm_FormClosing;
         }
-       
+        string version = Tab.version8_5;
+        private void @while_Tick(object? sender, EventArgs e)
+        {
+            if (Tab.Version != version) {
+                version = Tab.Version;
+                if (Tab.Version == Tab.version8)
+                {
+                    this.CheckBtn.Text = "Properties";
+                    this.CheckBtn.Click -= BtnCheckClick;
+                    this.CheckBtn.Click += ShowProperty;
+                    return;
+                }
+                else if (Tab.Version == Tab.version8_5)
+                {
+                    this.CheckBtn.Text = "Check";
+                    this.CheckBtn.Click -= ShowProperty;
+                    this.CheckBtn.Click += BtnCheckClick;
+                    return;
+                }
+                else
+                {
+                    return;
+                }
+            }
+        }
+        private void ShowProperty(object sender,EventArgs e)
+        {
+            if(Tab.Version != Tab.version8_5)
+            new CodeCore.AdvancedProperties().ShowDialog();
+            
+        }
         bool isclose = false;
         private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
         {
@@ -304,11 +339,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
 
         private void FeiSharpForm_Load(object sender, EventArgs e)
         {
-            StringWriter stringWriter = new StringWriter();
-            Console.SetOut(stringWriter);
-            Console.WriteLine("'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: DefaultDomain): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Private.CoreLib.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'D:\\Source Code\\FeiSharp\\FeiSharpCodeEditor(WinForm.net8.0)\\bin\\Debug\\net8.0-windows\\FeiSharpCodeEditor(WinForm.net8.0).dll'. Symbols loaded.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Runtime.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'c:\\program files\\microsoft visual studio\\2022\\community\\common7\\ide\\commonextensions\\microsoft\\hotreload\\Microsoft.Extensions.DotNetDeltaApplier.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.IO.Pipes.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Linq.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Collections.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Console.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Threading.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Runtime.InteropServices.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Threading.Overlapped.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Security.AccessControl.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Security.Principal.Windows.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Security.Claims.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Runtime.Loader.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App\\8.0.8\\System.Windows.Forms.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Collections.Concurrent.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.ComponentModel.Primitives.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App\\8.0.8\\System.Windows.Forms.Primitives.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Drawing.Primitives.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Collections.Specialized.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Diagnostics.TraceSource.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App\\8.0.8\\System.Drawing.Common.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\Microsoft.Win32.Primitives.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.ComponentModel.EventBasedAsync.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Threading.Thread.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App\\8.0.8\\Accessibility.dll'. Module was built without symbols.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.ComponentModel.TypeConverter.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Numerics.Vectors.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App\\8.0.8\\Microsoft.Win32.SystemEvents.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.ComponentModel.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App\\8.0.8\\System.Resources.Extensions.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Memory.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App\\8.0.8\\System.Drawing.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.ObjectModel.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Diagnostics.FileVersionInfo.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App\\8.0.8\\zh-Hans\\System.Windows.Forms.resources.dll'. Module was built without symbols.\r\n'FeiSharpCodeEditor(WinForm.net8.0).exe' (CoreCLR: clrhost): Loaded 'C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\8.0.8\\System.Collections.NonGeneric.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.");
-            string output = stringWriter.ToString();
-            AddText(eventName:EventName.Load,"type=Form(this)",output);
+           
             AddText(EventName.Load, "type=Form(this)", "Form1", "this");
         }
 
@@ -338,8 +369,11 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
 
         private void BtnCheckClick(object sender, EventArgs e)
         {
-            AddText(EventName.Click, "type=Button", "Form1", "btnCheck");
-            Check();
+            if(Tab.Version != Tab.version8)
+            {
+                AddText(EventName.Click, "type=Button", "Form1", "btnCheck");
+                Check();
+            }
         }
 
         private void ShowIntelligenceIfNecessary(string segment)

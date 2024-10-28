@@ -49,7 +49,6 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             contextMenuStrip1 = new ContextMenuStrip(components);
             exit = new ToolStripMenuItem();
             properties = new ToolStripMenuItem();
-            contextMenuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // RunBtn
@@ -131,7 +130,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             // 
             CheckBtn.Location = new Point(1719, 3);
             CheckBtn.Name = "CheckBtn";
-            CheckBtn.Size = new Size(136, 88);
+            CheckBtn.Size = new Size(237, 88);
             CheckBtn.TabIndex = 11;
             CheckBtn.Text = "Check";
             CheckBtn.UseVisualStyleBackColor = true;
@@ -169,7 +168,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             // 
             // log
             // 
-            log.Location = new Point(1861, 3);
+            log.Location = new Point(1962, 3);
             log.Name = "log";
             log.Size = new Size(215, 88);
             log.TabIndex = 15;
@@ -194,7 +193,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             // 
             contextMenuStrip1.ImageScalingSize = new Size(48, 48);
             contextMenuStrip1.Name = "contextMenuStrip1";
-            contextMenuStrip1.Size = new Size(421, 124);
+            contextMenuStrip1.Size = new Size(61, 4);
             // 
             // exit
             // 
@@ -235,7 +234,6 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             KeyPress += Form1_KeyPress;
             MouseDown += MainForm_MouseDown;
             Resize += FeiSharpForm_Resize;
-            contextMenuStrip1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
