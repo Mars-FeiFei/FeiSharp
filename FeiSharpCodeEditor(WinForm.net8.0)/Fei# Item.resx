@@ -118,8 +118,9 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="textBox1.Text" xml:space="preserve">
-    <value>Fei# items is some powerful framework.Such as Console,FicJson(Fei#item Convert Json),Developer Cmd and Learn.Console can make a text-only progarm.FicJson can convenient
-convert Fei#Item to Json.Learn can study some question's answer.Developer Cmd is a command for this application.
+    <value>Fei# items is some powerful framework.Such as Console,PowerShell and Windows Cmd.Console can make a text-only progarm.Windows Cmd is a Cmd for Windows.PowerShell is the Windows PowerShell Application.
+
+
 
 </value>
   </data>

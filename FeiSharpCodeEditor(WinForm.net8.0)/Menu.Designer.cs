@@ -1,4 +1,4 @@
-﻿namespace FeiSharpCodeEditor_WinForm.net8._0_
+﻿namespace FeiSharpStudio
 {
     partial class Menu
     {
@@ -30,36 +30,25 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Menu));
             console = new Button();
-            ficJson = new Button();
             linkLabel1 = new LinkLabel();
             devoCmd = new Button();
-            learn = new Button();
+            button1 = new Button();
             SuspendLayout();
             // 
             // console
             // 
-            console.Location = new Point(577, 193);
+            console.Location = new Point(577, 12);
             console.Name = "console";
-            console.Size = new Size(423, 137);
+            console.Size = new Size(423, 232);
             console.TabIndex = 0;
             console.Text = "Console";
             console.UseVisualStyleBackColor = true;
             console.Click += button1_Click;
             // 
-            // ficJson
-            // 
-            ficJson.Location = new Point(577, 597);
-            ficJson.Name = "ficJson";
-            ficJson.Size = new Size(423, 147);
-            ficJson.TabIndex = 1;
-            ficJson.Text = "FicJson(Fei#Item convert Json)";
-            ficJson.UseVisualStyleBackColor = true;
-            ficJson.Click += button2_Click;
-            // 
             // linkLabel1
             // 
             linkLabel1.AutoSize = true;
-            linkLabel1.Location = new Point(149, 332);
+            linkLabel1.Location = new Point(141, 303);
             linkLabel1.Name = "linkLabel1";
             linkLabel1.Size = new Size(181, 46);
             linkLabel1.TabIndex = 2;
@@ -69,23 +58,23 @@
             // 
             // devoCmd
             // 
-            devoCmd.Location = new Point(577, 388);
+            devoCmd.Location = new Point(577, 510);
             devoCmd.Name = "devoCmd";
-            devoCmd.Size = new Size(423, 149);
+            devoCmd.Size = new Size(423, 214);
             devoCmd.TabIndex = 3;
-            devoCmd.Text = "Developer Cmd";
+            devoCmd.Text = "Windows Cmd";
             devoCmd.UseVisualStyleBackColor = true;
             devoCmd.Click += button3_Click;
             // 
-            // learn
+            // button1
             // 
-            learn.Location = new Point(577, 2);
-            learn.Name = "learn";
-            learn.Size = new Size(423, 134);
-            learn.TabIndex = 4;
-            learn.Text = "Learn";
-            learn.UseVisualStyleBackColor = true;
-            learn.Click += button4_Click;
+            button1.Location = new Point(577, 259);
+            button1.Name = "button1";
+            button1.Size = new Size(423, 232);
+            button1.TabIndex = 4;
+            button1.Text = "PowerShell";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click_1;
             // 
             // Menu
             // 
@@ -93,10 +82,9 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.GradientInactiveCaption;
             ClientSize = new Size(1171, 756);
-            Controls.Add(learn);
+            Controls.Add(button1);
             Controls.Add(devoCmd);
             Controls.Add(linkLabel1);
-            Controls.Add(ficJson);
             Controls.Add(console);
             FormBorderStyle = FormBorderStyle.Fixed3D;
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -112,9 +100,8 @@
         #endregion
 
         private Button console;
-        private Button ficJson;
         private LinkLabel linkLabel1;
         private Button devoCmd;
-        private Button learn;
+        private Button button1;
     }
 }

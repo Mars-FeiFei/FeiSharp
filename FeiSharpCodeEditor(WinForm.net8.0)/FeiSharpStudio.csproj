@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
-    <RootNamespace>FeiSharpCodeEditor_WinForm.net8._0_</RootNamespace>
+    <RootNamespace>FeiSharpStudio</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -35,6 +35,10 @@
     <PackageReference Include="Microsoft.VisualStudio.Shell.Framework" Version="17.11.40262" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2792.45" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DeveloperCommandLine\DeveloperCommandLine.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,8 +1,8 @@
-﻿using FeiSharpCodeEditor_WinForm.net8._0_.Utils;
+﻿using FeiSharpStudio.Utils;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 
-namespace FeiSharpCodeEditor_WinForm.net8._0_.CodeCore
+namespace FeiSharpStudio.CodeCore
 {
     public partial class AdvancedProperties : Form
     {

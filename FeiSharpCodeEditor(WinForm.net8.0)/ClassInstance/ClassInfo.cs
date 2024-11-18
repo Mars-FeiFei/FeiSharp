@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FeiSharpCodeEditor_WinForm.net8._0_;
-namespace FeiSharpCodeEditor_WinForm.net8._0_.ClassInstance
+using FeiSharpStudio;
+namespace FeiSharpStudio.ClassInstance
 {
     internal class ClassInfo
     {

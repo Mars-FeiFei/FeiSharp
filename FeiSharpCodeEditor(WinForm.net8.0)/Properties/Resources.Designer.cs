@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FeiSharpCodeEditor_WinForm.net8._0_.Properties {
+namespace FeiSharpStudio.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("FeiSharpCodeEditor_WinForm.net8._0_.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("FeiSharpStudio.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

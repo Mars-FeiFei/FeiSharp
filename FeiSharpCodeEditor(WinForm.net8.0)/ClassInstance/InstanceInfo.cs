@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FeiSharpCodeEditor_WinForm.net8._0_.ClassInstance
+namespace FeiSharpStudio.ClassInstance
 {
     internal class InstanceInfo
     {

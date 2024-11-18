@@ -1,4 +1,7 @@
-namespace FeiSharpCodeEditor_WinForm.net8._0_
+using System.Diagnostics;
+using System.Reflection;
+
+namespace FeiSharpStudio
 {
     internal static class Program
     {
@@ -6,13 +9,22 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         ///  The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
-            ApplicationConfiguration.Initialize();
-            MainForm form1 = new();
-            Application.Run(form1);
+            FileAssociation.RegisterFileAssociation(".fsc", Assembly.GetExecutingAssembly().Location.Replace(".dll", ".exe"));
+            Process currentProcess = Process.GetCurrentProcess();
+            Process[] processes = Process.GetProcessesByName(currentProcess.ProcessName);
+            if (processes.Length > 1)
+            {
+                MessageBox.Show("This application is running......", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(true);
+                ApplicationConfiguration.Initialize();
+                Application.Run(new MainForm());
+            }
         }
     }
 }

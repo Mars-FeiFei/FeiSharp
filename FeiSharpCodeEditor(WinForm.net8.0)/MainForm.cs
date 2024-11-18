@@ -1,21 +1,17 @@
-﻿
-using EnvDTE;
-using EnvDTE80;
-using FeiSharpCodeEditor_WinForm.net8._0_.Utils;
+﻿using FeiSharpStudio.Utils;
 using IWshRuntimeLibrary;
 using System.Diagnostics;
-using System.IO.Packaging;
 using System.Reflection;
 using While = System.Windows.Forms.Timer;
 
-namespace FeiSharpCodeEditor_WinForm.net8._0_
+namespace FeiSharpStudio
 {
     public partial class MainForm : Form
     {
         Log logForm = new Log();
         List<string> keywords = new List<string>()
         {
-            "var", "print", "init", "set", "import", "export", "start", "stop", "wait", "watchstart", "watchend", "abe", "helper", "if", "while", "func", "return", "gethtml", "getVarsFromJsonFilePath"
+            "var", "print", "init", "set", "import", "export", "start", "stop", "wait", "watchstart", "watchend", "abe", "helper", "if", "while", "func", "return", "gethtml", "getVarsFromJsonFilePath","invoke","and","or","not"
         };
         private readonly static string delimiter = "                    ";
         While @while = new While();
@@ -23,6 +19,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         {
             AddText(EventName.Ctor, "type=Method", "Form1", "ctor Form1()");
             InitializeComponent();
+            this.DoubleBuffered = true;
             this.KeyDown += Form1_KeyDown;
             RunBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             RunBtn.FlatAppearance.BorderSize = 0;
@@ -38,29 +35,55 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             CheckBtn.FlatAppearance.BorderSize = 0;
             log.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             log.FlatAppearance.BorderSize = 0;
+            developer.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            developer.FlatAppearance.BorderSize = 0;
             exit.Text = "exit";
             exit.BackColor = Color.LightYellow;
-            exit.ShortcutKeys = Keys.Control | Keys.Alt|Keys.F4;
-            exit.Click += (s, e) => { 
+            exit.ShortcutKeys = Keys.Control | Keys.Alt | Keys.F4;
+            exit.Click += (s, e) =>
+            {
                 Application.Exit();
             };
             properties.Text = "properties";
             properties.BackColor = Color.LightYellow;
             properties.ShortcutKeys = Keys.P | Keys.Control | Keys.Shift;
-            properties.Click += (s, e) => { 
+            properties.Click += (s, e) =>
+            {
                 new CodeCore.AdvancedProperties().ShowDialog();
             };
             @while.Interval = 250;
             @while.Start();
             @while.Tick += @while_Tick;
-            contextMenuStrip1.Items.AddRange([exit,properties]);
+            contextMenuStrip1.Items.AddRange([exit, properties]);
             ShortCutBtn.SendToBack();
             this.FormClosing += MainForm_FormClosing;
+        }
+        private string GetCurrentLineText(RichTextBox rtb)
+        {
+            int start = rtb.SelectionStart;
+            int line = rtb.GetLineFromCharIndex(start);
+            int lineStart = rtb.GetFirstCharIndexFromLine(line);
+            int lineEnd = rtb.GetFirstCharIndexFromLine(line + 1);
+            if (lineEnd < 0)
+                lineEnd = rtb.Text.Length;
+            return rtb.Text.Substring(lineStart, lineEnd - lineStart);
+        }
+        private void DeleteCurrentLine(RichTextBox rtb)
+        {
+            int start = rtb.SelectionStart;
+            int line = rtb.GetLineFromCharIndex(start);
+            int lineStart = rtb.GetFirstCharIndexFromLine(line);
+            int lineEnd = rtb.GetFirstCharIndexFromLine(line + 1);
+            if (lineEnd < 0)
+                lineEnd = rtb.Text.Length;
+            rtb.Text = rtb.Text.Remove(lineStart, lineEnd - lineStart);
+            rtb.SelectionStart = lineStart;
         }
         string version = Tab.version8_5;
         private void @while_Tick(object? sender, EventArgs e)
         {
-            if (Tab.Version != version) {
+            if (Tab.Version != version)
+            {
                 version = Tab.Version;
                 if (Tab.Version == Tab.version8)
                 {
@@ -82,11 +105,11 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 }
             }
         }
-        private void ShowProperty(object sender,EventArgs e)
+        private void ShowProperty(object sender, EventArgs e)
         {
-            if(Tab.Version != Tab.version8_5)
-            new CodeCore.AdvancedProperties().ShowDialog();
-            
+            if (Tab.Version != Tab.version8_5)
+                new CodeCore.AdvancedProperties().ShowDialog();
+
         }
         bool isclose = false;
         private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
@@ -151,9 +174,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         private void Run()
         {
             AddText(EventName.Method, "type=Method", "Form1", "void Run()[2 references]");
-
-            string code = "";
-            string sourceCode = txtCode.Text;
+            string sourceCode = "func And(x,y)\r\n[\r\ninvoke(\"#@-9824193-/75123148767786793-/23135345445\",\"a\",x,y);\r\nreturn a;\r\n]" + txtCode.Text;
             Lexer lexer = new(sourceCode);
             List<Token> tokens = [];
             Token token;
@@ -162,7 +183,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 token = lexer.NextToken();
 
                 tokens.Add(token);
-            } while (token.Type != TokenType.EndOfFile);
+            } while (token.Type != TokenTypes.EndOfFile);
 
             Parser parser = new(tokens);
             parser.OutputEvent += (s, e) =>
@@ -193,7 +214,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             {
                 token = lexer.NextToken();
                 tokens.Add(token);
-            } while (token.Type != TokenType.EndOfFile);
+            } while (token.Type != TokenTypes.EndOfFile);
             return tokens;
         }
 
@@ -217,7 +238,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             {
                 token = lexer.NextToken();
                 tokens.Add(token);
-            } while (token.Type != TokenType.EndOfFile);
+            } while (token.Type != TokenTypes.EndOfFile);
 
             Parser parser = new(tokens);
             Debug.WriteLine("test run value:");
@@ -248,7 +269,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             bool isValid = true;
             foreach (var item in tokens)
             {
-                if (item.Type == TokenType.Identifier && char.IsUpper(item.Value[0]))
+                if (item.Type == TokenTypes.Identifier && char.IsUpper(item.Value[0]))
                 {
                     outputBox.Show("The var or func \"" + item.Value + "\" isn't a valid var or func name, \r\n but it doesn't affect operation.");
                     isValid = false;
@@ -339,7 +360,20 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
 
         private void FeiSharpForm_Load(object sender, EventArgs e)
         {
-           
+            string[] args = Environment.GetCommandLineArgs();
+            if (args.Length > 1)
+            {
+                string filePath = args[1];
+                try
+                {
+                    string text = System.IO.File.ReadAllText(filePath);
+                    txtCode.Text = text;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error reading file: " + ex.Message);
+                }
+            }
             AddText(EventName.Load, "type=Form(this)", "Form1", "this");
         }
 
@@ -369,7 +403,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
 
         private void BtnCheckClick(object sender, EventArgs e)
         {
-            if(Tab.Version != Tab.version8)
+            if (Tab.Version != Tab.version8)
             {
                 AddText(EventName.Click, "type=Button", "Form1", "btnCheck");
                 Check();
@@ -414,7 +448,10 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             AddText(EventName.KeyPress, "type=Form(this)", "Form1", "this");
             if (e.KeyChar == (char)Keys.Escape)
             {
+                int start = txtCode.SelectionStart;
                 lstbIntelligence.Visible = false;
+                txtCode.SelectionStart = start;
+                txtCode.Text = txtCode.Text.Replace("\b", "");
             }
         }
         private void Form1_KeyDown1(object sender, KeyEventArgs e)
@@ -518,6 +555,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         {
             AddText(EventName.TextChanged, "type=RichTextBox", "Form1", "txtCode");
             Debug.WriteLine(txtCode.SelectionStart);
+            var indexc = txtCode.SelectionStart;
             var index = txtCode.SelectionStart - 1;
             if (index >= 0 && txtCode.Text.Length > index)
             {
@@ -536,6 +574,8 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 Debug.WriteLine(segment);
                 ShowIntelligenceIfNecessary(segment);
             }
+            txtCode.Text = txtCode.Text.Replace("\b", "");
+            txtCode.SelectionStart = indexc;
         }
 
         private void lstbIntelligence_KeyPress(object sender, KeyPressEventArgs e)
@@ -551,29 +591,18 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 if (!list.Contains(e.KeyChar))
                 {
                     e.Handled = true;
-                    txtCode.Text.Insert(index1, e.KeyChar.ToString());
+                    lstbIntelligence.Visible = false;
+                    txtCode.Text = txtCode.Text.Insert(index1, e.KeyChar.ToString());
                     txtCode.Focus();
                 }
-                //if (lstbIntelligence.Visible && e.KeyChar == (char)Keys.Up)
-                //{
-                //    lstbIntelligence.SelectedIndex += 1;
-                //    return;
-                //}
-                //if (lstbIntelligence.Visible && e.KeyChar == (char)Keys.Down)
-                //{
-                //    lstbIntelligence.SelectedIndex -= 1;
-                //    return;
-                //}
                 if (lstbIntelligence.Visible && e.KeyChar == (char)Keys.Enter)
                 {
                     int index = txtCode.SelectionStart;
                     string keyword = lstbIntelligence.SelectedItem.ToString();
                     int segmentLength = lstbIntelligence.Tag.ToString().Length;
-                    var oldKeyword = keyword;
-                    keyword = keyword.Remove(0, segmentLength);
-                    txtCode.Text = txtCode.Text.Insert(index, keyword);
+                    txtCode.Text = txtCode.Text.Replace(lstbIntelligence.Tag.ToString(),keyword);
                     lstbIntelligence.Visible = false;
-                    txtCode.SelectionStart = index + (oldKeyword.Length - segmentLength);
+                    txtCode.SelectionStart = index + keyword.Length;
                     txtCode.Focus();
                 }
             }
@@ -586,6 +615,31 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         {
             lstbIntelligence.Visible = false;
             AddText(EventName.MouseClick, "type=RichTextBox", "Form1", "txtCode");
+        }
+        private void TxtCode_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.X)
+            {
+                if (txtCode.SelectionLength == 0) {
+                    Clipboard.SetText(GetCurrentLineText(txtCode));
+                    DeleteCurrentLine(txtCode);
+                }
+                else
+                {
+                    txtCode.Cut();
+                }
+            }
+            else if (e.Control && e.KeyCode == Keys.C)
+            {
+                if (txtCode.SelectionLength == 0)
+                {
+                    Clipboard.SetText(GetCurrentLineText(txtCode));
+                }
+                else
+                {
+                    txtCode.Copy();
+                }
+            }
         }
         private enum EventName
         {
@@ -623,11 +677,9 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                     int index = txtCode.SelectionStart;
                     string keyword = lstbIntelligence.SelectedItem.ToString();
                     int segmentLength = lstbIntelligence.Tag.ToString().Length;
-                    var oldKeyword = keyword;
-                    keyword = keyword.Remove(0, segmentLength);
-                    txtCode.Text = txtCode.Text.Insert(index, keyword);
+                    txtCode.Text = txtCode.Text.Replace(lstbIntelligence.Tag.ToString(), keyword);
                     lstbIntelligence.Visible = false;
-                    txtCode.SelectionStart = index + (oldKeyword.Length - segmentLength);
+                    txtCode.SelectionStart = index + keyword.Length;
                     txtCode.Focus();
                 }
                 catch
@@ -667,6 +719,12 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             {
                 this.Show();
             }
+        }
+
+        private void developer_Click(object sender, EventArgs e)
+        {
+            string parentFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            System.Diagnostics.Process.Start(Path.Combine(parentFolder, "DeveloperCommandLine.exe"));
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FeiSharpCodeEditor_WinForm.net8._0_
+namespace FeiSharpStudio
 {
     public abstract class Expr { }
     public class VarExpr : Expr

@@ -1,6 +1,6 @@
-﻿using FeiSharpCodeEditor_WinForm.net8._0_;
+﻿using FeiSharpStudio;
 
-namespace FeiSharpCodeEditor_WinForm.net8._0_
+namespace FeiSharpStudio
 {
   
     partial class MainForm
@@ -49,6 +49,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             contextMenuStrip1 = new ContextMenuStrip(components);
             exit = new ToolStripMenuItem();
             properties = new ToolStripMenuItem();
+            developer = new Button();
             SuspendLayout();
             // 
             // RunBtn
@@ -121,7 +122,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             outputBox.Name = "outputBox";
             outputBox.ReadOnly = true;
             outputBox.ScrollBars = RichTextBoxScrollBars.Vertical;
-            outputBox.Size = new Size(2401, 417);
+            outputBox.Size = new Size(2532, 417);
             outputBox.TabIndex = 10;
             outputBox.Text = "";
             outputBox.MouseDown += OutputBox_MouseDown;
@@ -144,13 +145,14 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             txtCode.ForeColor = Color.White;
             txtCode.Location = new Point(7, 251);
             txtCode.Name = "txtCode";
-            txtCode.Size = new Size(2382, 1139);
+            txtCode.Size = new Size(2525, 1139);
             txtCode.TabIndex = 13;
             txtCode.Text = "";
             txtCode.MouseClick += txtCode_MouseClick;
             txtCode.TextChanged += txtCode_TextChanged;
             txtCode.KeyPress += CodeEditor_KeyPress;
             txtCode.MouseDown += TxtCode_MouseDown;
+            txtCode.KeyDown += TxtCode_KeyDown;
             // 
             // lstbIntelligence
             // 
@@ -207,12 +209,23 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             properties.Size = new Size(420, 54);
             properties.Text = "properties";
             // 
+            // developer
+            // 
+            developer.Location = new Point(2183, 3);
+            developer.Name = "developer";
+            developer.Size = new Size(337, 88);
+            developer.TabIndex = 16;
+            developer.Text = "Developer Cmd";
+            developer.UseVisualStyleBackColor = true;
+            developer.Click += developer_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(22F, 46F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.AliceBlue;
-            ClientSize = new Size(2401, 1870);
+            ClientSize = new Size(2532, 1870);
+            Controls.Add(developer);
             Controls.Add(log);
             Controls.Add(lstbIntelligence);
             Controls.Add(txtCode);
@@ -238,6 +251,8 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             PerformLayout();
         }
 
+        
+
 
 
 
@@ -250,7 +265,6 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         private Label label1;
         internal RichTextBox outputBox;
         private Button CheckBtn;
-        private RichTextBox txtCode;
         private ListBox lstbIntelligence;
         private Button log;
         private ToolStripMenuItem toolStripMenuItem1;
@@ -258,5 +272,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         private ContextMenuStrip contextMenuStrip1;
         private ToolStripMenuItem exit;
         private ToolStripMenuItem properties;
+        private Button developer;
+        internal RichTextBox txtCode;
     }
 }

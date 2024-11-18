@@ -1,4 +1,4 @@
-﻿namespace FeiSharpCodeEditor_WinForm.net8._0_
+﻿namespace FeiSharpStudio
 {
     partial class Fei__Item
     {

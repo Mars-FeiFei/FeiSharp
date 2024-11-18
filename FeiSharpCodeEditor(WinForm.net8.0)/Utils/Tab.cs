@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FeiSharpCodeEditor_WinForm.net8._0_.Utils
+namespace FeiSharpStudio.Utils
 {
     internal class Tab
     {

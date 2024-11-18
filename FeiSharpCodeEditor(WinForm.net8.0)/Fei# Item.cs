@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace FeiSharpCodeEditor_WinForm.net8._0_
+namespace FeiSharpStudio
 {
     public partial class Fei__Item: Form
     {

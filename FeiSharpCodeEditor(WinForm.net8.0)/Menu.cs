@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace FeiSharpCodeEditor_WinForm.net8._0_
+namespace FeiSharpStudio
 {
     public partial class Menu : Form
     {
@@ -19,12 +19,10 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             InitializeComponent();
             console.FlatStyle = FlatStyle.Flat;
             console.FlatAppearance.BorderSize = 0;
-            ficJson.FlatStyle = FlatStyle.Flat;
-            ficJson.FlatAppearance.BorderSize = 0;
             devoCmd.FlatStyle = FlatStyle.Flat;
             devoCmd.FlatAppearance.BorderSize = 0;
-            learn.FlatStyle = FlatStyle.Flat;
-            learn.FlatAppearance.BorderSize = 0;
+            button1.FlatStyle = FlatStyle.Flat;
+            button1.FlatAppearance.BorderSize = 0;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -32,16 +30,9 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             MainForm f = new MainForm();
             f.Show();
         }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            FicJson ficJson = new FicJson();
-            ficJson.Show();
-        }
-
         private void Menu_Load(object sender, EventArgs e)
         {
-
+            Debug.WriteLine("Loading......");
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -55,9 +46,9 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             Process.Start("cmd.exe");
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void button1_Click_1(object sender, EventArgs e)
         {
-            new Learn().Show();
+            Process.Start("powershell.exe");
         }
     }
 }

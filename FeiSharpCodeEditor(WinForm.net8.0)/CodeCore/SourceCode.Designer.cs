@@ -1,4 +1,4 @@
-﻿namespace FeiSharpCodeEditor_WinForm.net8._0_.CodeCore
+﻿namespace FeiSharpStudio.CodeCore
 {
     partial class SourceCode
     {

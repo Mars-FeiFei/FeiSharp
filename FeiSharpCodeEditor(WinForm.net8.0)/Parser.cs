@@ -1,8 +1,9 @@
-﻿using FeiSharpCodeEditor_WinForm.net8._0_.ClassInstance;
+﻿using FeiSharpStudio.ClassInstance;
+using FeiSharpStudio.UUID;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
-namespace FeiSharpCodeEditor_WinForm.net8._0_
+namespace FeiSharpStudio
 {
     public class Parser
     {
@@ -25,117 +26,130 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             EventHandler<OutputEventArgs> handler = OutputEvent;
             handler?.Invoke(this, e);
         }
-        // Parse statements (variable declarations and print statements)
         public void ParseStatements(string funcName = "")
         {
             do
             {
-                if (MatchKeyword("var"))
+                if (MatchKeyword(TokenKeywords._var))
                 {
                     ParseVariableDeclaration();
                 }
-                else if (MatchKeyword("print"))
+                else if (MatchKeyword(TokenKeywords.print))
                 {
                     PrintStmt printStmt = ParsePrintStatement();
                     EvaluatePrintStmt(printStmt);
                 }
-                else if (MatchKeyword("init"))
+                else if (MatchKeyword(TokenKeywords.init))
                 {
                     ParseInitStatement();
                 }
-                else if (MatchKeyword("set"))
+                else if (MatchKeyword(TokenKeywords.set))
                 {
                     ParseSetStatement();
                 }
-                else if (MatchKeyword("import"))
+                else if (MatchKeyword(TokenKeywords.import))
                 {
                     ParseImportStatement();
                 }
-                else if (MatchKeyword("export"))
+                else if (MatchKeyword(TokenKeywords.export))
                 {
                     ParseExportStatement();
                 }
-                else if (MatchKeyword("start"))
+                else if (MatchKeyword(TokenKeywords.start))
                 {
                     ParseStartStatement();
                 }
-                else if (MatchKeyword("stop"))
+                else if (MatchKeyword(TokenKeywords.stop))
                 {
                     ParseStopStatement();
                 }
-                else if (MatchKeyword("wait"))
+                else if (MatchKeyword(TokenKeywords.wait))
                 {
                     ParseWaitStatement();
                 }
-                else if (MatchKeyword("watchstart"))
+                else if (MatchKeyword(TokenKeywords.watchstart))
                 {
                     ParseWatchStartStatement();
                 }
-                else if (MatchKeyword("watchend"))
+                else if (MatchKeyword(TokenKeywords.watchend))
                 {
                     ParseWatchEndStatement();
                 }
-                else if (MatchKeyword("abe"))
+                else if (MatchKeyword(TokenKeywords.abe))
                 {
-                    ParseABSStatement();
+                    ParseABEStatement();
                 }
-                else if (MatchKeyword("helper"))
+                else if (MatchKeyword(TokenKeywords.helper))
                 {
                     ParseHelperStatement();
                 }
-                else if (MatchKeyword("true"))
-                {
-                    ParseTrueStatement();
-                }
-                else if (MatchKeyword("false"))
-                {
-                    ParseFalseStatement();
-                }
-                else if (MatchKeyword("if"))
+                else if (MatchKeyword(TokenKeywords._if))
                 {
                     ParseIfStatement();
                 }
-                else if (MatchKeyword("while"))
+                else if (MatchKeyword(TokenKeywords._while))
                 {
                     ParseWhileStatement();
                 }
-                else if (MatchKeyword("func"))
+                else if (MatchKeyword(TokenKeywords.func))
                 {
                     ParseFunctionStatement();
                 }
-                else if (MatchKeyword("dowhile"))
+                else if (MatchKeyword(TokenKeywords.dowhile))
                 {
                     ParseDowhileStatement();
                 }
-                else if (MatchKeyword("throw"))
+                else if (MatchKeyword(TokenKeywords._throw))
                 {
                     ParseThrowStatement();
                 }
-                else if (MatchKeyword("return"))
+                else if (MatchKeyword(TokenKeywords._return))
                 {
                     ParseReturnStatement(funcName);
                 }
-                else if (MatchKeyword("gethtml"))
+                else if (MatchKeyword(TokenKeywords.gethtml))
                 {
                     ParseGetHtmlStatement();
                 }
-                else if (MatchKeyword("getVarsFromJsonFilePath"))
+                else if (MatchKeyword(TokenKeywords.getVarsFromJsonFilePath))
                 {
                     ParseGetJsonFilePathStatement();
                 }
-                else if (MatchKeyword("class"))
+                else if (MatchKeyword(TokenKeywords.readonlyclass))
                 {
                     ParseClassStatement();
                 }
-                else if (MatchFunction(Peek().Value))
+                else if (MatchKeyword(TokenKeywords.invoke))
                 {
-                    RunFunction(Peek().Value);
+                    ParseInvokeStatement();
+                }
+                else if (MatchKeyword(TokenKeywords.read))
+                {
+                    ParseReadStatement();
                 }
                 else if (MatchFunction(Peek().Value))
                 {
                     RunFunction(Peek().Value);
                 }
-            } while (!IsAtEnd() && (Peek().Type == TokenType.Keyword || _functions.ContainsKey(Peek().Value) || _classInfos.ContainsKey(Peek().Value)));
+            } while (!IsAtEnd() && (Peek().Type == TokenTypes.Keyword || _functions.ContainsKey(Peek().Value) || _classInfos.ContainsKey(Peek().Value)));
+        }
+        private void ParseReadStatement()
+        {
+            
+            if (!MatchPunctuation("(")) throw new Exception("Expected '('");
+            string varname = EvaluateExpression(ParseExpression()).ToString();
+            if (!MatchPunctuation(",")) throw new Exception("Expected ','");
+            string path = EvaluateExpression(ParseExpression()).ToString();
+            if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
+            try
+            {
+                _variables.Add(varname, path);
+            }
+            catch
+            {
+                _variables[varname] = path;
+            }
+            if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
         }
         private KeyValuePair<string,bool> Runclass(string name)
         {
@@ -180,13 +194,13 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             int indexC = 0;
             for (int i = _current + 1; i < _tokens.Count; i++)
             {
-                if (_tokens[i].Type == TokenType.Punctuation && _tokens[i].Value == "}")
+                if (_tokens[i].Type == TokenTypes.Punctuation && _tokens[i].Value == "}")
                 {
                     indexC = i;
                     Advance();
                     break;
                 }
-                if (_tokens[i].Type == TokenType.Punctuation && _tokens[i].Value == "{")
+                if (_tokens[i].Type == TokenTypes.Punctuation && _tokens[i].Value == "{")
                 {
                     Advance();
                     continue;
@@ -203,6 +217,66 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             _classInfos.Add(className, classInfo);
         }
         internal Dictionary<string,ClassInfo> _classInfos = new Dictionary<string,ClassInfo>();
+        private void ParseInvokeStatement()
+        {
+            if (!MatchPunctuation("(")) throw new Exception("Expected '('");
+            string uuid = EvaluateExpression(ParseExpression()).ToString();
+            if(uuid == UUIDData.AndUUID)
+            {
+                if (!MatchPunctuation(",")) throw new Exception("Expected ','");
+                string varname = EvaluateExpression(ParseExpression()).ToString();
+                if (!MatchPunctuation(",")) throw new Exception("Expected ','");
+                bool bool1 = bool.Parse(EvaluateExpression(ParseExpression()).ToString());
+                if (!MatchPunctuation(",")) throw new Exception("Expected ','");
+                bool bool2 = bool.Parse(EvaluateExpression(ParseExpression()).ToString());
+                try
+                {
+                    _variables.Add(varname, (object)(bool1 && bool2));
+                }
+                catch
+                {
+                    _variables[varname] = (object)(bool1 && bool2);
+                }
+                if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
+                if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
+            }
+            else if(uuid == UUIDData.OrUUID)
+            {
+                if (!MatchPunctuation(",")) throw new Exception("Expected ','");
+                string varname = EvaluateExpression(ParseExpression()).ToString();
+                if (!MatchPunctuation(",")) throw new Exception("Expected ','");
+                bool bool1 = bool.Parse(EvaluateExpression(ParseExpression()).ToString());
+                if (!MatchPunctuation(",")) throw new Exception("Expected ','");
+                bool bool2 = bool.Parse(EvaluateExpression(ParseExpression()).ToString());
+                try
+                {
+                    _variables.Add(varname, (object)(bool1 || bool2));
+                }
+                catch
+                {
+                    _variables[varname] = (object)(bool1 || bool2);
+                }
+                if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
+                if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
+            }
+            else if (uuid == UUIDData.NotUUID)
+            {
+                if (!MatchPunctuation(",")) throw new Exception("Expected ','");
+                string varname = EvaluateExpression(ParseExpression()).ToString();
+                if (!MatchPunctuation(",")) throw new Exception("Expected ','");
+                bool bool1 = bool.Parse(EvaluateExpression(ParseExpression()).ToString());
+                try
+                {
+                    _variables.Add(varname, (object)(!bool1));
+                }
+                catch
+                {
+                    _variables[varname] = (object)(!bool1);
+                }
+                if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
+                if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
+            }
+        }
         private void ParseGetJsonFilePathStatement()
         {
             if (!MatchPunctuation("(")) throw new Exception("Expected '('");
@@ -282,14 +356,13 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             int indexC = 0;
             for (int i = _current + 1; i < _tokens.Count; i++)
             {
-                if (_tokens[i].Type == TokenType.Punctuation && _tokens[i].Value == "}")
+                if (_tokens[i].Type == TokenTypes.Punctuation && _tokens[i].Value == "}")
                 {
                     indexC = i;
                     break;
                 }
                 tokens.Add(_tokens[i]);
             }
-            TestVoid();
             do
             {
                 _variables = Run(tokens, _variables);
@@ -298,7 +371,6 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             } while (a);
             _current = indexC;
         }
-        private void TestVoid() { }
         private void RunFunction(string funcName)
         {
             FunctionInfo functionInfo = _functions[funcName];
@@ -398,7 +470,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             int indexC = 0;
             for (int i = _current + 1; i < _tokens.Count; i++)
             {
-                if (_tokens[i].Type == TokenType.Punctuation && _tokens[i].Value == "]")
+                if (_tokens[i].Type == TokenTypes.Punctuation && _tokens[i].Value == "]")
                 {
                     indexC = i;
                     break;
@@ -419,14 +491,13 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             int indexC = 0;
             for (int i = _current + 1; i < _tokens.Count; i++)
             {
-                if (_tokens[i].Type == TokenType.Punctuation && _tokens[i].Value == "}")
+                if (_tokens[i].Type == TokenTypes.Punctuation && _tokens[i].Value == "}")
                 {
                     indexC = i;
                     break;
                 }
                 tokens.Add(_tokens[i]);
             }
-            TestVoid();
             while (a)
             {
                 _variables = Run(tokens, _variables);
@@ -446,18 +517,17 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             int indexC = 0;
             for (int i = _current + 1; i < _tokens.Count; i++)
             {
-                if (_tokens[i].Type == TokenType.Punctuation && _tokens[i].Value == "]")
+                if (_tokens[i].Type == TokenTypes.Punctuation && _tokens[i].Value == "]")
                 {
                     indexC = i;
                     break;
                 }
-                if (_tokens[i].Type == TokenType.Punctuation && _tokens[i].Value == "[")
+                if (_tokens[i].Type == TokenTypes.Punctuation && _tokens[i].Value == "[")
                 {
                     continue;
                 }
                 tokens.Add(_tokens[i]);
             }
-            TestVoid();
             if (a)
             {
                 _variables = Run(tokens, _variables);
@@ -466,14 +536,6 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             }
             _current = indexC;
         }
-        private void ParseTrueStatement()
-        {
-        }
-
-        private void ParseFalseStatement()
-        {
-        }
-
         private void ParseHelperStatement()
         {
             if (!MatchPunctuation("(")) throw new Exception("Expected '('");
@@ -494,16 +556,16 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
             if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
         }
-        private void ParseABSStatement()
+        private void ParseABEStatement()
         {
             if (!MatchPunctuation("(")) throw new Exception("Expected '('");
             string a = EvaluateExpression(ParseExpression()).ToString();
             if (!MatchPunctuation(",")) throw new Exception("Expected ','");
-            int b = int.Parse(EvaluateExpression(ParseExpression()).ToString());
+            double b = double.Parse(EvaluateExpression(ParseExpression()).ToString());
             if (!MatchPunctuation(",")) throw new Exception("Expected ','");
-            int c = int.Parse(EvaluateExpression(ParseExpression()).ToString());
+            double c = double.Parse(EvaluateExpression(ParseExpression()).ToString());
             if (!MatchPunctuation(",")) throw new Exception("Expected ','");
-            int d = int.Parse(EvaluateExpression(ParseExpression()).ToString());
+            double d = double.Parse(EvaluateExpression(ParseExpression()).ToString());
             if (!MatchPunctuation(")")) throw new Exception("Expected ')'");
             if (!MatchPunctuation(";")) throw new Exception("Expected ';'");
             try
@@ -594,7 +656,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             {
                 token = lexer.NextToken();
                 tokens.Add(token);
-            } while (token.Type != TokenType.EndOfFile);
+            } while (token.Type != TokenTypes.EndOfFile);
 
             Parser parser = new(tokens);
             parser._functions = _functions;
@@ -667,7 +729,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             {
                 token = lexer.NextToken();
                 tokens.Add(token);
-            } while (token.Type != TokenType.EndOfFile);
+            } while (token.Type != TokenTypes.EndOfFile);
 
             Parser parser = new(tokens);
             parser.OutputEvent = this.OutputEvent;
@@ -680,21 +742,6 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 OnOutputEvent(new OutputEventArgs("Parsing error: " + ex.Message));
             }
             return parser._variables;
-        }
-        private string GetCenter(string str, char fir, char lat)
-        {
-            return str.Split(fir)[1].Split(lat)[0];
-        }
-        private object ParseExStr(string ex)
-        {
-            List<Token> tokens = new List<Token>();
-            Lexer lx = new(ex);
-            while (lx.NextToken().Type != TokenType.EndOfFile)
-            {
-                tokens.Add(lx.NextToken());
-            }
-            Parser parser = new(tokens);
-            return EvaluateExpression(parser.ParseExpression());
         }
         private void ParseSetStatement()
         {
@@ -724,7 +771,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         }
         private Expr GetVar()
         {
-            if (MatchToken(TokenType.Identifier))
+            if (MatchToken(TokenTypes.Identifier))
             {
                 return new VarExpr(Previous().Value);
             }
@@ -732,7 +779,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         }
         private Expr GetType()
         {
-            if (MatchToken(TokenType.Type))
+            if (MatchToken(TokenTypes.Type))
             {
                 return new VarExpr(Previous().Value);
             }
@@ -740,33 +787,27 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
         }
         private void ParseVariableDeclaration()
         {
-            // Match the variable name
-            if (!MatchToken(TokenType.Identifier, out string varName))
+            if (!MatchToken(TokenTypes.Identifier, out string varName))
             {
                 throw new Exception("Expected variable name");
             }
 
-            // Match the '=' token
-            if (!MatchToken(TokenType.Operator, out string op) || op != "=")
+            if (!MatchToken(TokenTypes.Operator, out string op) || op != "=")
             {
                 throw new Exception("Expected '=' after variable name");
             }
 
-            // Parse the expression on the right-hand side
             Expr expr = ParseExpression();
 
-            // Ensure the statement ends with a semicolon
             if (!MatchPunctuation(";"))
             {
                 throw new Exception("Expected ';' after variable declaration");
             }
 
-            // Evaluate the expression and store the result
             object value = EvaluateExpression(expr);
             _variables[varName] = value;
         }
 
-        // Parse a print statement
         private PrintStmt ParsePrintStatement()
         {
             if (!MatchPunctuation("(")) throw new Exception("Expected '('");
@@ -790,15 +831,15 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
 
         private Expr ParsePrimary()
         {
-            if (MatchToken(TokenType.Number))
+            if (MatchToken(TokenTypes.Number))
             {
                 return new ValueExpr(double.Parse(Previous().Value));
             }
-            else if (MatchToken(TokenType.String))
+            else if (MatchToken(TokenTypes.String))
             {
                 return new StringExpr(Previous().Value);
             }
-            else if (MatchToken(TokenType.Identifier))
+            else if (MatchToken(TokenTypes.Identifier))
             {
                 string varName = Previous().Value;
                 if (_variables.TryGetValue(varName, out object value))
@@ -809,7 +850,6 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 {
                     RunFunction(varName);
                     return new ValueExpr(_variables[$"{varName}:return"]);
-                    // return new ValueExpr(Run(_functions[varName].FunctionBody, _variables, varName));
                 }
                 else
                 {
@@ -853,10 +893,81 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
 
                 throw new Exception($"Undefined variable: {varName}");
             }
+            else
+            {
+                if(Previous().Type == TokenTypes.Keyword && Previous().Value == "true")
+                {
+                    _current--;
+                    return new ValueExpr(true);
+                }
+                else if (Previous().Type == TokenTypes.Keyword && Previous().Value == "false")
+                {
+                    _current--;
+                    return new ValueExpr(true);
+                }
+                else if (MatchPreviousToken(TokenTypes.Number))
+                {
+                    return new ValueExpr(double.Parse(Previous().Value));
+                }
+                else if (MatchPreviousToken(TokenTypes.String))
+                {
+                    return new StringExpr(Previous().Value);
+                }
+                else if (MatchPreviousToken(TokenTypes.Identifier))
+                {
+                    string varName = Previous().Value;
+                    if (_variables.TryGetValue(varName, out object value))
+                    {
+                        return new ValueExpr(value);
+                    }
+                    else if (_functions.ContainsKey(varName))
+                    {
+                        RunFunction(varName);
+                        return new ValueExpr(_variables[$"{varName}:return"]);
+                    }
+                    else
+                    {
+                        var a = Runclass(varName);
+                        if (a.Value)
+                        {
+                            return new ValueExpr(_variables[$"{a.Key}:return"]);
+                        }
+                        else
+                        {
+                            return new ValueExpr(_variables[a.Key]);
+                        }
+                    }
+                    throw new Exception($"Undefined variable: {varName}");
+                }
+                else if (MatchPunctuation("("))
+                {
+                    Expr expr = ParseExpression();
+                    if (!MatchPunctuation(")"))
+                    {
+                        throw new Exception("Expected ')' after expression");
+                    }
+                    return expr;
+                }
+            }
             throw new Exception("Unvalid token: " + Peek().Value);
         }
-
-        private bool MatchToken(params TokenType[] types)
+        private bool MatchPreviousToken(params TokenTypes[] types)
+        {
+            foreach (var type in types)
+            {
+                if (PreviousCheck(type))
+                {
+                    Advance();
+                    return true;
+                }
+            }
+            return false;
+        }
+        private bool PreviousCheck(TokenTypes type)
+        {
+            return !IsAtEnd() && Previous().Type == type;
+        }
+        private bool MatchToken(params TokenTypes[] types)
         {
             foreach (var type in types)
             {
@@ -869,7 +980,7 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             return false;
         }
 
-        private bool MatchToken(TokenType type, out string value)
+        private bool MatchToken(TokenTypes type, out string value)
         {
             if (Check(type))
             {
@@ -880,77 +991,63 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
             value = null;
             return false;
         }
-
-
         private bool MatchKeyword(string keyword)
         {
-            if (Check(TokenType.Keyword) && Peek().Value == keyword)
+            if (Check(TokenTypes.Keyword) && Peek().Value == keyword)
             {
                 Advance();
                 return true;
             }
             return false;
         }
-
         private bool MatchPunctuation(string punctuation)
         {
-            if (Check(TokenType.Punctuation) && Peek().Value == punctuation)
+            if (Check(TokenTypes.Punctuation) && Peek().Value == punctuation)
             {
                 Advance();
                 return true;
             }
             else {
                 Advance();
-                if (Check(TokenType.Punctuation) && Peek().Value == punctuation)
+                if (Check(TokenTypes.Punctuation) && Peek().Value == punctuation)
                 {
-                    Advance();
                     return true;
                 }
             }
             return false;
         }
-
         private bool MatchOperator(params string[] operators)
         {
-            if (Check(TokenType.Operator) && operators.Contains(Peek().Value))
+            if (Check(TokenTypes.Operator) && operators.Contains(Peek().Value))
             {
                 Advance();
                 return true;
             }
             return false;
         }
-
-        private bool Check(TokenType type)
+        private bool Check(TokenTypes type)
         {
             return !IsAtEnd() && Peek().Type == type;
-        }
-        private bool PreviousCheck(TokenType type)
-        {
-            return !IsAtEnd() && Previous().Type == type;
         }
         private Token Advance()
         {
             if (!IsAtEnd()) _current++;
             return Previous();
         }
-
         private bool IsAtEnd()
         {
             return _current >= _tokens.Count;
         }
-
         private Token Peek()
         {
             if (IsAtEnd()) throw new InvalidOperationException("No more tokens available.");
             return _tokens[_current];
         }
-
         private Token Previous()
         {
             if (_current == 0) throw new InvalidOperationException("No previous token available.");
             return _tokens[_current - 1];
         }
-
         private void EvaluatePrintStmt(PrintStmt stmt)
         {
             string text = EvaluateExpression(stmt.Expression).ToString();
@@ -1013,21 +1110,5 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                 return result;
             }
         }
-    }
-
-
-    // Example TokenType enum
-    public enum TokenType
-    {
-        Keyword,
-        Identifier,
-        Number,
-        String,
-        Punctuation,
-        Operator,
-        EndOfFile,
-        Type,
-        Bool,
-        FuncName
     }
 }

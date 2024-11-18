@@ -1,10 +1,4 @@
-﻿using FeiSharpCodeEditor_WinForm.net8._0_;
-using System.Diagnostics;
-using System.Diagnostics.Tracing;
-using System.Text.RegularExpressions;
-using static System.Net.Mime.MediaTypeNames;
-
-namespace FeiSharpCodeEditor_WinForm.net8._0_
+﻿namespace FeiSharpStudio
 {
     public class Lexer
     {
@@ -27,27 +21,27 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                     _index++;
                     continue;
                 }
-                if (current == '`') { _index++; return new Token(TokenType.Punctuation, "`"); }
-                if (current == ']') { _index++; return new Token(TokenType.Punctuation, "]"); }
-                if (current == '[') { _index++; return new Token(TokenType.Punctuation, "["); }
-                if (current == '!') { _index++; return new Token(TokenType.Operator, "!"); }
-                if (current == '}') { _index++; return new Token(TokenType.Punctuation, "}"); }
-                if (current == '{') { _index++; return new Token(TokenType.Punctuation, "{"); }
-                if (current == '<') { _index++; return new Token(TokenType.Operator, "<"); }
-                if (current == '>') { _index++; return new Token(TokenType.Operator, ">"); }
-                if (current == '=') { _index++; return new Token(TokenType.Operator, "="); }
-                if (current == '|') { _index++; return new Token(TokenType.Operator, "|"); }
-                if (current == '^') { _index++; return new Token(TokenType.Operator, "^"); }
-                if (current == '/') { _index++; return new Token(TokenType.Operator, "/"); }
-                if (current == '*') { _index++; return new Token(TokenType.Operator, "*"); }
-                if (current == '-') { _index++; return new Token(TokenType.Operator, "-"); }
-                if (current == ',') { _index++; return new Token(TokenType.Punctuation, ","); }
-                if (current == '+') { _index++; return new Token(TokenType.Operator, "+"); }
-                if (current == '-') { _index++; return new Token(TokenType.Operator, "-"); }
-                if (current == '=') { _index++; return new Token(TokenType.Operator, "="); } // Added for '='
-                if (current == ';') { _index++; return new Token(TokenType.Punctuation, ";"); }
-                if (current == '(') { _index++; return new Token(TokenType.Punctuation, "("); }
-                if (current == ')') { _index++; return new Token(TokenType.Punctuation, ")"); }
+                if (current == '`') { _index++; return new Token(TokenTypes.Punctuation, "`"); }
+                if (current == ']') { _index++; return new Token(TokenTypes.Punctuation, "]"); }
+                if (current == '[') { _index++; return new Token(TokenTypes.Punctuation, "["); }
+                if (current == '!') { _index++; return new Token(TokenTypes.Operator, "!"); }
+                if (current == '}') { _index++; return new Token(TokenTypes.Punctuation, "}"); }
+                if (current == '{') { _index++; return new Token(TokenTypes.Punctuation, "{"); }
+                if (current == '<') { _index++; return new Token(TokenTypes.Operator, "<"); }
+                if (current == '>') { _index++; return new Token(TokenTypes.Operator, ">"); }
+                if (current == '=') { _index++; return new Token(TokenTypes.Operator, "="); }
+                if (current == '|') { _index++; return new Token(TokenTypes.Operator, "|"); }
+                if (current == '^') { _index++; return new Token(TokenTypes.Operator, "^"); }
+                if (current == '/') { _index++; return new Token(TokenTypes.Operator, "/"); }
+                if (current == '*') { _index++; return new Token(TokenTypes.Operator, "*"); }
+                if (current == '-') { _index++; return new Token(TokenTypes.Operator, "-"); }
+                if (current == ',') { _index++; return new Token(TokenTypes.Punctuation, ","); }
+                if (current == '+') { _index++; return new Token(TokenTypes.Operator, "+"); }
+                if (current == '-') { _index++; return new Token(TokenTypes.Operator, "-"); }
+                if (current == '=') { _index++; return new Token(TokenTypes.Operator, "="); } 
+                if (current == ';') { _index++; return new Token(TokenTypes.Punctuation, ";"); }
+                if (current == '(') { _index++; return new Token(TokenTypes.Punctuation, "("); }
+                if (current == ')') { _index++; return new Token(TokenTypes.Punctuation, ")"); }
                 if (current == '"')
                 {
                     int start = ++_index;
@@ -56,14 +50,13 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                     {
                         _index++;
                     }
-                    return new Token(TokenType.String, _source[start.._index++]);
+                    return new Token(TokenTypes.String, _source[start.._index++]);
                 }
-
                 if (char.IsDigit(current))
                 {
                     int start = _index;
                     while (_index < _source.Length && (char.IsDigit(_source[_index]) || _source[_index] == '.')) _index++;
-                    return new Token(TokenType.Number, _source[start.._index]);
+                    return new Token(TokenTypes.Number, _source[start.._index]);
                 }
 
                 if (char.IsLetter(current))
@@ -71,38 +64,41 @@ namespace FeiSharpCodeEditor_WinForm.net8._0_
                     int start = _index;
                     while (_index < _source.Length && char.IsLetter(_source[_index])) _index++;
                     string value = _source.Substring(start, _index - start);
-                    if (value == "var") return new Token(TokenType.Keyword, "var");
-                    else if (value == "gethtml") return new Token(TokenType.Keyword, "gethtml");
-                    else if (value == "print") return new Token(TokenType.Keyword, "print");
-                    else if (value == "init") return new Token(TokenType.Keyword, "init");
-                    else if (value == "set") return new Token(TokenType.Keyword, "set");
-                    else if (value == "import") return new Token(TokenType.Keyword, "import");
-                    else if (value == "export") return new Token(TokenType.Keyword, "export");
-                    else if (value == "start") return new Token(TokenType.Keyword, "start");
-                    else if (value == "stop") return new Token(TokenType.Keyword, "stop");
-                    else if (value == "wait") return new Token(TokenType.Keyword, "wait");
-                    else if (value == "watchstart") return new Token(TokenType.Keyword, "watchstart");
-                    else if (value == "watchend") return new Token(TokenType.Keyword, "watchend");
-                    else if (value == "abe") return new Token(TokenType.Keyword, "abe");
-                    else if (value == "Double") return new Token(TokenType.Type, "Double");
-                    else if (value == "helper") return new Token(TokenType.Keyword, "helper");
-                    else if (value == "true") return new Token(TokenType.Keyword, "true");
-                    else if (value == "false") return new Token(TokenType.Keyword, "false");
-                    else if (value == "if") return new Token(TokenType.Keyword, "if");
-                    else if (value == "while") return new Token(TokenType.Keyword, "while");
-                    else if (value == "dowhile") return new Token(TokenType.Keyword, "dowhile");
-                    else if (value == "throw") return new Token(TokenType.Keyword, "throw");
-                    else if (value == "return") return new Token(TokenType.Keyword, "return");
-                    else if (value == "getVarsFromJsonFilePath") return new Token(TokenType.Keyword, "getVarsFromJsonFilePath");
-                    else if (value == "class") return new Token(TokenType.Keyword, "class");
-                    else if (value == "func") { 
-                        return new Token(TokenType.Keyword, "func"); 
+                    if (value == TokenKeywords._var) return new Token(TokenTypes.Keyword, "var");
+                    else if (value == TokenKeywords.gethtml) return new Token(TokenTypes.Keyword, "gethtml");
+                    else if (value == TokenKeywords.print) return new Token(TokenTypes.Keyword, "print");
+                    else if (value == TokenKeywords.init) return new Token(TokenTypes.Keyword, "init");
+                    else if (value == TokenKeywords.set) return new Token(TokenTypes.Keyword, "set");
+                    else if (value == TokenKeywords.import) return new Token(TokenTypes.Keyword, "import");
+                    else if (value == TokenKeywords.export) return new Token(TokenTypes.Keyword, "export");
+                    else if (value == TokenKeywords.start) return new Token(TokenTypes.Keyword, "start");
+                    else if (value == TokenKeywords.stop) return new Token(TokenTypes.Keyword, "stop");
+                    else if (value == TokenKeywords.wait) return new Token(TokenTypes.Keyword, "wait");
+                    else if (value == TokenKeywords.watchstart) return new Token(TokenTypes.Keyword, "watchstart");
+                    else if (value == TokenKeywords.watchend) return new Token(TokenTypes.Keyword, "watchend");
+                    else if (value == TokenKeywords.abe) return new Token(TokenTypes.Keyword, "abe");
+                    else if (value == TokenKeywords.Double) return new Token(TokenTypes.Type, "Double");
+                    else if (value == TokenKeywords.helper) return new Token(TokenTypes.Keyword, "helper");
+                    else if (value == TokenKeywords._true) return new Token(TokenTypes.Keyword, "true");
+                    else if (value == TokenKeywords._false) return new Token(TokenTypes.Keyword, "false");
+                    else if (value == TokenKeywords._if) return new Token(TokenTypes.Keyword, "if");
+                    else if (value == TokenKeywords._while) return new Token(TokenTypes.Keyword, "while");
+                    else if (value == TokenKeywords.dowhile) return new Token(TokenTypes.Keyword, "dowhile");
+                    else if (value == TokenKeywords._throw) return new Token(TokenTypes.Keyword, "throw");
+                    else if (value == TokenKeywords._return) return new Token(TokenTypes.Keyword, "return");
+                    else if (value == TokenKeywords.getVarsFromJsonFilePath) return new Token(TokenTypes.Keyword, "getVarsFromJsonFilePath");
+                    else if (value == TokenKeywords.readonlyclass) return new Token(TokenTypes.Keyword, "readonlyclass");
+                    else if (value == TokenKeywords.invoke) return new Token(TokenTypes.Keyword, "invoke");
+                    else if (value == TokenKeywords.read) return new Token(TokenTypes.Keyword, "read");
+                    else if (value == TokenKeywords.func) { 
+                        return new Token(TokenTypes.Keyword, "func"); 
                     }
-                    else return new Token(TokenType.Identifier, value);
+                    else return new Token (TokenTypes.Identifier, value);
                 }
+                
                 throw new Exception("Unexpected character: " + current);
             }
-            return new Token(TokenType.EndOfFile, "");
+            return new Token(TokenTypes.EndOfFile, "");
         }
     }
 }
