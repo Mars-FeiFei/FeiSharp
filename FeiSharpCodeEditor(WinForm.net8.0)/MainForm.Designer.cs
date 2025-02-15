@@ -1,4 +1,5 @@
-﻿using FeiSharpStudio;
+﻿using FastColoredTextBoxNS;
+using FeiSharpStudio;
 
 namespace FeiSharpStudio
 {
@@ -38,7 +39,6 @@ namespace FeiSharpStudio
             OpenBtn = new Button();
             Menu = new Button();
             ShortCutBtn = new Button();
-            label1 = new Label();
             outputBox = new RichTextBox();
             CheckBtn = new Button();
             txtCode = new RichTextBox();
@@ -50,13 +50,18 @@ namespace FeiSharpStudio
             exit = new ToolStripMenuItem();
             properties = new ToolStripMenuItem();
             developer = new Button();
+            checkBox1 = new CheckBox();
+            checkBox2 = new CheckBox();
+            checkBox3 = new CheckBox();
+            lineNumberListBox = new ListBox();
             SuspendLayout();
             // 
             // RunBtn
             // 
-            RunBtn.Location = new Point(199, 3);
+            RunBtn.Location = new Point(92, 2);
+            RunBtn.Margin = new Padding(1, 2, 1, 2);
             RunBtn.Name = "RunBtn";
-            RunBtn.Size = new Size(245, 88);
+            RunBtn.Size = new Size(111, 46);
             RunBtn.TabIndex = 0;
             RunBtn.Text = "Run(F5)";
             RunBtn.UseVisualStyleBackColor = true;
@@ -64,9 +69,10 @@ namespace FeiSharpStudio
             // 
             // SaveAsBtn
             // 
-            SaveAsBtn.Location = new Point(450, 3);
+            SaveAsBtn.Location = new Point(205, 2);
+            SaveAsBtn.Margin = new Padding(1, 2, 1, 2);
             SaveAsBtn.Name = "SaveAsBtn";
-            SaveAsBtn.Size = new Size(333, 88);
+            SaveAsBtn.Size = new Size(151, 46);
             SaveAsBtn.TabIndex = 1;
             SaveAsBtn.Text = "Save As(CTRL+S)";
             SaveAsBtn.UseVisualStyleBackColor = true;
@@ -74,9 +80,10 @@ namespace FeiSharpStudio
             // 
             // OpenBtn
             // 
-            OpenBtn.Location = new Point(789, 3);
+            OpenBtn.Location = new Point(359, 2);
+            OpenBtn.Margin = new Padding(1, 2, 1, 2);
             OpenBtn.Name = "OpenBtn";
-            OpenBtn.Size = new Size(397, 88);
+            OpenBtn.Size = new Size(180, 46);
             OpenBtn.TabIndex = 2;
             OpenBtn.Text = "Open File(CTRL+F)";
             OpenBtn.UseVisualStyleBackColor = true;
@@ -84,9 +91,10 @@ namespace FeiSharpStudio
             // 
             // Menu
             // 
-            Menu.Location = new Point(5, 3);
+            Menu.Location = new Point(2, 2);
+            Menu.Margin = new Padding(1, 2, 1, 2);
             Menu.Name = "Menu";
-            Menu.Size = new Size(188, 88);
+            Menu.Size = new Size(88, 46);
             Menu.TabIndex = 6;
             Menu.Text = "Menu";
             Menu.UseVisualStyleBackColor = true;
@@ -94,44 +102,38 @@ namespace FeiSharpStudio
             // 
             // ShortCutBtn
             // 
-            ShortCutBtn.Location = new Point(1192, 3);
+            ShortCutBtn.Location = new Point(542, 2);
+            ShortCutBtn.Margin = new Padding(1, 2, 1, 2);
             ShortCutBtn.Name = "ShortCutBtn";
-            ShortCutBtn.Size = new Size(521, 88);
+            ShortCutBtn.Size = new Size(237, 46);
             ShortCutBtn.TabIndex = 8;
             ShortCutBtn.Text = "Create Desktop Shortcut";
             ShortCutBtn.UseVisualStyleBackColor = true;
             ShortCutBtn.Click += BtnShortcutClick;
             // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new Point(16, 1390);
-            label1.Name = "label1";
-            label1.Size = new Size(142, 46);
-            label1.TabIndex = 9;
-            label1.Text = "Output";
-            // 
             // outputBox
             // 
-            outputBox.BackColor = Color.FromArgb(64, 64, 64);
+            outputBox.BackColor = Color.FromArgb(30, 30, 30);
             outputBox.BorderStyle = BorderStyle.FixedSingle;
             outputBox.Dock = DockStyle.Bottom;
             outputBox.Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            outputBox.ForeColor = Color.White;
-            outputBox.Location = new Point(0, 1453);
+            outputBox.ForeColor = Color.FromArgb(86, 156, 214);
+            outputBox.Location = new Point(0, 1913);
+            outputBox.Margin = new Padding(1, 2, 1, 2);
             outputBox.Name = "outputBox";
             outputBox.ReadOnly = true;
             outputBox.ScrollBars = RichTextBoxScrollBars.Vertical;
-            outputBox.Size = new Size(2532, 417);
+            outputBox.Size = new Size(1948, 217);
             outputBox.TabIndex = 10;
             outputBox.Text = "";
             outputBox.MouseDown += OutputBox_MouseDown;
             // 
             // CheckBtn
             // 
-            CheckBtn.Location = new Point(1719, 3);
+            CheckBtn.Location = new Point(781, 2);
+            CheckBtn.Margin = new Padding(1, 2, 1, 2);
             CheckBtn.Name = "CheckBtn";
-            CheckBtn.Size = new Size(237, 88);
+            CheckBtn.Size = new Size(108, 46);
             CheckBtn.TabIndex = 11;
             CheckBtn.Text = "Check";
             CheckBtn.UseVisualStyleBackColor = true;
@@ -139,20 +141,21 @@ namespace FeiSharpStudio
             // 
             // txtCode
             // 
-            txtCode.BackColor = Color.FromArgb(64, 64, 64);
+            txtCode.BackColor = Color.FromArgb(30, 30, 30);
             txtCode.BorderStyle = BorderStyle.FixedSingle;
             txtCode.Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            txtCode.ForeColor = Color.White;
-            txtCode.Location = new Point(7, 251);
+            txtCode.ForeColor = Color.FromArgb(87, 166, 74);
+            txtCode.Location = new Point(57, 131);
+            txtCode.Margin = new Padding(1, 2, 1, 2);
             txtCode.Name = "txtCode";
-            txtCode.Size = new Size(2525, 1139);
+            txtCode.Size = new Size(1891, 1609);
             txtCode.TabIndex = 13;
             txtCode.Text = "";
             txtCode.MouseClick += txtCode_MouseClick;
             txtCode.TextChanged += txtCode_TextChanged;
+            txtCode.KeyDown += TxtCode_KeyDown;
             txtCode.KeyPress += CodeEditor_KeyPress;
             txtCode.MouseDown += TxtCode_MouseDown;
-            txtCode.KeyDown += TxtCode_KeyDown;
             // 
             // lstbIntelligence
             // 
@@ -160,9 +163,10 @@ namespace FeiSharpStudio
             lstbIntelligence.ForeColor = Color.Blue;
             lstbIntelligence.FormattingEnabled = true;
             lstbIntelligence.Items.AddRange(new object[] { "var", "print", "init", "set", "import", "export", "start", "stop", "wait", "watchstart", "watchend", "abe", "helper", "if", "while", "func", "return", "gethtml", "getVarsFromJsonFilePath" });
-            lstbIntelligence.Location = new Point(125, 146);
+            lstbIntelligence.Location = new Point(57, 52);
+            lstbIntelligence.Margin = new Padding(1, 2, 1, 2);
             lstbIntelligence.Name = "lstbIntelligence";
-            lstbIntelligence.Size = new Size(470, 280);
+            lstbIntelligence.Size = new Size(216, 148);
             lstbIntelligence.TabIndex = 14;
             lstbIntelligence.Visible = false;
             lstbIntelligence.KeyPress += lstbIntelligence_KeyPress;
@@ -170,9 +174,10 @@ namespace FeiSharpStudio
             // 
             // log
             // 
-            log.Location = new Point(1962, 3);
+            log.Location = new Point(892, 2);
+            log.Margin = new Padding(1, 2, 1, 2);
             log.Name = "log";
-            log.Size = new Size(215, 88);
+            log.Size = new Size(98, 46);
             log.TabIndex = 15;
             log.Text = "log";
             log.UseVisualStyleBackColor = true;
@@ -211,27 +216,73 @@ namespace FeiSharpStudio
             // 
             // developer
             // 
-            developer.Location = new Point(2183, 3);
+            developer.Location = new Point(992, 2);
+            developer.Margin = new Padding(1, 2, 1, 2);
             developer.Name = "developer";
-            developer.Size = new Size(337, 88);
+            developer.Size = new Size(175, 46);
             developer.TabIndex = 16;
             developer.Text = "Developer Cmd";
             developer.UseVisualStyleBackColor = true;
             developer.Click += developer_Click;
             // 
+            // checkBox1
+            // 
+            checkBox1.AutoSize = true;
+            checkBox1.Location = new Point(1375, 12);
+            checkBox1.Name = "checkBox1";
+            checkBox1.Size = new Size(221, 28);
+            checkBox1.TabIndex = 17;
+            checkBox1.Text = "use performance mode";
+            checkBox1.UseVisualStyleBackColor = true;
+            // 
+            // checkBox2
+            // 
+            checkBox2.AutoSize = true;
+            checkBox2.Location = new Point(1613, 12);
+            checkBox2.Name = "checkBox2";
+            checkBox2.Size = new Size(323, 28);
+            checkBox2.TabIndex = 18;
+            checkBox2.Text = "remove output intelligence message\r\n";
+            checkBox2.UseVisualStyleBackColor = true;
+            checkBox2.CheckedChanged += checkBox2_CheckedChanged;
+            // 
+            // checkBox3
+            // 
+            checkBox3.AutoSize = true;
+            checkBox3.Location = new Point(1171, 12);
+            checkBox3.Name = "checkBox3";
+            checkBox3.Size = new Size(189, 28);
+            checkBox3.TabIndex = 19;
+            checkBox3.Text = "WindowsPUI Mode";
+            checkBox3.UseVisualStyleBackColor = true;
+            checkBox3.CheckedChanged += checkBox3_CheckedChanged;
+            // 
+            // lineNumberListBox
+            // 
+            lineNumberListBox.FormattingEnabled = true;
+            lineNumberListBox.Location = new Point(2, 128);
+            lineNumberListBox.Name = "lineNumberListBox";
+            lineNumberListBox.Size = new Size(56, 1612);
+            lineNumberListBox.TabIndex = 20;
+            lineNumberListBox.DoubleClick += lineNumberListBox_SelectedIndexChanged;
+            lineNumberListBox.MouseDown += LineNumberListBox_MouseDown;
+            // 
             // MainForm
             // 
-            AutoScaleDimensions = new SizeF(22F, 46F);
+            AutoScaleDimensions = new SizeF(10F, 24F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.AliceBlue;
-            ClientSize = new Size(2532, 1870);
+            BackColor = Color.FromArgb(192, 255, 255);
+            ClientSize = new Size(1948, 2130);
+            Controls.Add(lineNumberListBox);
+            Controls.Add(checkBox3);
+            Controls.Add(checkBox2);
+            Controls.Add(checkBox1);
             Controls.Add(developer);
             Controls.Add(log);
             Controls.Add(lstbIntelligence);
             Controls.Add(txtCode);
             Controls.Add(CheckBtn);
             Controls.Add(outputBox);
-            Controls.Add(label1);
             Controls.Add(ShortCutBtn);
             Controls.Add(Menu);
             Controls.Add(OpenBtn);
@@ -239,6 +290,7 @@ namespace FeiSharpStudio
             Controls.Add(RunBtn);
             Icon = (Icon)resources.GetObject("$this.Icon");
             KeyPreview = true;
+            Margin = new Padding(1, 2, 1, 2);
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "FeiSharpStudio-Console";
@@ -251,7 +303,9 @@ namespace FeiSharpStudio
             PerformLayout();
         }
 
-        
+       
+
+
 
 
 
@@ -262,7 +316,6 @@ namespace FeiSharpStudio
         private Button OpenBtn;
         private Button Menu;
         private Button ShortCutBtn;
-        private Label label1;
         internal RichTextBox outputBox;
         private Button CheckBtn;
         private ListBox lstbIntelligence;
@@ -274,5 +327,9 @@ namespace FeiSharpStudio
         private ToolStripMenuItem properties;
         private Button developer;
         internal RichTextBox txtCode;
+        private CheckBox checkBox1;
+        private CheckBox checkBox2;
+        private CheckBox checkBox3;
+        private ListBox lineNumberListBox;
     }
 }

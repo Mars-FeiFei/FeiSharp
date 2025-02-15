@@ -11,7 +11,6 @@ namespace FeiSharpStudio
         [STAThread]
         static void Main(string[] args)
         {
-            FileAssociation.RegisterFileAssociation(".fsc", Assembly.GetExecutingAssembly().Location.Replace(".dll", ".exe"));
             Process currentProcess = Process.GetCurrentProcess();
             Process[] processes = Process.GetProcessesByName(currentProcess.ProcessName);
             if (processes.Length > 1)

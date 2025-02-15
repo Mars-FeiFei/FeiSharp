@@ -1,6 +1,8 @@
 ﻿using FeiSharpStudio.Utils;
 using IWshRuntimeLibrary;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Numerics;
 using System.Reflection;
 using While = System.Windows.Forms.Timer;
 
@@ -11,7 +13,7 @@ namespace FeiSharpStudio
         Log logForm = new Log();
         List<string> keywords = new List<string>()
         {
-            "var", "print", "init", "set", "import", "export", "start", "stop", "wait", "watchstart", "watchend", "abe", "helper", "if", "while", "func", "return", "gethtml", "getVarsFromJsonFilePath","invoke","and","or","not"
+            "var", "print", "init", "set", "import", "export", "start", "stop", "wait", "watchstart", "watchend", "abe", "helper", "if", "while", "dowhile", "throw", "class","func", "return", "gethtml", "getVarsFromJsonFilePath","invoke","read","anno","define","readline","readkey","ctype","cstr","astextbox","createData","addData","delData","replaceData","saceDataChanges","invokeData","getData","createInstance","setClassVar","setBaseClass","printMethod"
         };
         private readonly static string delimiter = "                    ";
         While @while = new While();
@@ -19,8 +21,14 @@ namespace FeiSharpStudio
         {
             AddText(EventName.Ctor, "type=Method", "Form1", "ctor Form1()");
             InitializeComponent();
+            string codeText = "using System;\npublic class Program\n{\n    public static void Main()\n    {\n        Console.WriteLine(\"Hello, World!\");\n    }\n}";
             this.DoubleBuffered = true;
             this.KeyDown += Form1_KeyDown;
+            this.WindowState = FormWindowState.Maximized;
+            lineNumberListBox.Font = txtCode.Font;
+            lineNumberListBox.ItemHeight = txtCode.Font.Height;
+            txtCode.VScroll += TxtCode_VScroll;
+
             RunBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             RunBtn.FlatAppearance.BorderSize = 0;
             SaveAsBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -51,12 +59,59 @@ namespace FeiSharpStudio
             {
                 new CodeCore.AdvancedProperties().ShowDialog();
             };
+            lineNumberListBox.DataSource = ints;
+            lineNumberListBox.DisplayMember = "Name";
             @while.Interval = 250;
             @while.Start();
             @while.Tick += @while_Tick;
             contextMenuStrip1.Items.AddRange([exit, properties]);
             ShortCutBtn.SendToBack();
             this.FormClosing += MainForm_FormClosing;
+        }
+        private void TxtCode_VScroll(object sender, EventArgs e)
+        {
+            lineNumberListBox.TopIndex = txtCode.GetFirstCharIndexFromLine(txtCode.GetLineFromCharIndex(txtCode.GetCharIndexFromPosition(new Point(0, 0))));
+        }
+        BindingList<Number> ints = new BindingList<Number>() { new Number() { Name = "1" } };
+        private void LineNumberListBox_VScroll(object sender, MouseEventArgs e)
+        {
+            int visibleItemCount = lineNumberListBox.ClientSize.Height / lineNumberListBox.ItemHeight;
+
+            int newTopIndex = lineNumberListBox.TopIndex - (e.Delta / 120);
+            if (newTopIndex < 0) newTopIndex = 0;
+            if (newTopIndex > ints.Count - visibleItemCount)
+            {
+                newTopIndex = ints.Count - visibleItemCount;
+            }
+            lineNumberListBox.TopIndex = newTopIndex;
+
+            txtCode.SelectionStart = txtCode.GetFirstCharIndexFromLine(lineNumberListBox.TopIndex);
+            txtCode.ScrollToCaret();
+        }
+
+        private void UpdateLineNumbers()
+        {
+            ints.Clear();
+            int lineCount = txtCode.Lines.Length;
+            for (int i = 1; i <= lineCount; i++)
+            {
+                ints.Add(new Number() { Name = i.ToString() });
+            }
+            if(ints.Count == 0)
+            {
+                ints.Add(new Number() { Name = "1" }); 
+            }
+        }
+
+        private void LineNumberListBox_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            e.DrawBackground();
+            if (e.Index >= 0)
+            {
+                string lineNumber = ints[e.Index].ToString();
+                e.Graphics.DrawString(lineNumber, e.Font, Brushes.Black, e.Bounds, StringFormat.GenericDefault);
+            }
+            e.DrawFocusRectangle();
         }
         private string GetCurrentLineText(RichTextBox rtb)
         {
@@ -79,6 +134,25 @@ namespace FeiSharpStudio
             rtb.Text = rtb.Text.Remove(lineStart, lineEnd - lineStart);
             rtb.SelectionStart = lineStart;
         }
+        private void ReplaceLineWithText(RichTextBox rtb, int lineNumber, string replacementText)
+        {
+            if (lineNumber > 0 && lineNumber <= rtb.Lines.Length)
+            {
+                int startIndex = rtb.GetFirstCharIndexFromLine(lineNumber - 1);
+                int endIndex;
+                if (lineNumber < rtb.Lines.Length)
+                {
+                    endIndex = rtb.GetFirstCharIndexFromLine(lineNumber);
+                }
+                else
+                {
+                    endIndex = rtb.Text.Length;
+                }
+                rtb.Select(startIndex, endIndex - startIndex);
+                rtb.SelectedText = replacementText;
+            }
+        }
+
         string version = Tab.version8_5;
         private void @while_Tick(object? sender, EventArgs e)
         {
@@ -170,53 +244,40 @@ namespace FeiSharpStudio
 
             Run();
         }
-
+        private Process externalProcess;
         private void Run()
         {
             AddText(EventName.Method, "type=Method", "Form1", "void Run()[2 references]");
-            string sourceCode = "func And(x,y)\r\n[\r\ninvoke(\"#@-9824193-/75123148767786793-/23135345445\",\"a\",x,y);\r\nreturn a;\r\n]" + txtCode.Text;
-            Lexer lexer = new(sourceCode);
-            List<Token> tokens = [];
-            Token token;
-            do
+            if (checkBox3.Checked)
             {
-                token = lexer.NextToken();
-
-                tokens.Add(token);
-            } while (token.Type != TokenTypes.EndOfFile);
-
-            Parser parser = new(tokens);
-            parser.OutputEvent += (s, e) =>
-            {
-                outputBox.Show(e.Message);
-            };
-            try
-            {
-                parser.ParseStatements();
+                System.IO.File.WriteAllText(@"C:\Users\benba\OneDrive\Documents\a.txt", txtCode.Text);
+                Process.Start("WindowsPUI.exe");
             }
-            catch (Exception ex)
+            else
             {
-                outputBox.Show("Parsing error: " + ex.Message);
+                if (checkBox2.Checked)
+                {
+                    outputBox.Text = string.Empty;
+                }
+                else
+                {
+                    outputBox.Text += "Input file then press enter and input ~code.fsc then  also press enter to run this application.";
+                }
+                System.IO.File.WriteAllText("~code.fsc", txtCode.Text);
+                Process.Start("feisharp.exe");
             }
-            return;
         }
-
-        private List<Token> Build()
+        private void ExternalProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
-            AddText(EventName.Method, "type=Method", "Form1", "List<Token> Build()");
-
-            string code = "";
-            string sourceCode = txtCode.Text;
-            Lexer lexer = new(sourceCode);
-            List<Token> tokens = [];
-            Token token;
-            do
+            if (!string.IsNullOrEmpty(e.Data))
             {
-                token = lexer.NextToken();
-                tokens.Add(token);
-            } while (token.Type != TokenTypes.EndOfFile);
-            return tokens;
+                this.Invoke((System.Windows.Forms.MethodInvoker)delegate
+                {
+                    outputBox.Text += e.Data + Environment.NewLine;
+                });
+            }
         }
+
 
         private void BtnSaveAsClick(object sender, EventArgs e)
         {
@@ -225,70 +286,15 @@ namespace FeiSharpStudio
             SaveAs();
         }
 
-        private void RunAsException()
-        {
-            AddText(EventName.Method, "type=Method", "Form1", "void RunAsException()");
 
-            string code = "";
-            string sourceCode = txtCode.Text;
-            Lexer lexer = new(sourceCode);
-            List<Token> tokens = [];
-            Token token;
-            do
-            {
-                token = lexer.NextToken();
-                tokens.Add(token);
-            } while (token.Type != TokenTypes.EndOfFile);
-
-            Parser parser = new(tokens);
-            Debug.WriteLine("test run value:");
-            parser.OutputEvent += (s, e) =>
-            {
-                Debug.WriteLine(e.Message);
-            };
-            parser.ParseStatements();
-            return;
-        }
 
         private void FeiSharpForm_Resize(object sender, EventArgs e)
         {
             AddText(EventName.Resize, "type=Form(this)", "Form1", "this");
-
-            if (ClientSize.Width <= 1900 && ClientSize.Height <= 2000)
-            {
-                Width = 1900;
-                Height = 2000;
-            }
             txtCode.Width = outputBox.ClientSize.Width;
         }
 
-        private void Check()
-        {
-            AddText(EventName.Method, "type=Method", "Form1", "void Check()");
-            List<Token> tokens = Build();
-            bool isValid = true;
-            foreach (var item in tokens)
-            {
-                if (item.Type == TokenTypes.Identifier && char.IsUpper(item.Value[0]))
-                {
-                    outputBox.Show("The var or func \"" + item.Value + "\" isn't a valid var or func name, \r\n but it doesn't affect operation.");
-                    isValid = false;
-                }
-            }
-            try
-            {
-                RunAsException();
-            }
-            catch (Exception ex)
-            {
-                outputBox.Show("Runtime exception:" + "\r\n in " + ex.Source + $" Namespace's  {ex.Data}.");
-                isValid = false;
-            }
-            if (isValid)
-            {
-                outputBox.Show("Nothing wrong.");
-            }
-        }
+
         private void MainForm_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
@@ -406,7 +412,6 @@ namespace FeiSharpStudio
             if (Tab.Version != Tab.version8)
             {
                 AddText(EventName.Click, "type=Button", "Form1", "btnCheck");
-                Check();
             }
         }
 
@@ -446,13 +451,7 @@ namespace FeiSharpStudio
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
         {
             AddText(EventName.KeyPress, "type=Form(this)", "Form1", "this");
-            if (e.KeyChar == (char)Keys.Escape)
-            {
-                int start = txtCode.SelectionStart;
-                lstbIntelligence.Visible = false;
-                txtCode.SelectionStart = start;
-                txtCode.Text = txtCode.Text.Replace("\b", "");
-            }
+
         }
         private void Form1_KeyDown1(object sender, KeyEventArgs e)
         {
@@ -508,24 +507,34 @@ namespace FeiSharpStudio
                 ToolStripMenuItem CopyMenuItem = new ToolStripMenuItem("Copy");
                 ToolStripMenuItem CutMenuItem = new ToolStripMenuItem("Cut");
                 ToolStripMenuItem SelectAllMenuItem = new ToolStripMenuItem("Select All");
+                ToolStripMenuItem UndoMenuItem = new ToolStripMenuItem("Undo");
                 ToolStripMenuItem DeleteMenuItem = new ToolStripMenuItem($"Delete{delimiter}Backspace");
                 ClearMenuItem.Click += (s, g) => { txtCode.Text = ""; };
                 PasteMenuItem.Click += (s, g) => { txtCode.Paste(); };
                 CopyMenuItem.Click += (s, g) => txtCode.Copy();
                 CutMenuItem.Click += (s, g) => txtCode.Cut();
                 SelectAllMenuItem.Click += (s, g) => txtCode.SelectAll();
+                UndoMenuItem.Click += (s, g) => {
+                    if (txtCode.CanUndo)
+                    {
+                        txtCode.Undo();
+                        txtCode.ClearUndo();
+                    }
+                };
                 DeleteMenuItem.Click += (s, g) => txtCode.SelectedText = "";
                 CutMenuItem.ShortcutKeys = Keys.Control | Keys.X;
                 CopyMenuItem.ShortcutKeys = Keys.Control | Keys.C;
                 ClearMenuItem.ShortcutKeys = Keys.Control | Keys.B;
                 PasteMenuItem.ShortcutKeys = Keys.Control | Keys.V;
                 SelectAllMenuItem.ShortcutKeys = Keys.Control | Keys.A;
+                UndoMenuItem.ShortcutKeys = Keys.Control | Keys.Z;
                 contextMenuStrip.Items.Add(ClearMenuItem);
                 contextMenuStrip.Items.Add(PasteMenuItem);
                 contextMenuStrip.Items.Add(CopyMenuItem);
                 contextMenuStrip.Items.Add(CutMenuItem);
                 contextMenuStrip.Items.Add(SelectAllMenuItem);
                 contextMenuStrip.Items.Add(DeleteMenuItem);
+                contextMenuStrip.Items.Add(UndoMenuItem);
                 contextMenuStrip.Show(txtCode, e.Location);
             }
         }
@@ -555,6 +564,7 @@ namespace FeiSharpStudio
         {
             AddText(EventName.TextChanged, "type=RichTextBox", "Form1", "txtCode");
             Debug.WriteLine(txtCode.SelectionStart);
+            UpdateLineNumbers();
             var indexc = txtCode.SelectionStart;
             var index = txtCode.SelectionStart - 1;
             if (index >= 0 && txtCode.Text.Length > index)
@@ -577,30 +587,46 @@ namespace FeiSharpStudio
             txtCode.Text = txtCode.Text.Replace("\b", "");
             txtCode.SelectionStart = indexc;
         }
-
         private void lstbIntelligence_KeyPress(object sender, KeyPressEventArgs e)
         {
             AddText(EventName.KeyPress, "type=ListBox", "Form1", "lstbIntelligence");
             try
             {
                 int index1 = txtCode.SelectionStart;
-                List<char> list = new List<char>
-            {
-                (char)Keys.Enter, (char)Keys.Up, (char)Keys.Down
-            };
-                if (!list.Contains(e.KeyChar))
+                if (e.KeyChar != (char)Keys.Enter)
                 {
-                    e.Handled = true;
-                    lstbIntelligence.Visible = false;
-                    txtCode.Text = txtCode.Text.Insert(index1, e.KeyChar.ToString());
-                    txtCode.Focus();
+                    if (e.KeyChar == (char)Keys.Back)
+                    {
+                        e.Handled = true;
+                        lstbIntelligence.Visible = false;
+                        txtCode.Text = txtCode.Text.Substring(0, txtCode.TextLength - 1);
+                        txtCode.SelectionStart = index1 - 1;
+                        txtCode.Focus();
+                    }
+                    else if (e.KeyChar == (char)Keys.Escape)
+                    {
+                        int start = txtCode.SelectionStart;
+                        string txtCodeText = txtCode.Text;
+                        lstbIntelligence.Visible = false;
+                        txtCode.SelectionStart = start + (txtCode.TextLength - txtCodeText.Length);
+                        txtCode.Text = txtCode.Text.Replace("\b", "");
+                        txtCode.Focus();
+                    }
+                    else if (!char.IsControl(e.KeyChar))
+                    {
+                        e.Handled = true;
+                        lstbIntelligence.Visible = false;
+                        txtCode.Text = txtCode.Text.Insert(index1, e.KeyChar.ToString());
+                        txtCode.Focus();
+                        txtCode.SelectionStart = index1 + 1;
+                    }
                 }
                 if (lstbIntelligence.Visible && e.KeyChar == (char)Keys.Enter)
                 {
                     int index = txtCode.SelectionStart;
                     string keyword = lstbIntelligence.SelectedItem.ToString();
                     int segmentLength = lstbIntelligence.Tag.ToString().Length;
-                    txtCode.Text = txtCode.Text.Replace(lstbIntelligence.Tag.ToString(),keyword);
+                    txtCode.Text = ReplaceNearestTarget(txtCode.Text, index, lstbIntelligence.Tag.ToString(), keyword);
                     lstbIntelligence.Visible = false;
                     txtCode.SelectionStart = index + keyword.Length;
                     txtCode.Focus();
@@ -609,6 +635,33 @@ namespace FeiSharpStudio
             catch
             {
                 return;
+            }
+        }
+        string ReplaceNearestTarget(string str, int index, string target, string newStr)
+        {
+            int forwardIndex = str.IndexOf(target, index);
+            int backwardIndex = str.LastIndexOf(target, index);
+            if (forwardIndex == -1 && backwardIndex == -1)
+            {
+                return str;
+            }
+            if (forwardIndex != -1 && backwardIndex == -1)
+            {
+                return str.Remove(forwardIndex, target.Length).Insert(forwardIndex, newStr);
+            }
+            if (forwardIndex == -1 && backwardIndex != -1)
+            {
+                return str.Remove(backwardIndex, target.Length).Insert(backwardIndex, newStr);
+            }
+            int forwardDistance = Math.Abs(forwardIndex - index);
+            int backwardDistance = Math.Abs(backwardIndex - index);
+            if (forwardDistance <= backwardDistance)
+            {
+                return str.Remove(forwardIndex, target.Length).Insert(forwardIndex, newStr);
+            }
+            else
+            {
+                return str.Remove(backwardIndex, target.Length).Insert(backwardIndex, newStr);
             }
         }
         private void txtCode_MouseClick(object sender, MouseEventArgs e)
@@ -620,8 +673,8 @@ namespace FeiSharpStudio
         {
             if (e.Control && e.KeyCode == Keys.X)
             {
-                if (txtCode.SelectionLength == 0) {
-                    Clipboard.SetText(GetCurrentLineText(txtCode));
+                if (txtCode.SelectionLength == 0)
+                {
                     DeleteCurrentLine(txtCode);
                 }
                 else
@@ -638,6 +691,14 @@ namespace FeiSharpStudio
                 else
                 {
                     txtCode.Copy();
+                }
+            }
+            else if (e.Control && e.KeyCode == Keys.Z)
+            {
+                if (txtCode.CanUndo)
+                {
+                    txtCode.Undo();
+                    txtCode.ClearUndo();
                 }
             }
         }
@@ -723,8 +784,73 @@ namespace FeiSharpStudio
 
         private void developer_Click(object sender, EventArgs e)
         {
-            string parentFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            System.Diagnostics.Process.Start(Path.Combine(parentFolder, "DeveloperCommandLine.exe"));
+            Process.Start("feisharp.exe");
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void LineNumberListBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                ContextMenuStrip contextMenuStrip = new ContextMenuStrip();
+                ToolStripMenuItem CutMenuItem = new ToolStripMenuItem("Add breakpoint");
+                CutMenuItem.Click += (s, g) =>
+                {
+                    ReplaceLineWithText(txtCode,lineNumberListBox.SelectedIndex+1,"stop;");
+                };
+                contextMenuStrip.Items.Add(CutMenuItem);
+                contextMenuStrip.Show(lineNumberListBox, e.Location);
+            }
+        }
+        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox3.Checked)
+            {
+                keywords = ["form-backcolor: ", "form-text: ", "form-opacity: ", "form-windowstate: ", "Maximized", "Minimized", "Normal", "form-event: ", "load", "resize", "shake", "type: ", "button", "label", "textbox", "name: ", "text: ", "location: ", "x: ", "y: ", "size: ", "width: ", "height: ", "event: ", "click", "double-click", "mouse-double-click", "form-size: ", "{}", "->", ": ", "mouse-move", "mouse-down", "mouse-up"];
+            }
+            else
+            {
+                keywords = ["var", "print", "init", "set", "import", "export", "start", "stop", "wait", "watchstart", "watchend", "abe", "helper", "if", "while", "dowhile", "throw", "class", "func", "return", "gethtml", "getVarsFromJsonFilePath", "invoke", "read", "anno", "define", "readline", "readkey", "ctype", "cstr", "astextbox", "createData", "addData", "delData", "replaceData", "saceDataChanges", "invokeData", "getData", "createInstance", "setClassVar", "setBaseClass", "printMethod"];
+            }
+        }
+
+        private void lineNumberListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int lineNumber = lineNumberListBox.SelectedIndex;
+            if (lineNumber > 0 && lineNumber <= txtCode.Lines.Length)
+            {
+                int charIndex = txtCode.GetFirstCharIndexFromLine(lineNumber);
+                txtCode.SelectionStart = charIndex;
+                txtCode.SelectionLength = 0;
+                txtCode.ScrollToCaret();
+            }
+            txtCode.Focus();
+        }
+    }
+    public class Number : INotifyPropertyChanged
+    {
+        private string name;
+        public string Name
+        {
+            get { return name; }
+            set
+            {
+                if (name != value)
+                {
+                    name = value;
+                    OnPropertyChanged(nameof(Name));
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
