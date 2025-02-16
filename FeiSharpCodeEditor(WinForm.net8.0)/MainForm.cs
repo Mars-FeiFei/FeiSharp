@@ -263,7 +263,8 @@ namespace FeiSharpStudio
                 }
                 else
                 {
-                    outputBox.Text += "Input file then press enter and input ~code.fsc then  also press enter to run this application.";
+                    outputBox.Text += "Build started......" + Environment.NewLine+ "(CoreCLR: clrhost): Loaded source code......" + Environment.NewLine;
+                    outputBox.Text += "Input file then press enter and input ~code.fsc then also press enter to run this application."+Environment.NewLine;
                 }
                 System.IO.File.WriteAllText("~code.fsc", txtCode.Text);
                 Process.Start("feisharp.exe");
@@ -414,7 +415,7 @@ namespace FeiSharpStudio
             if (Tab.Version != Tab.version8)
             {
                 AddText(EventName.Click, "type=Button", "Form1", "btnCheck");
-                outputBox.Text += "Nothings unvalid";
+                outputBox.Text += "Nothings unvalid."+Environment.NewLine;
             }
         }
 
