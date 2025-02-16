@@ -29,38 +29,22 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SourceCode));
-            richTextBox1 = new TextBox();
             SuspendLayout();
-            // 
-            // richTextBox1
-            // 
-            richTextBox1.BackColor = Color.FromArgb(64, 64, 64);
-            richTextBox1.Dock = DockStyle.Fill;
-            richTextBox1.Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            richTextBox1.ForeColor = Color.White;
-            richTextBox1.Location = new Point(0, 0);
-            richTextBox1.Name = "richTextBox1";
-            richTextBox1.ReadOnly = true;
-            richTextBox1.Size = new Size(2383, 64);
-            richTextBox1.TabIndex = 0;
             // 
             // SourceCode
             // 
-            AutoScaleDimensions = new SizeF(22F, 46F);
+            AutoScaleDimensions = new SizeF(10F, 24F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(2383, 1267);
-            Controls.Add(richTextBox1);
+            ClientSize = new Size(1083, 661);
             ForeColor = SystemColors.ControlText;
             Icon = (Icon)resources.GetObject("$this.Icon");
+            Margin = new Padding(1, 2, 1, 2);
             Name = "SourceCode";
             Text = "FeiSharpStudio-SourceCode";
             Load += SourceCode_Load;
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
-
-        private TextBox richTextBox1;
     }
 }

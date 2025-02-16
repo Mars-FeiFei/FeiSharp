@@ -54,6 +54,9 @@ namespace FeiSharpStudio
             checkBox2 = new CheckBox();
             checkBox3 = new CheckBox();
             lineNumberListBox = new ListBox();
+            button1 = new Button();
+            checkBox4 = new CheckBox();
+            checkBox5 = new CheckBox();
             SuspendLayout();
             // 
             // RunBtn
@@ -123,7 +126,7 @@ namespace FeiSharpStudio
             outputBox.Name = "outputBox";
             outputBox.ReadOnly = true;
             outputBox.ScrollBars = RichTextBoxScrollBars.Vertical;
-            outputBox.Size = new Size(1948, 217);
+            outputBox.Size = new Size(2508, 217);
             outputBox.TabIndex = 10;
             outputBox.Text = "";
             outputBox.MouseDown += OutputBox_MouseDown;
@@ -144,11 +147,11 @@ namespace FeiSharpStudio
             txtCode.BackColor = Color.FromArgb(30, 30, 30);
             txtCode.BorderStyle = BorderStyle.FixedSingle;
             txtCode.Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            txtCode.ForeColor = Color.FromArgb(87, 166, 74);
+            txtCode.ForeColor = Color.FromArgb(86, 156, 214);
             txtCode.Location = new Point(57, 131);
             txtCode.Margin = new Padding(1, 2, 1, 2);
             txtCode.Name = "txtCode";
-            txtCode.Size = new Size(1891, 1609);
+            txtCode.Size = new Size(2451, 1609);
             txtCode.TabIndex = 13;
             txtCode.Text = "";
             txtCode.MouseClick += txtCode_MouseClick;
@@ -228,7 +231,7 @@ namespace FeiSharpStudio
             // checkBox1
             // 
             checkBox1.AutoSize = true;
-            checkBox1.Location = new Point(1375, 12);
+            checkBox1.Location = new Point(1946, 12);
             checkBox1.Name = "checkBox1";
             checkBox1.Size = new Size(221, 28);
             checkBox1.TabIndex = 17;
@@ -238,7 +241,7 @@ namespace FeiSharpStudio
             // checkBox2
             // 
             checkBox2.AutoSize = true;
-            checkBox2.Location = new Point(1613, 12);
+            checkBox2.Location = new Point(2173, 12);
             checkBox2.Name = "checkBox2";
             checkBox2.Size = new Size(323, 28);
             checkBox2.TabIndex = 18;
@@ -249,7 +252,7 @@ namespace FeiSharpStudio
             // checkBox3
             // 
             checkBox3.AutoSize = true;
-            checkBox3.Location = new Point(1171, 12);
+            checkBox3.Location = new Point(1751, 12);
             checkBox3.Name = "checkBox3";
             checkBox3.Size = new Size(189, 28);
             checkBox3.TabIndex = 19;
@@ -267,12 +270,47 @@ namespace FeiSharpStudio
             lineNumberListBox.DoubleClick += lineNumberListBox_SelectedIndexChanged;
             lineNumberListBox.MouseDown += LineNumberListBox_MouseDown;
             // 
+            // button1
+            // 
+            button1.Location = new Point(1169, 2);
+            button1.Margin = new Padding(1, 2, 1, 2);
+            button1.Name = "button1";
+            button1.Size = new Size(175, 46);
+            button1.TabIndex = 21;
+            button1.Text = "New";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
+            // checkBox4
+            // 
+            checkBox4.AutoSize = true;
+            checkBox4.Location = new Point(1348, 12);
+            checkBox4.Name = "checkBox4";
+            checkBox4.Size = new Size(154, 28);
+            checkBox4.TabIndex = 22;
+            checkBox4.Text = "do not use IDE";
+            checkBox4.UseVisualStyleBackColor = true;
+            // 
+            // checkBox5
+            // 
+            checkBox5.AutoSize = true;
+            checkBox5.Enabled = false;
+            checkBox5.Location = new Point(1523, 12);
+            checkBox5.Name = "checkBox5";
+            checkBox5.Size = new Size(222, 28);
+            checkBox5.TabIndex = 23;
+            checkBox5.Text = "build with [feisharp.exe]";
+            checkBox5.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(10F, 24F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(192, 255, 255);
-            ClientSize = new Size(1948, 2130);
+            ClientSize = new Size(2508, 2130);
+            Controls.Add(checkBox5);
+            Controls.Add(checkBox4);
+            Controls.Add(button1);
             Controls.Add(lineNumberListBox);
             Controls.Add(checkBox3);
             Controls.Add(checkBox2);
@@ -303,7 +341,7 @@ namespace FeiSharpStudio
             PerformLayout();
         }
 
-       
+
 
 
 
@@ -331,5 +369,8 @@ namespace FeiSharpStudio
         private CheckBox checkBox2;
         private CheckBox checkBox3;
         private ListBox lineNumberListBox;
+        private Button button1;
+        private CheckBox checkBox4;
+        private CheckBox checkBox5;
     }
 }

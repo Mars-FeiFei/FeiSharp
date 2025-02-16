@@ -37,6 +37,8 @@ namespace FeiSharpStudio
             Menu.FlatAppearance.BorderSize = 0;
             OpenBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             OpenBtn.FlatAppearance.BorderSize = 0;
+            button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            button1.FlatAppearance.BorderSize = 0;
             ShortCutBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             ShortCutBtn.FlatAppearance.BorderSize = 0;
             CheckBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -97,9 +99,9 @@ namespace FeiSharpStudio
             {
                 ints.Add(new Number() { Name = i.ToString() });
             }
-            if(ints.Count == 0)
+            if (ints.Count == 0)
             {
-                ints.Add(new Number() { Name = "1" }); 
+                ints.Add(new Number() { Name = "1" });
             }
         }
 
@@ -149,7 +151,7 @@ namespace FeiSharpStudio
                     endIndex = rtb.Text.Length;
                 }
                 rtb.Select(startIndex, endIndex - startIndex);
-                rtb.SelectedText = replacementText;
+                rtb.SelectedText = $"{replacementText}{rtb.SelectedText}";
             }
         }
 
@@ -412,40 +414,48 @@ namespace FeiSharpStudio
             if (Tab.Version != Tab.version8)
             {
                 AddText(EventName.Click, "type=Button", "Form1", "btnCheck");
+                outputBox.Text += "Nothings unvalid";
             }
         }
 
         private void ShowIntelligenceIfNecessary(string segment)
         {
-            object[] objectKeywords = keywords.Where(i => i.Contains(segment)).ToArray();
-            lstbIntelligence.Items.Clear();
-            lstbIntelligence.Items.AddRange(objectKeywords);
-            int index = -1;
-            for (int i = 0; i < lstbIntelligence.Items.Count; i++)
+            if(checkBox4.Checked)
             {
-                string currentItem = lstbIntelligence?.Items[i]?.ToString();
-                if (segment != "" && currentItem.StartsWith(segment, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    index = i;
-                    break;
-                }
-            }
-
-            if (index >= 0)
-            {
-                lstbIntelligence.SelectedIndex = index;
-                Point cursorPosition = txtCode.GetPositionFromCharIndex(txtCode.SelectionStart);
-                lstbIntelligence.Left = txtCode.Left + cursorPosition.X;
-                lstbIntelligence.Top = txtCode.Top + cursorPosition.Y + txtCode.Font.Height;
-                lstbIntelligence.Tag = segment;
-                lstbIntelligence.Visible = true;
-                lstbIntelligence.BringToFront();
-                lstbIntelligence.Focus();
+                lstbIntelligence.Visible = false;
             }
             else
             {
-                lstbIntelligence.Visible = false;
-                txtCode.Focus();
+                object[] objectKeywords = keywords.Where(i => i.Contains(segment)).ToArray();
+                lstbIntelligence.Items.Clear();
+                lstbIntelligence.Items.AddRange(objectKeywords);
+                int index = -1;
+                for (int i = 0; i < lstbIntelligence.Items.Count; i++)
+                {
+                    string currentItem = lstbIntelligence?.Items[i]?.ToString();
+                    if (segment != "" && currentItem.StartsWith(segment, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+
+                if (index >= 0)
+                {
+                    lstbIntelligence.SelectedIndex = index;
+                    Point cursorPosition = txtCode.GetPositionFromCharIndex(txtCode.SelectionStart);
+                    lstbIntelligence.Left = txtCode.Left + cursorPosition.X;
+                    lstbIntelligence.Top = txtCode.Top + cursorPosition.Y + txtCode.Font.Height;
+                    lstbIntelligence.Tag = segment;
+                    lstbIntelligence.Visible = true;
+                    lstbIntelligence.BringToFront();
+                    lstbIntelligence.Focus();
+                }
+                else
+                {
+                    lstbIntelligence.Visible = false;
+                    txtCode.Focus();
+                }
             }
         }
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
@@ -514,7 +524,8 @@ namespace FeiSharpStudio
                 CopyMenuItem.Click += (s, g) => txtCode.Copy();
                 CutMenuItem.Click += (s, g) => txtCode.Cut();
                 SelectAllMenuItem.Click += (s, g) => txtCode.SelectAll();
-                UndoMenuItem.Click += (s, g) => {
+                UndoMenuItem.Click += (s, g) =>
+                {
                     if (txtCode.CanUndo)
                     {
                         txtCode.Undo();
@@ -565,6 +576,25 @@ namespace FeiSharpStudio
             AddText(EventName.TextChanged, "type=RichTextBox", "Form1", "txtCode");
             Debug.WriteLine(txtCode.SelectionStart);
             UpdateLineNumbers();
+            List<string> args = new(txtCode.Text.Split(' '));
+            foreach (string arg in args)
+            {
+                if (!keywords.Contains(arg) && (!arg.Contains('{') && !arg.Contains('[') && !arg.Contains(']') && !arg.Contains('}')))
+                {
+                    bool isValid = true;
+                    foreach (string keyword in keywords)
+                    {
+                        if (arg.Contains(keyword))
+                        {
+                            isValid = false;
+                        }
+                    }
+                    if (isValid)
+                    {
+                        keywords.Add(arg);
+                    }
+                }
+            }
             var indexc = txtCode.SelectionStart;
             var index = txtCode.SelectionStart - 1;
             if (index >= 0 && txtCode.Text.Length > index)
@@ -608,9 +638,24 @@ namespace FeiSharpStudio
                         int start = txtCode.SelectionStart;
                         string txtCodeText = txtCode.Text;
                         lstbIntelligence.Visible = false;
-                        txtCode.SelectionStart = start + (txtCode.TextLength - txtCodeText.Length);
-                        txtCode.Text = txtCode.Text.Replace("\b", "");
+                        txtCode.SelectionStart = (start + (txtCode.TextLength - txtCodeText.Length)) == 0 ? start : (start + (txtCode.TextLength - txtCodeText.Length));
                         txtCode.Focus();
+                    }
+                    else if (e.KeyChar == '(')
+                    {
+                        int start = txtCode.SelectionStart;
+                        txtCode.Text = txtCode.Text.Insert(txtCode.SelectionStart, "()");
+                        txtCode.SelectionStart = start + 1;
+                        e.Handled = true;
+                        lstbIntelligence.Visible = false;
+                    }
+                    else if (e.KeyChar == '"')
+                    {
+                        int start = txtCode.SelectionStart;
+                        txtCode.Text = txtCode.Text.Insert(txtCode.SelectionStart, "\"\"");
+                        txtCode.SelectionStart = start + 1;
+                        e.Handled = true;
+                        lstbIntelligence.Visible = false;
                     }
                     else if (!char.IsControl(e.KeyChar))
                     {
@@ -799,7 +844,7 @@ namespace FeiSharpStudio
                 ToolStripMenuItem CutMenuItem = new ToolStripMenuItem("Add breakpoint");
                 CutMenuItem.Click += (s, g) =>
                 {
-                    ReplaceLineWithText(txtCode,lineNumberListBox.SelectedIndex+1,"stop;");
+                    ReplaceLineWithText(txtCode, lineNumberListBox.SelectedIndex + 1, "stop;");
                 };
                 contextMenuStrip.Items.Add(CutMenuItem);
                 contextMenuStrip.Show(lineNumberListBox, e.Location);
@@ -828,6 +873,12 @@ namespace FeiSharpStudio
                 txtCode.ScrollToCaret();
             }
             txtCode.Focus();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            txtCode.Text = "";
+            this.Refresh();
         }
     }
     public class Number : INotifyPropertyChanged
