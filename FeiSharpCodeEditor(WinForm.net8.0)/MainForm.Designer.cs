@@ -61,10 +61,10 @@ namespace FeiSharpStudio
             // 
             // RunBtn
             // 
-            RunBtn.Location = new Point(92, 2);
-            RunBtn.Margin = new Padding(1, 2, 1, 2);
+            RunBtn.Location = new Point(202, 4);
+            RunBtn.Margin = new Padding(2, 4, 2, 4);
             RunBtn.Name = "RunBtn";
-            RunBtn.Size = new Size(111, 46);
+            RunBtn.Size = new Size(244, 88);
             RunBtn.TabIndex = 0;
             RunBtn.Text = "Run(F5)";
             RunBtn.UseVisualStyleBackColor = true;
@@ -72,10 +72,10 @@ namespace FeiSharpStudio
             // 
             // SaveAsBtn
             // 
-            SaveAsBtn.Location = new Point(205, 2);
-            SaveAsBtn.Margin = new Padding(1, 2, 1, 2);
+            SaveAsBtn.Location = new Point(451, 4);
+            SaveAsBtn.Margin = new Padding(2, 4, 2, 4);
             SaveAsBtn.Name = "SaveAsBtn";
-            SaveAsBtn.Size = new Size(151, 46);
+            SaveAsBtn.Size = new Size(332, 88);
             SaveAsBtn.TabIndex = 1;
             SaveAsBtn.Text = "Save As(CTRL+S)";
             SaveAsBtn.UseVisualStyleBackColor = true;
@@ -83,10 +83,10 @@ namespace FeiSharpStudio
             // 
             // OpenBtn
             // 
-            OpenBtn.Location = new Point(359, 2);
-            OpenBtn.Margin = new Padding(1, 2, 1, 2);
+            OpenBtn.Location = new Point(790, 4);
+            OpenBtn.Margin = new Padding(2, 4, 2, 4);
             OpenBtn.Name = "OpenBtn";
-            OpenBtn.Size = new Size(180, 46);
+            OpenBtn.Size = new Size(396, 88);
             OpenBtn.TabIndex = 2;
             OpenBtn.Text = "Open File(CTRL+F)";
             OpenBtn.UseVisualStyleBackColor = true;
@@ -94,10 +94,10 @@ namespace FeiSharpStudio
             // 
             // Menu
             // 
-            Menu.Location = new Point(2, 2);
-            Menu.Margin = new Padding(1, 2, 1, 2);
+            Menu.Location = new Point(4, 4);
+            Menu.Margin = new Padding(2, 4, 2, 4);
             Menu.Name = "Menu";
-            Menu.Size = new Size(88, 46);
+            Menu.Size = new Size(194, 88);
             Menu.TabIndex = 6;
             Menu.Text = "Menu";
             Menu.UseVisualStyleBackColor = true;
@@ -105,10 +105,10 @@ namespace FeiSharpStudio
             // 
             // ShortCutBtn
             // 
-            ShortCutBtn.Location = new Point(542, 2);
-            ShortCutBtn.Margin = new Padding(1, 2, 1, 2);
+            ShortCutBtn.Location = new Point(1192, 4);
+            ShortCutBtn.Margin = new Padding(2, 4, 2, 4);
             ShortCutBtn.Name = "ShortCutBtn";
-            ShortCutBtn.Size = new Size(237, 46);
+            ShortCutBtn.Size = new Size(521, 88);
             ShortCutBtn.TabIndex = 8;
             ShortCutBtn.Text = "Create Desktop Shortcut";
             ShortCutBtn.UseVisualStyleBackColor = true;
@@ -121,22 +121,22 @@ namespace FeiSharpStudio
             outputBox.Dock = DockStyle.Bottom;
             outputBox.Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             outputBox.ForeColor = Color.FromArgb(86, 156, 214);
-            outputBox.Location = new Point(0, 1913);
-            outputBox.Margin = new Padding(1, 2, 1, 2);
+            outputBox.Location = new Point(0, 1582);
+            outputBox.Margin = new Padding(2, 4, 2, 4);
             outputBox.Name = "outputBox";
             outputBox.ReadOnly = true;
             outputBox.ScrollBars = RichTextBoxScrollBars.Vertical;
-            outputBox.Size = new Size(2508, 217);
+            outputBox.Size = new Size(3844, 515);
             outputBox.TabIndex = 10;
             outputBox.Text = "";
             outputBox.MouseDown += OutputBox_MouseDown;
             // 
             // CheckBtn
             // 
-            CheckBtn.Location = new Point(781, 2);
-            CheckBtn.Margin = new Padding(1, 2, 1, 2);
+            CheckBtn.Location = new Point(1718, 4);
+            CheckBtn.Margin = new Padding(2, 4, 2, 4);
             CheckBtn.Name = "CheckBtn";
-            CheckBtn.Size = new Size(108, 46);
+            CheckBtn.Size = new Size(238, 88);
             CheckBtn.TabIndex = 11;
             CheckBtn.Text = "Check";
             CheckBtn.UseVisualStyleBackColor = true;
@@ -148,10 +148,10 @@ namespace FeiSharpStudio
             txtCode.BorderStyle = BorderStyle.FixedSingle;
             txtCode.Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             txtCode.ForeColor = Color.FromArgb(86, 156, 214);
-            txtCode.Location = new Point(57, 131);
-            txtCode.Margin = new Padding(1, 2, 1, 2);
+            txtCode.Location = new Point(125, 239);
+            txtCode.Margin = new Padding(2, 4, 2, 4);
             txtCode.Name = "txtCode";
-            txtCode.Size = new Size(2451, 1609);
+            txtCode.Size = new Size(5387, 978);
             txtCode.TabIndex = 13;
             txtCode.Text = "";
             txtCode.MouseClick += txtCode_MouseClick;
@@ -166,10 +166,10 @@ namespace FeiSharpStudio
             lstbIntelligence.ForeColor = Color.Blue;
             lstbIntelligence.FormattingEnabled = true;
             lstbIntelligence.Items.AddRange(new object[] { "var", "print", "init", "set", "import", "export", "start", "stop", "wait", "watchstart", "watchend", "abe", "helper", "if", "while", "func", "return", "gethtml", "getVarsFromJsonFilePath" });
-            lstbIntelligence.Location = new Point(57, 52);
-            lstbIntelligence.Margin = new Padding(1, 2, 1, 2);
+            lstbIntelligence.Location = new Point(125, 100);
+            lstbIntelligence.Margin = new Padding(2, 4, 2, 4);
             lstbIntelligence.Name = "lstbIntelligence";
-            lstbIntelligence.Size = new Size(216, 148);
+            lstbIntelligence.Size = new Size(470, 280);
             lstbIntelligence.TabIndex = 14;
             lstbIntelligence.Visible = false;
             lstbIntelligence.KeyPress += lstbIntelligence_KeyPress;
@@ -177,10 +177,10 @@ namespace FeiSharpStudio
             // 
             // log
             // 
-            log.Location = new Point(892, 2);
-            log.Margin = new Padding(1, 2, 1, 2);
+            log.Location = new Point(1962, 4);
+            log.Margin = new Padding(2, 4, 2, 4);
             log.Name = "log";
-            log.Size = new Size(98, 46);
+            log.Size = new Size(216, 88);
             log.TabIndex = 15;
             log.Text = "log";
             log.UseVisualStyleBackColor = true;
@@ -219,10 +219,10 @@ namespace FeiSharpStudio
             // 
             // developer
             // 
-            developer.Location = new Point(992, 2);
-            developer.Margin = new Padding(1, 2, 1, 2);
+            developer.Location = new Point(2182, 4);
+            developer.Margin = new Padding(2, 4, 2, 4);
             developer.Name = "developer";
-            developer.Size = new Size(175, 46);
+            developer.Size = new Size(385, 88);
             developer.TabIndex = 16;
             developer.Text = "Developer Cmd";
             developer.UseVisualStyleBackColor = true;
@@ -231,9 +231,10 @@ namespace FeiSharpStudio
             // checkBox1
             // 
             checkBox1.AutoSize = true;
-            checkBox1.Location = new Point(1946, 12);
+            checkBox1.Location = new Point(3273, 100);
+            checkBox1.Margin = new Padding(7, 6, 7, 6);
             checkBox1.Name = "checkBox1";
-            checkBox1.Size = new Size(221, 28);
+            checkBox1.Size = new Size(467, 50);
             checkBox1.TabIndex = 17;
             checkBox1.Text = "use performance mode";
             checkBox1.UseVisualStyleBackColor = true;
@@ -241,9 +242,10 @@ namespace FeiSharpStudio
             // checkBox2
             // 
             checkBox2.AutoSize = true;
-            checkBox2.Location = new Point(2173, 12);
+            checkBox2.Location = new Point(2861, 179);
+            checkBox2.Margin = new Padding(7, 6, 7, 6);
             checkBox2.Name = "checkBox2";
-            checkBox2.Size = new Size(323, 28);
+            checkBox2.Size = new Size(694, 50);
             checkBox2.TabIndex = 18;
             checkBox2.Text = "remove output intelligence message\r\n";
             checkBox2.UseVisualStyleBackColor = true;
@@ -252,9 +254,10 @@ namespace FeiSharpStudio
             // checkBox3
             // 
             checkBox3.AutoSize = true;
-            checkBox3.Location = new Point(1751, 12);
+            checkBox3.Location = new Point(2861, 100);
+            checkBox3.Margin = new Padding(7, 6, 7, 6);
             checkBox3.Name = "checkBox3";
-            checkBox3.Size = new Size(189, 28);
+            checkBox3.Size = new Size(398, 50);
             checkBox3.TabIndex = 19;
             checkBox3.Text = "WindowsPUI Mode";
             checkBox3.UseVisualStyleBackColor = true;
@@ -263,19 +266,20 @@ namespace FeiSharpStudio
             // lineNumberListBox
             // 
             lineNumberListBox.FormattingEnabled = true;
-            lineNumberListBox.Location = new Point(2, 128);
+            lineNumberListBox.Location = new Point(4, 245);
+            lineNumberListBox.Margin = new Padding(7, 6, 7, 6);
             lineNumberListBox.Name = "lineNumberListBox";
-            lineNumberListBox.Size = new Size(56, 1612);
+            lineNumberListBox.Size = new Size(118, 3086);
             lineNumberListBox.TabIndex = 20;
             lineNumberListBox.DoubleClick += lineNumberListBox_SelectedIndexChanged;
             lineNumberListBox.MouseDown += LineNumberListBox_MouseDown;
             // 
             // button1
             // 
-            button1.Location = new Point(1169, 2);
-            button1.Margin = new Padding(1, 2, 1, 2);
+            button1.Location = new Point(2572, 4);
+            button1.Margin = new Padding(2, 4, 2, 4);
             button1.Name = "button1";
-            button1.Size = new Size(175, 46);
+            button1.Size = new Size(280, 88);
             button1.TabIndex = 21;
             button1.Text = "New";
             button1.UseVisualStyleBackColor = true;
@@ -284,9 +288,10 @@ namespace FeiSharpStudio
             // checkBox4
             // 
             checkBox4.AutoSize = true;
-            checkBox4.Location = new Point(1348, 12);
+            checkBox4.Location = new Point(2861, 24);
+            checkBox4.Margin = new Padding(7, 6, 7, 6);
             checkBox4.Name = "checkBox4";
-            checkBox4.Size = new Size(154, 28);
+            checkBox4.Size = new Size(320, 50);
             checkBox4.TabIndex = 22;
             checkBox4.Text = "do not use IDE";
             checkBox4.UseVisualStyleBackColor = true;
@@ -295,19 +300,20 @@ namespace FeiSharpStudio
             // 
             checkBox5.AutoSize = true;
             checkBox5.Enabled = false;
-            checkBox5.Location = new Point(1523, 12);
+            checkBox5.Location = new Point(3195, 24);
+            checkBox5.Margin = new Padding(7, 6, 7, 6);
             checkBox5.Name = "checkBox5";
-            checkBox5.Size = new Size(222, 28);
+            checkBox5.Size = new Size(478, 50);
             checkBox5.TabIndex = 23;
             checkBox5.Text = "build with [feisharp.exe]";
             checkBox5.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
-            AutoScaleDimensions = new SizeF(10F, 24F);
+            AutoScaleDimensions = new SizeF(22F, 46F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(192, 255, 255);
-            ClientSize = new Size(2508, 2130);
+            ClientSize = new Size(3844, 2097);
             Controls.Add(checkBox5);
             Controls.Add(checkBox4);
             Controls.Add(button1);
@@ -328,7 +334,7 @@ namespace FeiSharpStudio
             Controls.Add(RunBtn);
             Icon = (Icon)resources.GetObject("$this.Icon");
             KeyPreview = true;
-            Margin = new Padding(1, 2, 1, 2);
+            Margin = new Padding(2, 4, 2, 4);
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "FeiSharpStudio-Console";
